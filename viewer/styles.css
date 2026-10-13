@@ -742,3 +742,188 @@ body {
   color: #f43f5e;
   margin-bottom: 0.2rem;
 }
+
+/* Metric card latency saved (C3) */
+.metric-latency-saved {
+  border-left: 2px solid #818cf8;
+}
+.metric-latency-saved .metric-value {
+  color: #a5b4fc;
+}
+
+/* Rumor Chart Card (C1) */
+.rumor-chart-card {
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.chart-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-color.r1 { background: #f43f5e; }
+.legend-color.r2 { background: #10b981; }
+
+#rumor-curve-canvas {
+  width: 100%;
+  height: 110px;
+  display: block;
+}
+
+/* MemoryGate Diff Styles (C2) */
+.diff-header-banner {
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.diff-header-banner h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.diff-header-banner p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.diff-metrics-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.diff-metric-pill {
+  flex: 1;
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.diff-metric-pill .label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.diff-metric-pill .val {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.diff-metric-pill .val.green {
+  color: var(--brand-decider);
+}
+
+.diff-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.diff-box {
+  background: var(--bg-app);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.diff-box.without-gate {
+  border-left: 3px solid #f43f5e;
+}
+
+.diff-box.with-gate {
+  border-left: 3px solid #10b981;
+}
+
+.diff-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-danger {
+  background: rgba(244, 63, 94, 0.15);
+  color: #f43f5e;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+}
+
+.badge-success {
+  background: var(--brand-decider-bg);
+  color: var(--brand-decider);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+}
+
+.diff-box-body {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.diff-memory-item {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.diff-memory-item.selected {
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+.diff-memory-item.filtered-out {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.7;
+}

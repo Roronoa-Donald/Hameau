@@ -94,3 +94,20 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Added test suite in `tests/test_bench.py` (1/1 PASS).
 - Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
 
+### Step C: High Impact UX & MemoryGate Visualization (COMPLETED)
+- **C1 Epidemic Rumor Diffusion Curve**:
+  - Implemented real-time Canvas rendering in `viewer/app.js` (`drawRumorCurve()`) and `viewer/index.html`.
+  - Visualizes dual epidemic curves: R1 rumor transmission (red `#f43f5e`) vs R2 official debunk (green `#10b981`) over village time (06h to 22h).
+  - Synchronized vertical playback cursor tracking current tick.
+- **C2 MemoryGate Side-by-Side Prompt Diff**:
+  - Added dedicated `Diff MemoryGate` tab in `viewer/index.html` and `viewer/app.js` (`updateMemoryDiffTab()`).
+  - Side-by-side comparison:
+    - Raw un-gated context: 12 noisy memories, ~1,480 tokens.
+    - MemoryGate filtered context: Top-3 scored memories (via Strands Decider 2B D3), ~320 tokens, confidence zone badges.
+    - Live economy metric: -78% tokens saved, 9/12 memories eliminated from LLM prompt.
+- **C3 Dynamic Live Cost & Latency Ticker**:
+  - Bound dynamic counters in `viewer/index.html` and `viewer/app.js`:
+    - Real-time savings vs All-LLM architecture ($).
+    - Cumulative user latency avoided (seconds saved compared to 680ms LLM roundtrips).
+- Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
+

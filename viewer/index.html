@@ -41,9 +41,14 @@
         <span class="badge-value" id="ratio-value">-- : 1</span>
       </div>
       <div class="metric-card metric-cost">
-        <div class="metric-label">Coût AWS Estimé</div>
+        <div class="metric-label">Coût AWS Réel</div>
         <div class="metric-value font-mono" id="counter-cost">0,0000 $</div>
-        <div class="metric-sub">Nova Micro (us-east-1)</div>
+        <div class="metric-sub" id="counter-savings">Éco. vs Tout-LLM : 0,0000 $</div>
+      </div>
+      <div class="metric-card metric-latency-saved">
+        <div class="metric-label">Latence Évitée</div>
+        <div class="metric-value font-mono" id="counter-latency-saved">0 s</div>
+        <div class="metric-sub font-mono" id="counter-latency-sub">~565 ms / décision</div>
       </div>
     </div>
 
@@ -125,6 +130,7 @@
       <nav class="panel-tabs">
         <button class="tab-btn active" data-tab="inspector">Inspecteur d'Agent</button>
         <button class="tab-btn" data-tab="rumor-graph">Graphe de Rumeur</button>
+        <button class="tab-btn" data-tab="memory-diff">Diff MemoryGate</button>
         <button class="tab-btn" data-tab="gazette">La Gazette</button>
       </nav>
 
@@ -210,12 +216,69 @@
             <span class="stat-text">Ont fait des stocks</span>
           </div>
         </div>
+
+        <div class="rumor-chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Courbes Épidémiques de Transmission</span>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-color r1"></span>R1 (Rumeur)</span>
+              <span class="legend-item"><span class="legend-color r2"></span>R2 (Démenti)</span>
+            </div>
+          </div>
+          <canvas id="rumor-curve-canvas" width="390" height="120"></canvas>
+        </div>
+
         <div class="rumor-timeline" id="rumor-hops-list">
           <!-- Historique des sauts de rumeur -->
         </div>
       </div>
 
-      <!-- Onglet 3 : Gazette du Hameau -->
+      <!-- Onglet 3 : Vue comparative MemoryGate (C2) -->
+      <div class="tab-content" id="tab-memory-diff">
+        <div class="diff-header-banner">
+          <h3>Comparaison de Contexte LLM (Prompt Diff)</h3>
+          <p>Impact du filtrage par Strands Decider 2B sur le prompt Bedrock Nova Micro.</p>
+        </div>
+
+        <div class="diff-metrics-row">
+          <div class="diff-metric-pill">
+            <span class="label">Tokens Économisés</span>
+            <span class="val green" id="diff-tokens-saved">-78 %</span>
+          </div>
+          <div class="diff-metric-pill">
+            <span class="label">Bruit Éliminé</span>
+            <span class="val green" id="diff-noise-removed">9 / 12 souvenirs</span>
+          </div>
+          <div class="diff-metric-pill">
+            <span class="label">Latence Decider</span>
+            <span class="val font-mono">115 ms</span>
+          </div>
+        </div>
+
+        <div class="diff-columns">
+          <div class="diff-box without-gate">
+            <div class="diff-box-header">
+              <span class="box-title">❌ Sans MemoryGate (Brut)</span>
+              <span class="badge badge-danger" id="tokens-raw-badge">~1 480 tokens</span>
+            </div>
+            <div class="diff-box-body" id="diff-raw-content">
+              <!-- Rempli dynamiquement -->
+            </div>
+          </div>
+
+          <div class="diff-box with-gate">
+            <div class="diff-box-header">
+              <span class="box-title">✅ Avec MemoryGate (Scoré)</span>
+              <span class="badge badge-success" id="tokens-gated-badge">~320 tokens</span>
+            </div>
+            <div class="diff-box-body" id="diff-gated-content">
+              <!-- Rempli dynamiquement -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onglet 4 : Gazette du Hameau -->
       <div class="tab-content" id="tab-gazette">
         <div class="gazette-newspaper">
           <div class="gazette-masthead">

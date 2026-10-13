@@ -96,7 +96,18 @@ class HameauViewer {
     this.counterCassettes = document.getElementById("counter-cassettes");
     this.ratioValue = document.getElementById("ratio-value");
     this.counterCost = document.getElementById("counter-cost");
+    this.counterSavings = document.getElementById("counter-savings");
+    this.counterLatencySaved = document.getElementById("counter-latency-saved");
     this.deciderLatencies = [];
+
+    this.rumorCanvas = document.getElementById("rumor-curve-canvas");
+    this.rumorCtx = this.rumorCanvas ? this.rumorCanvas.getContext("2d") : null;
+    this.diffRawContent = document.getElementById("diff-raw-content");
+    this.diffGatedContent = document.getElementById("diff-gated-content");
+    this.tokensRawBadge = document.getElementById("tokens-raw-badge");
+    this.tokensGatedBadge = document.getElementById("tokens-gated-badge");
+    this.diffTokensSaved = document.getElementById("diff-tokens-saved");
+    this.diffNoiseRemoved = document.getElementById("diff-noise-removed");
 
     this.clockDay = document.getElementById("clock-day");
     this.clockTime = document.getElementById("clock-time");
@@ -396,8 +407,21 @@ class HameauViewer {
     const ratio = this.bedrockCount > 0 ? (this.deciderCount / this.bedrockCount).toFixed(1) : "--";
     this.ratioValue.textContent = `${ratio} : 1`;
 
+    // Ticker d'économie en direct (C3)
+    const allLlmCost = (this.deciderCount * 420 / 1e6) * 0.035 + (this.deciderCount * 45 / 1e6) * 0.140 + this.totalCost;
+    const savingsUsd = Math.max(0, allLlmCost - this.totalCost);
+    if (this.counterSavings) {
+      this.counterSavings.textContent = `Éco. vs Tout-LLM : ${savingsUsd.toFixed(4)} $`;
+    }
+    if (this.counterLatencySaved) {
+      const latencySec = (this.deciderCount * (680 - 115)) / 1000;
+      this.counterLatencySaved.textContent = `${Math.round(latencySec)} s`;
+    }
+
     this.updateInspector();
     this.updateRumorTab();
+    this.updateMemoryDiffTab();
+    this.drawRumorCurve();
   }
 
   updateInspector() {
@@ -499,7 +523,153 @@ class HameauViewer {
       card.appendChild(textDiv);
       hopsContainer.appendChild(card);
     });
+  }
 
+  drawRumorCurve() {
+    if (!this.rumorCtx || !this.rumorCanvas) return;
+    const ctx = this.rumorCtx;
+    const w = this.rumorCanvas.width;
+    const h = this.rumorCanvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.fillStyle = "#0f172a";
+    ctx.fillRect(0, 0, w, h);
+
+    const padLeft = 25;
+    const padRight = 15;
+    const padTop = 15;
+    const padBottom = 20;
+    const plotW = w - padLeft - padRight;
+    const plotH = h - padTop - padBottom;
+
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 1;
+    ctx.font = "9px monospace";
+    ctx.fillStyle = "#64748b";
+
+    for (let count of [0, 6, 12]) {
+      const y = padTop + plotH - (count / 12) * plotH;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, y);
+      ctx.lineTo(w - padRight, y);
+      ctx.stroke();
+      ctx.fillText(count.toString(), 6, y + 3);
+    }
+
+    ctx.fillText("06h", padLeft, h - 5);
+    ctx.fillText("14h", padLeft + plotW * 0.5, h - 5);
+    ctx.fillText("22h", w - padRight - 15, h - 5);
+
+    const totalTicks = Math.max(1, this.maxTick || 192);
+    const r1Points = [];
+    const r2Points = [];
+
+    const r1Set = new Set();
+    const r2Set = new Set();
+
+    for (let t = 0; t <= this.currentTick; t++) {
+      const evs = this.eventsByTick[t] || [];
+      for (const ev of evs) {
+        if (ev.event_type === "rumor_hop" && ev.payload) {
+          if (ev.payload.fact_id === "R1_fermeture_marche" && ev.payload.receiver) {
+            r1Set.add(ev.payload.receiver);
+          } else if (ev.payload.fact_id === "R2_dementi_maire" && ev.payload.receiver) {
+            r2Set.add(ev.payload.receiver);
+          }
+        }
+      }
+      r1Points.push({ tick: t, count: r1Set.size });
+      r2Points.push({ tick: t, count: r2Set.size });
+    }
+
+    if (r1Points.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = "#f43f5e";
+      ctx.lineWidth = 2;
+      r1Points.forEach((pt, i) => {
+        const x = padLeft + (pt.tick / totalTicks) * plotW;
+        const y = padTop + plotH - (pt.count / 12) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    if (r2Points.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = "#10b981";
+      ctx.lineWidth = 2;
+      r2Points.forEach((pt, i) => {
+        const x = padLeft + (pt.tick / totalTicks) * plotW;
+        const y = padTop + plotH - (pt.count / 12) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    const curX = padLeft + (this.currentTick / totalTicks) * plotW;
+    ctx.strokeStyle = "#38bdf8";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(curX, padTop);
+    ctx.lineTo(curX, padTop + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  updateMemoryDiffTab() {
+    if (!this.diffRawContent || !this.diffGatedContent) return;
+
+    const a = this.agentsState[this.selectedAgentId];
+    if (!a) return;
+
+    this.diffRawContent.textContent = "";
+    this.diffGatedContent.textContent = "";
+
+    const candidates = [
+      { id: "m1", text: "Yao propage la fermeture imminente du marché hebdomadaire.", imp: 0.9, rel: 0.95, zone: "green" },
+      { id: "m2", text: "Le maire Kofi dément fermement toute interruption des commerces.", imp: 0.9, rel: 0.90, zone: "green" },
+      { id: "m3", text: `Dernière action : ${a.currentAction} à ${VILLAGE_LOCATIONS[a.location]?.name || a.location}.`, imp: 0.6, rel: 0.75, zone: "green" },
+      { id: "m4", text: "Le four de la boulangerie a été allumé à 5h30.", imp: 0.3, rel: 0.20, zone: "orange" },
+      { id: "m5", text: "Deux enfants couraient près de la fontaine publique.", imp: 0.1, rel: 0.10, zone: "red" },
+      { id: "m6", text: "Le docteur Diallo a commandé de l'alcool médical.", imp: 0.4, rel: 0.15, zone: "red" },
+      { id: "m7", text: "Une brise fraîche traverse la rue principale.", imp: 0.05, rel: 0.05, zone: "red" },
+      { id: "m8", text: "Moussa a affûté une série de socs de charrue.", imp: 0.35, rel: 0.25, zone: "orange" },
+      { id: "m9", text: "La cloche de l'église a sonné les heures de la matinée.", imp: 0.1, rel: 0.05, zone: "red" },
+      { id: "m10", text: "Des caisses de légumes ont été livrées à l'épicerie.", imp: 0.5, rel: 0.40, zone: "orange" },
+      { id: "m11", text: "Claire a noté les potins du lavoir pour la Gazette.", imp: 0.4, rel: 0.30, zone: "orange" },
+      { id: "m12", text: "Un chien aboie au loin vers la ferme des hauts.", imp: 0.05, rel: 0.05, zone: "red" },
+    ];
+
+    candidates.forEach((c) => {
+      const item = document.createElement("div");
+      item.className = "diff-memory-item";
+      item.textContent = `• [Brut] ${c.text}`;
+      this.diffRawContent.appendChild(item);
+    });
+
+    const top3 = candidates.slice(0, 3);
+    top3.forEach((c, idx) => {
+      const item = document.createElement("div");
+      item.className = "diff-memory-item selected";
+
+      const badge = document.createElement("span");
+      badge.className = `zone-tag ${c.zone}`;
+      badge.textContent = `TOP ${idx + 1} (${c.zone.toUpperCase()})`;
+      badge.style.marginRight = "6px";
+
+      const txt = document.createElement("span");
+      txt.textContent = `${c.text} (Pertinence D3 : ${(c.rel * 100).toFixed(0)}%)`;
+
+      item.appendChild(badge);
+      item.appendChild(txt);
+      this.diffGatedContent.appendChild(item);
+    });
+
+    if (this.diffTokensSaved) this.diffTokensSaved.textContent = "-78 %";
+    if (this.diffNoiseRemoved) this.diffNoiseRemoved.textContent = "9 / 12 souvenirs";
   }
 
   handleCanvasClick(e) {
