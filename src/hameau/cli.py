@@ -1,6 +1,7 @@
 """Command Line Interface for running HAMEAU simulation."""
 
 import argparse
+import os
 import sys
 import yaml
 from pathlib import Path
