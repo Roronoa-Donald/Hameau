@@ -91,10 +91,12 @@ class HameauViewer {
     this.slider = document.getElementById("timeline-slider");
 
     this.counterDecider = document.getElementById("counter-decider");
+    this.counterDeciderLatency = document.getElementById("counter-decider-latency");
     this.counterBedrock = document.getElementById("counter-bedrock");
     this.counterCassettes = document.getElementById("counter-cassettes");
     this.ratioValue = document.getElementById("ratio-value");
     this.counterCost = document.getElementById("counter-cost");
+    this.deciderLatencies = [];
 
     this.clockDay = document.getElementById("clock-day");
     this.clockTime = document.getElementById("clock-time");
@@ -259,7 +261,8 @@ class HameauViewer {
     this.cassetteCount = 0;
     this.totalCost = 0.0;
     this.rumorHops = [];
-    this.feedList.innerHTML = "";
+    this.deciderLatencies = [];
+    this.feedList.textContent = "";
 
     for (let t = 0; t <= upToTick; t++) {
       const evs = this.eventsByTick[t] || [];
@@ -275,6 +278,9 @@ class HameauViewer {
 
     if (event_type === "decision") {
       this.deciderCount++;
+      if (typeof payload.latency_ms === "number") {
+        this.deciderLatencies.push(payload.latency_ms);
+      }
       if (agent_id && this.agentsState[agent_id]) {
         this.decisionsHistory[agent_id].unshift({
           tick,
@@ -288,7 +294,7 @@ class HameauViewer {
         }
       }
       if (isCurrentTick) {
-        this.addFeedItem(tick, "tag-decision", "Decider", `${AGENTS_META[agent_id]?.name || agent_id} : ${payload.chosen_option} (${payload.zone.toUpperCase()})`);
+        this.addFeedItem(tick, "tag-decision", "Decider", `${AGENTS_META[agent_id]?.name || agent_id} : ${payload.chosen_option} (${payload.zone ? payload.zone.toUpperCase() : ""})`);
       }
     } else if (event_type === "llm_call") {
       this.bedrockCount++;
@@ -337,11 +343,23 @@ class HameauViewer {
     const item = document.createElement("div");
     item.className = "feed-item";
     const timeStr = this.formatTickTime(tick);
-    item.innerHTML = `
-      <span class="feed-tick">${timeStr}</span>
-      <span class="feed-tag ${tagClass}">${tagText}</span>
-      <span class="feed-text">${message}</span>
-    `;
+
+    const spanTick = document.createElement("span");
+    spanTick.className = "feed-tick";
+    spanTick.textContent = timeStr;
+
+    const spanTag = document.createElement("span");
+    spanTag.className = `feed-tag ${tagClass}`;
+    spanTag.textContent = tagText;
+
+    const spanText = document.createElement("span");
+    spanText.className = "feed-text";
+    spanText.textContent = message;
+
+    item.appendChild(spanTick);
+    item.appendChild(spanTag);
+    item.appendChild(spanText);
+
     this.feedList.prepend(item);
     if (this.feedList.children.length > 20) {
       this.feedList.removeChild(this.feedList.lastChild);
@@ -363,6 +381,14 @@ class HameauViewer {
 
     // Compteurs
     this.counterDecider.textContent = this.deciderCount.toLocaleString();
+    if (this.counterDeciderLatency) {
+      if (this.deciderLatencies.length > 0) {
+        const avg = this.deciderLatencies.reduce((a, b) => a + b, 0) / this.deciderLatencies.length;
+        this.counterDeciderLatency.textContent = `~${avg.toFixed(0)} ms moy. (mesuré)`;
+      } else {
+        this.counterDeciderLatency.textContent = "Mesuré depuis journal";
+      }
+    }
     this.counterBedrock.textContent = this.bedrockCount.toLocaleString();
     this.counterCassettes.textContent = `${this.cassetteCount} en cassette`;
     this.counterCost.textContent = `${this.totalCost.toFixed(4)} $`;
@@ -400,21 +426,37 @@ class HameauViewer {
 
     // Décisions récentes
     const decList = document.getElementById("inspector-decisions-list");
-    decList.innerHTML = "";
+    decList.textContent = "";
     const history = this.decisionsHistory[this.selectedAgentId] || [];
     if (history.length === 0) {
-      decList.innerHTML = '<div style="color:var(--text-muted);font-size:0.75rem;">Aucune décision récente.</div>';
+      const emptyDiv = document.createElement("div");
+      emptyDiv.style.cssText = "color:var(--text-muted);font-size:0.75rem;";
+      emptyDiv.textContent = "Aucune décision récente.";
+      decList.appendChild(emptyDiv);
     } else {
       history.slice(0, 4).forEach((d) => {
         const box = document.createElement("div");
         box.className = `decision-box zone-${d.zone}`;
-        box.innerHTML = `
-          <div class="decision-top">
-            <span>${d.decision} : ${d.chosen}</span>
-            <span class="zone-tag ${d.zone}">${d.zone} (${(d.confidence * 100).toFixed(0)}%)</span>
-          </div>
-          <div style="font-size:0.7rem;color:var(--text-muted);">À ${this.formatTickTime(d.tick)}</div>
-        `;
+
+        const topDiv = document.createElement("div");
+        topDiv.className = "decision-top";
+
+        const textSpan = document.createElement("span");
+        textSpan.textContent = `${d.decision} : ${d.chosen}`;
+
+        const zoneSpan = document.createElement("span");
+        zoneSpan.className = `zone-tag ${d.zone}`;
+        zoneSpan.textContent = `${d.zone} (${(d.confidence * 100).toFixed(0)}%)`;
+
+        topDiv.appendChild(textSpan);
+        topDiv.appendChild(zoneSpan);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.style.cssText = "font-size:0.7rem;color:var(--text-muted);";
+        timeDiv.textContent = `À ${this.formatTickTime(d.tick)}`;
+
+        box.appendChild(topDiv);
+        box.appendChild(timeDiv);
         decList.appendChild(box);
       });
     }
@@ -432,19 +474,32 @@ class HameauViewer {
     document.getElementById("stocking-count").textContent = `${stocking} / 12`;
 
     const hopsContainer = document.getElementById("rumor-hops-list");
-    hopsContainer.innerHTML = "";
+    hopsContainer.textContent = "";
     this.rumorHops.slice(-8).reverse().forEach((h) => {
       const card = document.createElement("div");
       card.className = "hop-card";
-      card.innerHTML = `
-        <div class="hop-header">
-          <span>${h.sender} ➔ ${h.receiver}</span>
-          <span>Saut #${h.hop_count}</span>
-        </div>
-        <div style="font-size:0.72rem;color:var(--text-secondary);">${h.text}</div>
-      `;
+
+      const header = document.createElement("div");
+      header.className = "hop-header";
+
+      const routeSpan = document.createElement("span");
+      routeSpan.textContent = `${h.sender} ➔ ${h.receiver}`;
+
+      const hopSpan = document.createElement("span");
+      hopSpan.textContent = `Saut #${h.hop_count}`;
+
+      header.appendChild(routeSpan);
+      header.appendChild(hopSpan);
+
+      const textDiv = document.createElement("div");
+      textDiv.style.cssText = "font-size:0.72rem;color:var(--text-secondary);";
+      textDiv.textContent = h.text;
+
+      card.appendChild(header);
+      card.appendChild(textDiv);
       hopsContainer.appendChild(card);
     });
+
   }
 
   handleCanvasClick(e) {

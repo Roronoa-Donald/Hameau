@@ -5,6 +5,7 @@ import os
 import sys
 import yaml
 from pathlib import Path
+from typing import Optional
 
 from hameau.models.world import build_default_village
 from hameau.simulation.distribution import build_canonical_agents
@@ -13,6 +14,48 @@ from hameau.simulation.engine import SimulationEngine
 from hameau.decisions import DeciderClient
 from hameau.llm import BedrockClient
 from patterns.memory_gate import MemoryGate
+
+
+import functools
+import http.server
+import socketserver
+import urllib.parse
+
+
+class RestrictedViewerHandler(http.server.SimpleHTTPRequestHandler):
+    """Serveur web strictement restreint au dossier viewer/ et aux fichiers de runs/."""
+
+    def __init__(self, *args, repo_root: Optional[Path] = None, **kwargs):
+        self.repo_root = repo_root or Path(__file__).resolve().parent.parent.parent
+        self.viewer_dir = (self.repo_root / "viewer").resolve()
+        self.runs_dir = (self.repo_root / "runs").resolve()
+        super().__init__(*args, directory=str(self.viewer_dir), **kwargs)
+
+    def translate_path(self, path: str) -> str:
+        clean_path = urllib.parse.urlsplit(path).path
+        clean_path = urllib.parse.unquote(clean_path).lstrip("/")
+
+        # Route /runs/ autorisée pour charger les logs de simulation
+        if clean_path.startswith("runs/"):
+            sub_path = clean_path[len("runs/"):]
+            target = (self.runs_dir / sub_path).resolve()
+            if target.is_relative_to(self.runs_dir) and target.is_file():
+                return str(target)
+            return str(self.viewer_dir / "__not_found__")
+
+        target = (self.viewer_dir / clean_path).resolve()
+        if target.is_relative_to(self.viewer_dir):
+            return str(target)
+        return str(self.viewer_dir / "__not_found__")
+
+
+def create_viewer_server(port: int = 8000, repo_root: Optional[Path] = None):
+    """Crée un serveur HTTP lié exclusivement à 127.0.0.1 (localhost)."""
+    root = repo_root or Path(__file__).resolve().parent.parent.parent
+    handler_factory = functools.partial(RestrictedViewerHandler, repo_root=root)
+    server = socketserver.TCPServer(("127.0.0.1", port), handler_factory)
+    assigned_port = server.server_address[1]
+    return server, assigned_port
 
 
 def main():
@@ -28,18 +71,15 @@ def main():
     args = parser.parse_args()
 
     if args.serve:
-        import http.server
-        import socketserver
-        import webbrowser
-        os.chdir(Path(__file__).parent.parent.parent)
-        handler = http.server.SimpleHTTPRequestHandler
-        with socketserver.TCPServer(("", args.port), handler) as httpd:
-            url = f"http://localhost:{args.port}/viewer/index.html"
-            print(f"Serveur visualiseur HAMEAU démarré sur : {url}")
-            try:
-                httpd.serve_forever()
-            except KeyboardInterrupt:
-                print("\nArrêt du serveur.")
+        server, port = create_viewer_server(args.port)
+        url = f"http://127.0.0.1:{port}/index.html"
+        print(f"Serveur visualiseur HAMEAU sécurisé démarré sur : {url}")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("\nArrêt du serveur.")
+        finally:
+            server.server_close()
         return
 
     # Lecture de la configuration

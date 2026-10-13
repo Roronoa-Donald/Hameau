@@ -48,3 +48,15 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Formatted memories within `<memories><memory>...</memory></memories>` XML tags.
 - Verified entire test suite and integrity checks with `scripts/verify.sh` (ALL CHECKS PASSED).
 
+### Step B4: Security Hardening (COMPLETED)
+- **Localhost & Path Restriction**:
+  - Refactored `hameau --serve` in `src/hameau/cli.py` to use `create_viewer_server()` with `RestrictedViewerHandler`.
+  - Server binds strictly to `127.0.0.1` (no external network exposure).
+  - Restricted filesystem access: only files inside `viewer/` and simulation logs inside `runs/` are reachable; path traversal (`../`) and sensitive files (`.git/`, `config.yaml`) return 404.
+  - Automated tests added in `tests/test_security_serve.py` (PASS).
+- **DOM XSS Elimination**:
+  - Replaced all unescaped `innerHTML` occurrences in `viewer/app.js` (feed items, inspector decision cards, rumor hops) with safe DOM manipulation (`createElement`, `textContent`).
+  - Added strict Content Security Policy (CSP) `<meta>` tag to `viewer/index.html`.
+  - Removed hardcoded metric strings (`~100 ms · Local GPU`) in `viewer/index.html` and bound them dynamically to measured event latency in `viewer/app.js`.
+- Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
+
