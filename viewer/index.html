@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAMEAU — Visualiseur de Simulation Multi-Agents</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="theme-slate">
+  <!-- En-tête / Barre des métriques en direct -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo">
+        <span class="logo-icon">🏛️</span>
+      </div>
+      <div class="brand-text">
+        <h1>HAMEAU</h1>
+        <p class="subtitle">Strands Decider 2B &bull; Amazon Bedrock (Nova Micro)</p>
+      </div>
+    </div>
+
+    <!-- Compteurs en direct (FR-25, Section 4.2) -->
+    <div class="live-metrics" id="live-metrics">
+      <div class="metric-card metric-decider">
+        <div class="metric-label">Décisions Decider 2B</div>
+        <div class="metric-value" id="counter-decider">0</div>
+        <div class="metric-sub">~100 ms &bull; Local GPU</div>
+      </div>
+      <div class="metric-divider">:</div>
+      <div class="metric-card metric-bedrock">
+        <div class="metric-label">Appels Bedrock LLM</div>
+        <div class="metric-value" id="counter-bedrock">0</div>
+        <div class="metric-sub" id="counter-cassettes">0 en cassette</div>
+      </div>
+      <div class="metric-badge">
+        <span class="badge-title">Ratio d'Économie</span>
+        <span class="badge-value" id="ratio-value">-- : 1</span>
+      </div>
+      <div class="metric-card metric-cost">
+        <div class="metric-label">Coût AWS Estimé</div>
+        <div class="metric-value font-mono" id="counter-cost">0,0000 $</div>
+        <div class="metric-sub">Nova Micro (us-east-1)</div>
+      </div>
+    </div>
+
+    <!-- Horloge & Contrôles rapides -->
+    <div class="clock-display">
+      <div class="clock-day" id="clock-day">JOUR 1</div>
+      <div class="clock-time font-mono" id="clock-time">06:00</div>
+      <div class="clock-tick" id="clock-tick">Tick 0 / 192</div>
+    </div>
+  </header>
+
+  <!-- Corps principal -->
+  <main class="main-container">
+    <!-- Vue Carte & Timeline -->
+    <section class="simulation-view">
+      <!-- Barre d'outils de Rejeu -->
+      <div class="playback-bar">
+        <div class="playback-controls">
+          <button id="btn-play-pause" class="btn btn-primary" title="Espace : Lecture / Pause">
+            <span id="play-icon">▶</span>
+          </button>
+          <button id="btn-step-prev" class="btn btn-secondary" title="Pas précédent">⏮</button>
+          <button id="btn-step-next" class="btn btn-secondary" title="Pas suivant">⏭</button>
+          <div class="speed-selector">
+            <label>Vitesse :</label>
+            <button class="btn-chip active" data-speed="1">1x</button>
+            <button class="btn-chip" data-speed="2">2x</button>
+            <button class="btn-chip" data-speed="5">5x</button>
+            <button class="btn-chip" data-speed="15">15x</button>
+          </div>
+        </div>
+
+        <div class="timeline-slider-container">
+          <input type="range" id="timeline-slider" min="0" max="192" value="0" step="1">
+          <div class="timeline-ticks-labels">
+            <span>06h00 (Départ)</span>
+            <span>08h00 (Rumeur R1)</span>
+            <span>12h00</span>
+            <span>18h00</span>
+            <span>22h00 (Gazette)</span>
+          </div>
+        </div>
+
+        <div class="playback-actions">
+          <label class="btn btn-outline file-upload-label">
+            <span>Charger JSONL</span>
+            <input type="file" id="file-input" accept=".jsonl">
+          </label>
+          <button id="btn-load-sample" class="btn btn-outline">Rejeu Défaut</button>
+        </div>
+      </div>
+
+      <!-- Canvas Carte du Village -->
+      <div class="canvas-wrapper">
+        <canvas id="village-canvas" width="1000" height="640"></canvas>
+        <div class="map-overlay-legend">
+          <span class="legend-item"><span class="dot dot-habitant"></span> Habitant</span>
+          <span class="legend-item"><span class="dot dot-rumeur"></span> Porte la Rumeur R1</span>
+          <span class="legend-item"><span class="dot dot-dementi"></span> A reçu le Démenti R2</span>
+          <span class="legend-item"><span class="dot dot-stocking"></span> Stocke des provisions</span>
+        </div>
+      </div>
+
+      <!-- Journal des événements en direct -->
+      <div class="event-feed">
+        <div class="feed-header">
+          <h3>Flux d'Activité en Direct</h3>
+          <span class="feed-filter" id="feed-status">Prêt</span>
+        </div>
+        <div class="feed-list" id="feed-list">
+          <div class="feed-empty">Chargez un journal ou lancez la lecture pour observer les événements.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volet Inspecteur & Onglets (À droite) -->
+    <aside class="side-panel">
+      <!-- Navigation par onglets -->
+      <nav class="panel-tabs">
+        <button class="tab-btn active" data-tab="inspector">Inspecteur d'Agent</button>
+        <button class="tab-btn" data-tab="rumor-graph">Graphe de Rumeur</button>
+        <button class="tab-btn" data-tab="gazette">La Gazette</button>
+      </nav>
+
+      <!-- Onglet 1 : Inspecteur d'Agent -->
+      <div class="tab-content active" id="tab-inspector">
+        <div class="agent-selector-wrapper">
+          <label for="agent-select">Sélectionner un habitant :</label>
+          <select id="agent-select" class="form-select">
+            <option value="yao">Yao (Livreur du marché)</option>
+            <option value="kofi">Kofi (Maire)</option>
+            <option value="awa">Awa (Boulangère)</option>
+            <option value="elise">Élise (Institutrice)</option>
+            <option value="samuel">Samuel (Forgeron)</option>
+            <option value="nadia">Nadia (Médecin)</option>
+            <option value="tom">Tom (Apprenti café)</option>
+            <option value="mariam">Mariam (Marchande légumes)</option>
+            <option value="paul">Paul (Pêcheur retraité)</option>
+            <option value="lea">Léa (Bibliothécaire)</option>
+            <option value="ibrahim">Ibrahim (Agriculteur)</option>
+            <option value="claire">Claire (Rédactrice Gazette)</option>
+          </select>
+        </div>
+
+        <div class="agent-card" id="agent-profile-card">
+          <div class="agent-header">
+            <div class="agent-avatar" id="inspector-avatar">📦</div>
+            <div class="agent-title">
+              <h2 id="inspector-name">Yao</h2>
+              <p id="inspector-job">Livreur du marché &bull; 28 ans</p>
+            </div>
+            <div class="behavior-badge" id="inspector-stocking-badge">
+              Normal
+            </div>
+          </div>
+
+          <div class="agent-status-section">
+            <div class="status-item">
+              <span class="label">Lieu actuel :</span>
+              <span class="value" id="inspector-loc">Place du Marché</span>
+            </div>
+            <div class="status-item">
+              <span class="label">Action en cours :</span>
+              <span class="value" id="inspector-action">Prépare ses livraisons</span>
+            </div>
+          </div>
+
+          <!-- Croyances et Rumeurs -->
+          <div class="inspector-beliefs">
+            <h4>Croyances & Rumeurs</h4>
+            <div id="inspector-beliefs-list" class="beliefs-list">
+              <div class="belief-pill">R1 (Fermeture marché) : <span id="r1-cred">Non informé</span></div>
+              <div class="belief-pill">R2 (Démenti officiel) : <span id="r2-cred">Non informé</span></div>
+            </div>
+          </div>
+
+          <!-- Dernières Décisions Decider -->
+          <div class="inspector-decisions">
+            <h4>Dernières Décisions Decider 2B</h4>
+            <div id="inspector-decisions-list" class="decisions-list">
+              <!-- Rempli dynamiquement -->
+            </div>
+          </div>
+
+          <!-- Souvenirs scorés par MemoryGate -->
+          <div class="inspector-memories">
+            <h4>Souvenirs Notés (MemoryGate)</h4>
+            <div id="inspector-memories-list" class="memories-list">
+              <!-- Rempli dynamiquement -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onglet 2 : Graphe de propagation de la rumeur -->
+      <div class="tab-content" id="tab-rumor-graph">
+        <div class="rumor-stats">
+          <div class="stat-box">
+            <span class="stat-num" id="rumor-count">0 / 12</span>
+            <span class="stat-text">Habitants atteints</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stocking-count">0 / 12</span>
+            <span class="stat-text">Ont fait des stocks</span>
+          </div>
+        </div>
+        <div class="rumor-timeline" id="rumor-hops-list">
+          <!-- Historique des sauts de rumeur -->
+        </div>
+      </div>
+
+      <!-- Onglet 3 : Gazette du Hameau -->
+      <div class="tab-content" id="tab-gazette">
+        <div class="gazette-newspaper">
+          <div class="gazette-masthead">
+            <h1>LA GAZETTE DU HAMEAU</h1>
+            <p class="gazette-date" id="gazette-date">Édition Quotidienne &bull; Rédaction : Claire</p>
+          </div>
+          <article class="gazette-body" id="gazette-content">
+            <p class="gazette-empty">La Gazette paraît chaque soir à 22h00.</p>
+          </article>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

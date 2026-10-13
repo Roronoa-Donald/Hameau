@@ -1,0 +1,53 @@
+# Configuration de HAMEAU
+# Simulation multi-agents avec Strands Decider 2B et Amazon Bedrock (Nova Micro)
+
+seed: 42
+
+simulation:
+  ticks_per_day: 192       # 6h00 à 22h00, 5 min / tick
+  start_hour: 6
+  end_hour: 22
+  days: 2
+  num_agents: 12           # 12 agents fondateurs pour le scénario MVP de référence
+  time_step_minutes: 5
+
+decider:
+  checkpoint: "StrandsAgents/strands-decider-2B-hobson-v21"
+  device: "cuda"            # Utilise la RTX 3050 en local
+  max_options: 8
+  # Seuils de confiance calibrés (FR-08) :
+  # >= green : Zone verte (décision acceptée)
+  # orange <= c < green : Zone orange (acceptée mais taguée dans le log)
+  # < orange : Zone rouge (repli déterministe)
+  thresholds:
+    D1: { green: 0.60, orange: 0.40 }
+    D2: { green: 0.55, orange: 0.35 }
+    D3: { green: 0.55, orange: 0.35 }
+    D4: { green: 0.65, orange: 0.45 }
+    D5: { green: 0.60, orange: 0.40 }
+    D6: { green: 0.70, orange: 0.50 }
+    D7: { green: 0.60, orange: 0.40 }
+    D8: { green: 0.60, orange: 0.40 }
+
+bedrock:
+  model_id: "amazon.nova-micro-v1:0"
+  region: "us-east-1"
+  max_budget_usd: 2.00     # Plafond de coût dur
+  pricing_per_1m_tokens:
+    input: 0.035
+    output: 0.140
+  cassettes_dir: "cassettes"
+  use_cassettes: true      # Enregistre et rejoue en cache pour 0$ au rejeu
+
+memory_gate:
+  max_candidates: 12
+  top_k_injected: 3
+  recency_half_life_hours: 24.0
+  weights:
+    recency: 0.333
+    importance: 0.333
+    relevance: 0.334
+
+logging:
+  runs_dir: "runs"
+  log_filename: "hameau_run.jsonl"
