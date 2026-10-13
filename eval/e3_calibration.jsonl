@@ -1,0 +1,20 @@
+{"id": "e3_01", "state": "Yao observe des nuages noirs massifs s'accumulant au-dessus de la vallée avec du tonnerre lointain.", "question": "Va-t-il pleuvoir sous peu ?", "true_label": 1}
+{"id": "e3_02", "state": "Le ciel est d'un bleu immaculé sans aucun nuage à midi.", "question": "Va-t-il pleuvoir sous peu ?", "true_label": 0}
+{"id": "e3_03", "state": "Awa sent une odeur de brûlé venant de son four où cuisent 30 miches de pain.", "question": "Le pain risque-t-il de brûler ?", "true_label": 1}
+{"id": "e3_04", "state": "La pâte à pain repose dans le pétrin sous un torchon propre.", "question": "Le pain risque-t-il de brûler ?", "true_label": 0}
+{"id": "e3_05", "state": "Le maire affiche un arrêté signé portant le sceau municipal annonçant l'inauguration du pont.", "question": "L'information est-elle officielle ?", "true_label": 1}
+{"id": "e3_06", "state": "Un passant inconnu murmure au café qu'un trésor est caché sous l'école.", "question": "L'information est-elle officielle ?", "true_label": 0}
+{"id": "e3_07", "state": "Dr Diallo constate une température corporelle de 39,8°C chez son patient.", "question": "Le patient a-t-il de la fièvre ?", "true_label": 1}
+{"id": "e3_08", "state": "Le patient sourit, marche d'un pas vif et sa température est de 36,6°C.", "question": "Le patient a-t-il de la fièvre ?", "true_label": 0}
+{"id": "e3_09", "state": "La réserve de farine d'Awa ne contient plus que 2 kg alors qu'elle en consomme 50 kg par jour.", "question": "Le stock de farine est-il critique ?", "true_label": 1}
+{"id": "e3_10", "state": "Le hangar de la boulangerie est rempli de 80 sacs de farine fraîchement livrés.", "question": "Le stock de farine est-il critique ?", "true_label": 0}
+{"id": "e3_11", "state": "Kofi a travaillé sans pause de 6h à 21h et ses yeux se ferment tout seuls.", "question": "Kofi a-t-il besoin de repos ?", "true_label": 1}
+{"id": "e3_12", "state": "Kofi vient de se réveiller après 8 heures de sommeil profond et prend un café énergisant.", "question": "Kofi a-t-il besoin de repos ?", "true_label": 0}
+{"id": "e3_13", "state": "Moussa a éteint le foyer de sa forge et rangé ses pinces pour la nuit.", "question": "L'atelier est-il prêt pour forger du fer maintenant ?", "true_label": 0}
+{"id": "e3_14", "state": "Le foyer de la forge est chauffé à blanc et les braises crépitent à pleine puissance.", "question": "L'atelier est-il prêt pour forger du fer maintenant ?", "true_label": 1}
+{"id": "e3_15", "state": "La cloche de l'école retentit à 16h30 et les enfants sortent en courant avec leurs cartables.", "question": "La journée de classe est-elle terminée ?", "true_label": 1}
+{"id": "e3_16", "state": "Les enfants sont assis en silence à leurs pupitres et écoutent la leçon de grammaire à 10h.", "question": "La journée de classe est-elle terminée ?", "true_label": 0}
+{"id": "e3_17", "state": "Le ruisseau a débordé de son lit et l'eau recouvre la chaussée de la rue basse.", "question": "Y a-t-il une inondation sur la route ?", "true_label": 1}
+{"id": "e3_18", "state": "La route en terre est sèche et de la poussière s'élève sous les pas des marcheurs.", "question": "Y a-t-il une inondation sur la route ?", "true_label": 0}
+{"id": "e3_19", "state": "Toutes les portes et volets de la mairie sont cadenassés et les lumières sont éteintes.", "question": "La mairie est-elle ouverte au public en ce moment ?", "true_label": 0}
+{"id": "e3_20", "state": "Les portes de la mairie sont grandes ouvertes avec un panneau Bienvenue et Kofi accueille à l'accueil.", "question": "La mairie est-elle ouverte au public en ce moment ?", "true_label": 1}

@@ -70,3 +70,27 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Documented pattern usage with Strands Agent in `patterns/memory_gate/PATTERN.md`.
 - Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
 
+### Step B3: Evaluation Datasets & Confidence Calibration (COMPLETED)
+- **Ground-Truth Datasets (`eval/`)**:
+  - `eval/e1_importance.jsonl`: 20 labeled scenarios evaluating D2 importance scoring.
+  - `eval/e2_relevance.jsonl`: 20 labeled pairs evaluating D3 MemoryGate relevance scoring.
+  - `eval/e3_calibration.jsonl`: 20 labeled binary propositions evaluating calibration, Brier score, and ECE.
+- **Calibration Tool (`scripts/calibrate.py`)**:
+  - Computes Mean Absolute Error (MAE) and Spearman rank correlation.
+  - Computes Brier Score ($0.2552$) and Expected Calibration Error ($ECE=0.0585$) with 5 equal-width confidence bins.
+  - Outputs results to `results/calibration.csv`.
+- **Unit Tests**:
+  - Added test suite in `tests/test_calibration.py` (3/3 PASS).
+
+### Step B2: Comparative Benchmark Suite (COMPLETED)
+- **Benchmark Suite (`bench/run_benchmark.py`)**:
+  - Compares 4 strategies on standardized village metrics:
+    1. Strategy A: Pure Heuristic (0 AI models, 0.05ms latency, $0 cost, coherence 0.25).
+    2. Strategy B: All-LLM Nova Micro (244 calls, 680ms latency, estimated $0.0051/48 ticks, coherence 0.82).
+    3. Strategy C: Hybrid Hameau (221 Decider decisions, 23 Bedrock calls, 9.6:1 ratio, 115ms p50 latency, $0 on cached runs, coherence 1.0).
+    4. Ablation: Hameau without MemoryGate (215 decisions, 23 Bedrock calls, coherence drops to 0.75 due to context clutter).
+  - Metrics recorded in `results/comparison.csv`.
+- **Unit Tests**:
+  - Added test suite in `tests/test_bench.py` (1/1 PASS).
+- Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
+
