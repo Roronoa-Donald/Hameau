@@ -91,3 +91,24 @@ top_memories = gate.score_and_rank(candidates, current_tick=50, situation_contex
 for m in top_memories:
     print(f"[{m.zone.upper()}] Score={m.composite_score} : {m.candidate.text}")
 ```
+
+---
+
+## 6. Utilisation comme Hook Strands standard (`HookProvider`)
+
+`MemoryGate` implémente nativement le contrat `strands.hooks.HookProvider` :
+
+```python
+from strands import Agent
+from strands.hooks import HookRegistry
+from patterns.memory_gate import MemoryGate, MemoryGateHook
+
+# Enregistrement auprès d'un agent Strands
+gate = MemoryGate(decider_client=client, top_k=3)
+registry = HookRegistry()
+gate.register_hooks(registry)
+
+# Lors de l'événement BeforeModelCallEvent, MemoryGate intercepte l'appel,
+# évalue la pertinence des souvenirs via Strands Decider 2B en < 100 ms,
+# et injecte les mémoires sélectionnées dans invocation_state["selected_memories"].
+```

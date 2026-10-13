@@ -8,6 +8,20 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+try:
+    from strands.hooks import HookProvider, HookRegistry
+    from strands.hooks.events import BeforeModelCallEvent
+except ImportError:  # pragma: no cover
+    class HookProvider:  # type: ignore
+        """Fallback base class when strands-agents is not available."""
+        pass
+
+    class HookRegistry:  # type: ignore
+        def add_callback(self, event_type: Any, callback: Any) -> None:
+            pass
+
+    BeforeModelCallEvent = None  # type: ignore
+
 
 @dataclass
 class MemoryCandidate:
@@ -32,9 +46,10 @@ class ScoredMemory:
     fallback_used: bool = False
 
 
-class MemoryGate:
+class MemoryGate(HookProvider):
     """Module de scoring et de filtrage de souvenirs avant injection dans le contexte LLM.
     
+    Compatible comme HookProvider standard pour le SDK Strands Agents.
     Effectue la sélection en 3 étapes :
     1. Pré-sélection déterministe (recouvrement d'entités + récents + importants, max 12)
     2. Scoring de pertinence via Strands Decider 2B (D3)
@@ -182,3 +197,49 @@ class MemoryGate:
     ) -> List[ScoredMemory]:
         """Alias for score_and_rank."""
         return self.score_and_rank(candidates, current_tick, context_text)
+
+    def register_hooks(self, registry: Any) -> None:
+        """Enregistre le hook MemoryGate auprès du HookRegistry de Strands Agents."""
+        if BeforeModelCallEvent is not None and hasattr(registry, "add_callback"):
+            registry.add_callback(BeforeModelCallEvent, self.on_before_model_call)
+
+    def on_before_model_call(self, event: Any) -> None:
+        """Intercepte le cycle de vie avant appel au modèle pour injecter les mémoires filtrées."""
+        agent = getattr(event, "agent", None)
+        invocation_state = getattr(event, "invocation_state", {})
+
+        candidates = invocation_state.get("memory_candidates")
+        if candidates is None and agent is not None:
+            candidates = getattr(agent, "memory_candidates", None)
+            if candidates is None and hasattr(agent, "memories"):
+                candidates = [
+                    MemoryCandidate(
+                        id=f"mem_{i}",
+                        text=getattr(m, "text", str(m)),
+                        tick=getattr(m, "tick", 0),
+                        importance=getattr(m, "importance", 0.5),
+                        entities=getattr(m, "entities", []),
+                    )
+                    for i, m in enumerate(agent.memories)
+                ]
+
+        if not candidates:
+            return
+
+        current_tick = invocation_state.get("current_tick", getattr(agent, "current_tick", 0))
+        context_text = invocation_state.get("context_text", "")
+        if not context_text and agent is not None and hasattr(agent, "messages"):
+            if agent.messages:
+                context_text = str(agent.messages[-1])
+
+        top_memories = self.score_and_rank(
+            candidates=candidates,
+            current_tick=current_tick,
+            situation_context=context_text,
+        )
+
+        invocation_state["selected_memories"] = top_memories
+        invocation_state["memory_gate_injected_text"] = "\n".join(
+            f"- [Score: {m.composite_score:.2f} | Zone: {m.zone}] {m.candidate.text}"
+            for m in top_memories
+        )

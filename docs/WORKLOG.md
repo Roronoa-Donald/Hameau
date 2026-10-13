@@ -60,3 +60,13 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Removed hardcoded metric strings (`~100 ms · Local GPU`) in `viewer/index.html` and bound them dynamically to measured event latency in `viewer/app.js`.
 - Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
 
+### Step B1: MemoryGate as Strands HookProvider (COMPLETED)
+- **Strands Agents SDK Hook Integration**:
+  - Subclassed `HookProvider` in `patterns/memory_gate/memory_gate.py`.
+  - Implemented `register_hooks(registry)` binding callback to `BeforeModelCallEvent`.
+  - Implemented `on_before_model_call(event)`: intercepts model invocation, evaluates candidate memories via `MemoryGate.score_and_rank()`, and injects top-k scored memories directly into `invocation_state["selected_memories"]` and formatted prompt text.
+  - Exported `MemoryGateHook = MemoryGate` in `patterns/memory_gate/__init__.py`.
+  - Created standalone unit test suite in `patterns/memory_gate/test_gate.py` covering preselection, scoring, composite score weighting, confidence zones, HookProvider registration, and event interception (4/4 tests PASS).
+  - Documented pattern usage with Strands Agent in `patterns/memory_gate/PATTERN.md`.
+- Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
+
