@@ -111,3 +111,11 @@ This document tracks all engineering actions, measurements, and commits in chron
     - Cumulative user latency avoided (seconds saved compared to 680ms LLM roundtrips).
 - Verified entire suite with `scripts/verify.sh` (ALL CHECKS PASSED).
 
+### Step D: Documentation & Final Verification (COMPLETED)
+- **README.md Overhaul**:
+  - Authored comprehensive English README including architecture diagram, problem statement, MemoryGate HookProvider code, measured calibration & benchmark tables, quickstart guide, security practices, and repository layout.
+- **Architectural Decision Records (`docs/DECISIONS.md`)**:
+  - Added DEC-004 through DEC-008 explaining the decoupled Decider/LLM pattern, MemoryGate as HookProvider, global tick clock, localhost serving, and SHA-256 determinism.
+- **Final Verification**:
+  - Executed `scripts/verify.sh` covering unit tests, secret scan, 2-day simulation run, log completeness audit, and determinism check (ALL CHECKS PASSED).
+
