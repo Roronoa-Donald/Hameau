@@ -36,3 +36,6 @@ minversion = "8.0"
 addopts = "-ra -q"
 testpaths = ["tests"]
 pythonpath = ["src", "."]
+markers = [
+    "defect_repro: Reproduction tests for audit defects",
+]

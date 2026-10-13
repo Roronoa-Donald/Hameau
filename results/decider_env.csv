@@ -1,0 +1,4 @@
+model,checkpoint,num_questions,latency_p50_ms,latency_p95_ms,vram_used_mb,vram_total_mb,torch_version,cuda_available,flash_linear_attention,causal_conv1d
+hobson-v21,StrandsAgents/strands-decider-2B-hobson-v21,1,2340.6,2343.6,3727,5857,2.14.1+cu130,True,False,False
+hobson-v21,StrandsAgents/strands-decider-2B-hobson-v21,4,4107.9,4130.7,3868,5857,2.14.1+cu130,True,False,False
+hobson-v21,StrandsAgents/strands-decider-2B-hobson-v21,8,5445.3,5446.3,4038,5857,2.14.1+cu130,True,False,False
