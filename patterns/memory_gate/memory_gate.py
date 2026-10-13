@@ -46,7 +46,7 @@ class MemoryGate:
         decider_client: Any,
         top_k: int = 3,
         max_candidates: int = 12,
-        half_life_ticks: float = 288.0,  # 24h simulées à 5 min/tick
+        half_life_ticks: float = 192.0,  # 1 jour simulé (16h = 192 ticks à 5 min/tick)
         w_recency: float = 0.333,
         w_importance: float = 0.333,
         w_relevance: float = 0.334,
@@ -105,6 +105,7 @@ class MemoryGate:
         candidates: List[MemoryCandidate],
         current_tick: int,
         situation_context: str,
+        on_decision: Optional[Callable[[str, ScoredMemory, Dict[str, Any]], None]] = None,
     ) -> List[ScoredMemory]:
         """Étapes 2 & 3 : Évaluation par Decider 2B et calcul du score composite."""
         if not candidates:
@@ -156,18 +157,28 @@ class MemoryGate:
                 + self.w_relevance * relevance
             )
 
-            scored.append(
-                ScoredMemory(
-                    candidate=c,
-                    relevance_score=round(relevance, 3),
-                    relevance_confidence=round(confidence, 3),
-                    zone=zone,
-                    recency_score=round(recency_score, 3),
-                    composite_score=round(composite, 3),
-                    fallback_used=fallback,
-                )
+            scored_item = ScoredMemory(
+                candidate=c,
+                relevance_score=round(relevance, 3),
+                relevance_confidence=round(confidence, 3),
+                zone=zone,
+                recency_score=round(recency_score, 3),
+                composite_score=round(composite, 3),
+                fallback_used=fallback,
             )
+            scored.append(scored_item)
+            if on_decision is not None:
+                on_decision(c.id, scored_item, ans)
 
         # Tri décroissant selon le score composite
         scored.sort(key=lambda s: s.composite_score, reverse=True)
         return scored[:self.top_k]
+
+    def score_candidates(
+        self,
+        candidates: List[MemoryCandidate],
+        context_text: str,
+        current_tick: int,
+    ) -> List[ScoredMemory]:
+        """Alias for score_and_rank."""
+        return self.score_and_rank(candidates, current_tick, context_text)

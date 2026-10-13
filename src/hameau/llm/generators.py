@@ -5,6 +5,11 @@ from .bedrock import BedrockClient
 from hameau.models.agent import Agent
 from patterns.memory_gate import ScoredMemory
 
+VILLAGEOIS_AUTORISES = [
+    "Awa", "Kofi", "Yao", "Élise", "Samuel", "Nadia",
+    "Tom", "Mariam", "Paul", "Léa", "Ibrahim", "Claire"
+]
+
 
 def generate_dialogue_turn(
     bedrock: BedrockClient,
@@ -16,18 +21,21 @@ def generate_dialogue_turn(
     dialogue_history: List[Dict[str, str]],
 ) -> Dict[str, Any]:
     """B1 — Génération d'une réplique de conversation via Amazon Nova Micro."""
+    villagers_str = ", ".join(VILLAGEOIS_AUTORISES)
     system_prompt = (
         f"Tu incarnes {speaker.persona.name}, {speaker.persona.age} ans, {speaker.persona.job} dans le village de Hameau. "
         f"Traits de caractère : {', '.join(speaker.persona.traits)}. "
         f"Tu es à l'endroit suivant : {location_name}. "
         f"Tu parles à {listener.persona.name} ({listener.persona.job}). "
-        f"Consigne : Réponds en français de manière vivante, naturelle et très concise (1 à 2 phrases parlées au maximum). "
-        f"Ne produis aucune introduction méta ni guillemets superflus."
+        f"Règles strictes du monde :\n"
+        f"1. Les seuls villageois existants sont : {villagers_str}. N'invente jamais d'autres personnages.\n"
+        f"2. Réponds en français de manière vivante, naturelle et concise (1 à 2 phrases parlées au maximum).\n"
+        f"3. Ne produis aucune introduction méta, mention d'acteur ou guillemets superflus."
     )
 
-    mem_texts = "\n".join([f"- {sm.candidate.text}" for sm in injected_memories])
+    mem_xml = "\n".join([f"  <memory>{sm.candidate.text}</memory>" for sm in injected_memories])
     prompt = (
-        f"Contexte de tes souvenirs récents sélectionnés par MemoryGate :\n{mem_texts}\n\n"
+        f"<memories>\n{mem_xml}\n</memories>\n\n"
         f"Sujet au cœur de la discussion : {topic}\n\n"
     )
 
@@ -55,8 +63,8 @@ def generate_reflection(
         f"Rédige une pensée introspective courte (1 à 2 phrases) qui résume ce qui te marque le plus."
     )
 
-    mem_texts = "\n".join([f"- {sm.candidate.text}" for sm in top_memories])
-    prompt = f"Voici tes souvenirs les plus marquants de la journée :\n{mem_texts}\n\nQuelle est ta réflexion globale du soir ?"
+    mem_xml = "\n".join([f"  <memory>{sm.candidate.text}</memory>" for sm in top_memories])
+    prompt = f"Voici tes souvenirs les plus marquants de la journée :\n<memories>\n{mem_xml}\n</memories>\n\nQuelle est ta réflexion globale du soir ?"
 
     messages = [{"role": "user", "content": [{"text": prompt}]}]
     return bedrock.generate(messages, system_prompt=system_prompt, max_tokens=100, temperature=0.6)

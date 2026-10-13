@@ -44,3 +44,7 @@ runs/*.jsonl
 runs/*.csv
 cassettes/*.json
 !cassettes/reference_*.json
+
+# Test artifacts
+test-jour1.png
+

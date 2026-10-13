@@ -20,6 +20,7 @@ class ScenarioManager:
         agents: Dict[str, Agent],
     ) -> List[LogEvent]:
         """Injecte les événements scénarisés aux moments clés."""
+        global_tick: int = (day - 1) * 192 + tick
         events: List[LogEvent] = []
 
         # J1 - 08h00 (tick 24) : Rumeur R1 chez Yao
@@ -30,7 +31,7 @@ class ScenarioManager:
                 mem = MemoryRecord(
                     id="mem_r1_init",
                     agent_id="yao",
-                    tick=tick,
+                    tick=global_tick,
                     type="hearsay",
                     text=r1_text,
                     entities=["marche", "mairie", "samedi"],
@@ -40,7 +41,7 @@ class ScenarioManager:
                     importance=0.90,
                     confidence=0.85,
                     decision_author="scenario",
-                    last_accessed_tick=tick,
+                    last_accessed_tick=global_tick,
                 )
                 yao.add_memory(mem)
                 yao.set_believed_fact("R1_fermeture_marche", 0.85)
@@ -71,7 +72,7 @@ class ScenarioManager:
                 mem = MemoryRecord(
                     id="mem_r2_init",
                     agent_id="kofi",
-                    tick=tick,
+                    tick=global_tick,
                     type="observation",
                     text=r2_text,
                     entities=["marche", "mairie", "Kofi"],
@@ -81,7 +82,7 @@ class ScenarioManager:
                     importance=0.95,
                     confidence=0.99,
                     decision_author="scenario",
-                    last_accessed_tick=tick,
+                    last_accessed_tick=global_tick,
                 )
                 kofi.add_memory(mem)
                 kofi.set_believed_fact("R2_dementi_maire", 0.99)

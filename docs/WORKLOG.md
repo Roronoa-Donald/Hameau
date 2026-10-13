@@ -21,3 +21,30 @@ This document tracks all engineering actions, measurements, and commits in chron
   - VRAM: ~3.7 to 4.0 GB used out of 5.8 GB.
   - Root cause of >2s latency: `flash-linear-attention` and `causal-conv1d` missing in environment, falling back to pure PyTorch loops.
 - Conclusion: Confirmed **12 agents** as target for local hardware to stay within reasonable runtimes (<10 min/day).
+
+### Step A: Making the Project Real (COMPLETED)
+- **A1 Global Tick & Dawn Reset**:
+  - Implemented `global_tick = (day - 1) * 192 + tick` across engine, memory gate, and scenarios.
+  - Implemented 06:00 dawn reset restoring energy, resetting pending actions, and placing agents at home.
+  - Verified by `tests/test_multi_day.py` (Day 2 decisions active, >100).
+- **A2 Score Normalization & Confidence Zones**:
+  - Normalized `ScoreAnswer.score` to `[0.0, 1.0]` using `raw_score / (len(legend) - 1)` while preserving `raw_score`.
+  - Added strict `ValueError` in `DeciderClient.load()` to prevent silent mock fallback in production.
+  - Verified by `tests/test_score_norm.py`.
+- **A3 Comprehensive Decision Logging**:
+  - Wired D1 to D8 through explicit `_log_decision` events with full metadata (options, probabilities, confidence, zone, latency, backend).
+  - Wired D3 inside `MemoryGate.score_and_rank` via `on_decision` callback.
+  - Summary metrics computed strictly by reducing the event stream (157 counted == 157 logged).
+  - Verified by `tests/test_logging_completeness.py`.
+- **A4 Social Dynamics & Rumor Diffusion**:
+  - Added 6-tick (30 min) conversation cooldown between pairs of agents to eliminate repetitive conversation loops.
+  - Added dynamic needs decay per tick (hunger, energy, social).
+  - Rumor spreads dynamically across village (all 12 agents reached over 2 days).
+- **A6 Determinism Guarantee**:
+  - Replaced Python `hash()` with SHA-256 deterministic hash in mock decider.
+  - Verified bit-for-bit event equality across runs with different `PYTHONHASHSEED` in `tests/test_determinism.py`.
+- **A7 Bedrock Guardrails**:
+  - Bound dialogue generation to strict authorized entity list (`VILLAGEOIS_AUTORISES`).
+  - Formatted memories within `<memories><memory>...</memory></memories>` XML tags.
+- Verified entire test suite and integrity checks with `scripts/verify.sh` (ALL CHECKS PASSED).
+

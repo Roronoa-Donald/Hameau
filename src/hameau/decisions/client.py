@@ -1,5 +1,6 @@
 """Strands Decider 2B client supporting GPU (RTX 3050), CPU, and deterministic mock."""
 
+import hashlib
 import time
 from typing import Any, Dict, List, Optional
 import torch
@@ -17,6 +18,16 @@ from strands_decider.schema import (
     SystemOneResponse,
 )
 from .confidence import ConfidenceThresholds, classify_zone, ZoneType
+
+
+def _deterministic_hash(seed: int, *args: Any) -> int:
+    """Calcul d'un entier 64-bit déterministe indépendant de PYTHONHASHSEED."""
+    h = hashlib.sha256()
+    h.update(str(seed).encode("utf-8"))
+    for arg in args:
+        h.update(b"|")
+        h.update(str(arg).encode("utf-8"))
+    return int.from_bytes(h.digest()[:8], byteorder="big", signed=False)
 
 
 class DeciderClient:
@@ -61,11 +72,12 @@ class DeciderClient:
                 self._engine = load_engine(self.checkpoint, device=target_device)
                 self.device = target_device
             except Exception as e:
-                # Repli de sécurité si l'environnement n'a pas accès aux poids
-                print(f"[DeciderClient] Échec chargement GPU ({e}), activation du mode mock déterministe.")
-                self.mock = True
-                import random
-                self._rng = random.Random(self.seed)
+                # Jamais de repli silencieux vers le mock : lever une erreur explicite
+                raise RuntimeError(
+                    f"[DeciderClient] Échec du chargement du modèle Decider '{self.checkpoint}' "
+                    f"sur le périphérique '{target_device}': {e}. "
+                    f"Pour exécuter les tests ou une simulation sans modèle, activez explicitement mock=True."
+                ) from e
 
     def ask(
         self,
@@ -111,9 +123,12 @@ class DeciderClient:
                 "confidence": ans.confidence,
             }
         elif isinstance(ans, ScoreAnswer):
+            levels_count = len(ans.legend)
+            norm_score = ans.score / (levels_count - 1) if levels_count > 1 else 0.0
             return {
                 "type": "score",
-                "value": ans.score,
+                "value": round(float(norm_score), 4),
+                "raw_score": float(ans.score),
                 "probabilities": ans.probabilities,
                 "confidence": ans.confidence,
                 "legend": ans.legend,
@@ -134,16 +149,14 @@ class DeciderClient:
         state: str | dict | list,
         questions: Dict[str, Question],
     ) -> Dict[str, Dict[str, Any]]:
-        """Mock déterministe pour tests sans GPU."""
-        assert self._rng is not None
+        """Mock déterministe pour tests sans GPU (indépendant de PYTHONHASHSEED)."""
         out = {}
         for name, q in questions.items():
             if isinstance(q, ChoiceQuestion):
                 options = list(q.criteria.keys())
-                # Choix pseudo-déterministe basé sur l'état et la graine
-                h = abs(hash(str(state) + name)) % len(options)
+                h = _deterministic_hash(self.seed, state, name) % len(options)
                 chosen = options[h]
-                conf = 0.70 + (abs(hash(chosen)) % 25) / 100.0
+                conf = 0.70 + (_deterministic_hash(self.seed, chosen, name) % 25) / 100.0
                 probs = {opt: (0.1 if opt != chosen else 0.7) for opt in options}
                 out[name] = {
                     "type": "choice",
@@ -153,20 +166,19 @@ class DeciderClient:
                 }
             elif isinstance(q, ScoreQuestion):
                 levels_count = len(q.criteria)
-                # Score de 0 à levels_count - 1
-                base_score = 1.0 + (abs(hash(str(state) + name)) % (levels_count - 1))
-                norm_score = base_score / (levels_count - 1)
-                conf = 0.65 + (abs(hash(name)) % 30) / 100.0
+                base_score = 1.0 + (_deterministic_hash(self.seed, state, name) % max(1, levels_count - 1))
+                norm_score = base_score / (levels_count - 1) if levels_count > 1 else 0.0
+                conf = 0.65 + (_deterministic_hash(self.seed, name) % 30) / 100.0
                 out[name] = {
                     "type": "score",
                     "value": round(norm_score, 3),
+                    "raw_score": round(base_score, 3),
                     "probabilities": {str(i): 1.0 / levels_count for i in range(levels_count)},
                     "confidence": round(conf, 3),
                     "legend": q.criteria,
                 }
             elif isinstance(q, NoulQuestion):
-                # Oui/non
-                prob = 0.3 + (abs(hash(str(state) + name)) % 50) / 100.0
+                prob = 0.3 + (_deterministic_hash(self.seed, state, name) % 50) / 100.0
                 out[name] = {
                     "type": "noul",
                     "value": prob >= 0.5,
@@ -174,3 +186,4 @@ class DeciderClient:
                     "confidence": round(abs(2 * prob - 1), 3),
                 }
         return out
+

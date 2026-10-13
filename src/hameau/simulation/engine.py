@@ -64,12 +64,67 @@ class SimulationEngine:
 
         # Résumé quotidien pour la Gazette
         self.daily_events_summary: List[str] = []
+        self.agent_last_conversation_tick: Dict[str, int] = {}
 
     def log(self, event: LogEvent) -> None:
         """Enregistre un événement dans la mémoire et dans le fichier JSONL."""
         self.log_events.append(event)
         with open(self.log_filepath, "a", encoding="utf-8") as f:
             f.write(json.dumps(event.to_jsonl_dict(), ensure_ascii=False) + "\n")
+
+    def _log_decision(
+        self,
+        day: int,
+        tick: int,
+        global_tick: int,
+        agent_id: str,
+        decision_type: str,
+        question_text: str,
+        answer_dict: Dict[str, Any],
+        options_or_criteria: Any,
+        zone: str,
+        fallback_used: bool,
+    ) -> None:
+        """Enregistre chaque décision D1 à D8 dans le journal d'événements (FR-30 & Étape A3)."""
+        self.log(
+            LogEvent(
+                tick=tick,
+                day=day,
+                agent_id=agent_id,
+                event_type="decision",
+                payload={
+                    "decision": decision_type,
+                    "decision_type": decision_type,
+                    "question": question_text,
+                    "options": options_or_criteria,
+                    "probabilities": answer_dict.get("probabilities", {}),
+                    "chosen_option": answer_dict.get("value"),
+                    "confidence": answer_dict.get("confidence", 1.0),
+                    "zone": zone,
+                    "fallback_used": fallback_used,
+                    "latency_ms": answer_dict.get("latency_ms", 0.0),
+                    "backend": answer_dict.get("model", "mock"),
+                    "global_tick": global_tick,
+                },
+            )
+        )
+
+    def _make_on_d3_decision(self, day: int, tick: int, global_tick: int, agent_id: str):
+        """Fabrique le callback d'enregistrement pour les décisions D3 dans MemoryGate."""
+        def _cb(cand_id: str, sm: Any, ans_dict: Dict[str, Any]) -> None:
+            self._log_decision(
+                day=day,
+                tick=tick,
+                global_tick=global_tick,
+                agent_id=agent_id,
+                decision_type="D3",
+                question_text=f"Pertinence du souvenir {cand_id}",
+                answer_dict=ans_dict,
+                options_or_criteria=ans_dict.get("legend", {}),
+                zone=sm.zone,
+                fallback_used=sm.fallback_used,
+            )
+        return _cb
 
     def run(self, days: int = 1, ticks_per_day: int = 192) -> Dict[str, Any]:
         """Exécute la simulation sur le nombre de jours spécifié."""
@@ -97,7 +152,25 @@ class SimulationEngine:
             self.daily_events_summary = []
             print(f"\n--- [HAMEAU] Début du Jour {day} ---")
 
+            # A1: Réveil à l'aube (6h00, tick 0 de chaque jour) chez soi
+            start_global_tick = (day - 1) * ticks_per_day
+            for agent in self.agents.values():
+                agent.state.current_location_id = agent.persona.home_id
+                agent.state.destination_id = None
+                agent.state.travel_remaining_ticks = 0
+                agent.state.current_action = "se réveille chez soi"
+                agent.state.action_end_tick = start_global_tick
+                agent.state.energy = 0.95
+                agent.state.hunger = 0.15
+
             for tick in range(ticks_per_day):
+                global_tick = (day - 1) * ticks_per_day + tick
+
+                # Mise à jour des besoins dynamiques
+                for agent in self.agents.values():
+                    agent.state.energy = max(0.10, agent.state.energy - 0.003)
+                    agent.state.hunger = min(0.95, agent.state.hunger + 0.004)
+
                 # 1. Scénario d'injection
                 injected = self.scenario.check_injections(day, tick, self.agents)
                 for ev in injected:
@@ -106,33 +179,46 @@ class SimulationEngine:
                         self.daily_events_summary.append(f"Événement clé : {ev.payload['text']}")
 
                 # 2. Déplacements en cours
-                self._update_agent_movements(day, tick)
+                self._update_agent_movements(day, tick, global_tick)
 
                 # 3. Prises de décisions (ActionPicker D1)
-                self._process_agent_decisions(day, tick)
+                self._process_agent_decisions(day, tick, global_tick)
 
                 # 4. Rencontres et conversations (D4, D5, B1, D7, D8, D2)
-                self._process_encounters(day, tick)
+                self._process_encounters(day, tick, global_tick)
 
                 # 5. Réflexions du soir à 21h30 (tick 186)
                 if tick == 186:
-                    self._process_evening_reflections(day, tick)
+                    self._process_evening_reflections(day, tick, global_tick)
 
             # 6. Fin de journée : Gazette du Hameau (B4)
             self._generate_evening_gazette(day, ticks_per_day)
 
-        # Bilan final
+        # Bilan final calculé par réduction exacte du flux d'événements (FR-30 & Étape A3)
+        decision_events = [e for e in self.log_events if e.event_type == "decision"]
+        total_decisions = len(decision_events)
+
+        latencies = [
+            float(e.payload.get("latency_ms", 0.0))
+            for e in decision_events
+            if "latency_ms" in e.payload and e.payload["latency_ms"] is not None
+        ]
+        latencies.sort()
+        p50 = latencies[len(latencies) // 2] if latencies else 0.0
+        p95 = latencies[int(len(latencies) * 0.95)] if latencies else 0.0
+
         ratio = (
-            round(self.decider.total_decisions / max(1, self.bedrock.total_calls), 1)
+            round(total_decisions / max(1, self.bedrock.total_calls), 1)
             if self.bedrock.total_calls > 0
-            else float(self.decider.total_decisions)
+            else float(total_decisions)
         )
 
         summary = {
             "total_ticks": days * ticks_per_day,
-            "decider_total_decisions": self.decider.total_decisions,
+            "decider_total_decisions": total_decisions,
             "decider_total_tokens": self.decider.total_tokens,
-            "decider_latency_p50_ms": round(self.decider.total_latency_ms / max(1, self.decider.total_decisions), 2),
+            "decider_latency_p50_ms": round(p50, 2),
+            "decider_latency_p95_ms": round(p95, 2),
             "bedrock_total_calls": self.bedrock.total_calls,
             "bedrock_from_cassette": self.bedrock.calls_from_cassette,
             "bedrock_input_tokens": self.bedrock.total_input_tokens,
@@ -150,7 +236,7 @@ class SimulationEngine:
 
         return summary
 
-    def _update_agent_movements(self, day: int, tick: int) -> None:
+    def _update_agent_movements(self, day: int, tick: int, global_tick: int) -> None:
         """Fait progresser les trajets des agents."""
         for agent in self.agents.values():
             if agent.state.travel_remaining_ticks > 0:
@@ -170,16 +256,17 @@ class SimulationEngine:
                                 "from": origin,
                                 "to": dest,
                                 "duration_ticks": self.world.travel_time(origin, dest),
+                                "global_tick": global_tick,
                             },
                         )
                     )
 
-    def _process_agent_decisions(self, day: int, tick: int) -> None:
+    def _process_agent_decisions(self, day: int, tick: int, global_tick: int) -> None:
         """Gère les agents qui ont terminé leur activité courante."""
         for agent in self.agents.values():
             if not agent.is_available():
                 continue
-            if tick < agent.state.action_end_tick:
+            if global_tick < agent.state.action_end_tick:
                 continue
 
             # Construction des options pour D1
@@ -213,9 +300,10 @@ class SimulationEngine:
                 for m in agent.memories
             ]
             top_memories = self.memory_gate.score_and_rank(
-                self.memory_gate.preselect(mem_candidates, tick, [curr_loc, agent.persona.id]),
-                tick,
+                self.memory_gate.preselect(mem_candidates, global_tick, [curr_loc, agent.persona.id]),
+                global_tick,
                 f"{agent.persona.name} est à {self.world.locations[curr_loc].name} à {6 + tick // 12}h{(tick % 12) * 5:02d}.",
+                on_decision=self._make_on_d3_decision(day, tick, global_tick, agent.persona.id),
             )
 
             state_text = (
@@ -244,7 +332,7 @@ class SimulationEngine:
 
             # Application de l'action
             duration = self.rng.randint(3, 6)  # 15 à 30 minutes simulées
-            agent.state.action_end_tick = tick + duration
+            agent.state.action_end_tick = global_tick + duration
 
             if chosen_key.startswith("aller_") or chosen_key == "rentrer":
                 target_loc = (
@@ -260,30 +348,27 @@ class SimulationEngine:
             else:
                 agent.state.current_action = options.get(chosen_key, "vaque à ses occupations")
 
-            self.log(
-                LogEvent(
-                    tick=tick,
-                    day=day,
-                    agent_id=agent.persona.id,
-                    event_type="decision",
-                    payload={
-                        "decision": "D1",
-                        "options": options,
-                        "chosen_option": chosen_key,
-                        "confidence": conf,
-                        "zone": zone,
-                        "fallback_used": fallback,
-                        "latency_ms": d1_ans.get("latency_ms", 0.0),
-                    },
-                )
+            self._log_decision(
+                day=day,
+                tick=tick,
+                global_tick=global_tick,
+                agent_id=agent.persona.id,
+                decision_type="D1",
+                question_text=d1_q.instructions,
+                answer_dict=d1_ans,
+                options_or_criteria=options,
+                zone=zone,
+                fallback_used=fallback,
             )
 
-    def _process_encounters(self, day: int, tick: int) -> None:
+    def _process_encounters(self, day: int, tick: int, global_tick: int) -> None:
         """Détecte les agents au même endroit et anime leurs conversations."""
         by_location: Dict[str, List[Agent]] = {}
         for a in self.agents.values():
             if a.is_available() and a.state.travel_remaining_ticks == 0:
-                by_location.setdefault(a.state.current_location_id, []).append(a)
+                # Cooldown de 6 ticks (30 min) pour espacer les conversations naturelles
+                if global_tick - self.agent_last_conversation_tick.get(a.persona.id, -999) >= 6:
+                    by_location.setdefault(a.state.current_location_id, []).append(a)
 
         for loc_id, agents_here in by_location.items():
             if len(agents_here) < 2:
@@ -304,14 +389,31 @@ class SimulationEngine:
                 orange=self.thresholds_cfg.get("D4", {}).get("orange", 0.45),
             )
             zone_d4 = classify_zone(d4_ans["confidence"], th_d4)
-
-            # Si D4 dit oui (ou si repli proximité si haute affinité)
+            fallback_d4 = False
             wants_talk = d4_ans["value"]
             if zone_d4 == "red":
                 wants_talk = speaker.persona.relationships.get(listener.persona.id, 0.0) >= 0.5
+                fallback_d4 = True
+
+            self._log_decision(
+                day=day,
+                tick=tick,
+                global_tick=global_tick,
+                agent_id=speaker.persona.id,
+                decision_type="D4",
+                question_text=f"Engager la conversation avec {listener.persona.name}",
+                answer_dict=d4_ans,
+                options_or_criteria={"true": "Engager la discussion", "false": "Passer son chemin"},
+                zone=zone_d4,
+                fallback_used=fallback_d4,
+            )
 
             if not wants_talk:
                 continue
+
+            # Marquer le tick de conversation pour le cooldown
+            self.agent_last_conversation_tick[speaker.persona.id] = global_tick
+            self.agent_last_conversation_tick[listener.persona.id] = global_tick
 
             # D5 — ShareScorer : choisir le souvenir à raconter
             shared_memory: Optional[MemoryRecord] = None
@@ -326,6 +428,27 @@ class SimulationEngine:
                 target_mem_id = best_id.replace("d5_", "")
                 shared_memory = next((m for m in speaker.memories if m.id == target_mem_id), None)
 
+                # Enregistrement de chaque évaluation D5
+                th_d5 = ConfidenceThresholds(
+                    green=self.thresholds_cfg.get("D5", {}).get("green", 0.60),
+                    orange=self.thresholds_cfg.get("D5", {}).get("orange", 0.40),
+                )
+                for q_key, d5_eval in d5_res.items():
+                    m_eval_id = q_key.replace("d5_", "")
+                    zone_d5 = classify_zone(d5_eval["confidence"], th_d5)
+                    self._log_decision(
+                        day=day,
+                        tick=tick,
+                        global_tick=global_tick,
+                        agent_id=speaker.persona.id,
+                        decision_type="D5",
+                        question_text=f"Partager souvenir {m_eval_id} avec {listener.persona.name}",
+                        answer_dict=d5_eval,
+                        options_or_criteria=d5_eval.get("legend", {}),
+                        zone=zone_d5,
+                        fallback_used=False,
+                    )
+
             topic = shared_memory.text if shared_memory else "les nouvelles de la journée et le temps"
 
             # B1 — Amazon Bedrock Nova Micro pour générer le dialogue
@@ -335,15 +458,16 @@ class SimulationEngine:
                 active_speaker = speaker if turn_idx % 2 == 0 else listener
                 active_listener = listener if turn_idx % 2 == 0 else speaker
 
-                # Souvenirs injectés par MemoryGate
+                # Souvenirs injectés par MemoryGate (avec logging D3)
                 cands = [
                     MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
                     for m in active_speaker.memories
                 ]
                 top_mems = self.memory_gate.score_and_rank(
-                    self.memory_gate.preselect(cands, tick, [loc_id, active_listener.persona.id]),
-                    tick,
+                    self.memory_gate.preselect(cands, global_tick, [loc_id, active_listener.persona.id]),
+                    global_tick,
                     f"Discussion à {self.world.locations[loc_id].name}",
+                    on_decision=self._make_on_d3_decision(day, tick, global_tick, active_speaker.persona.id),
                 )
 
                 gen_res = generate_dialogue_turn(
@@ -374,9 +498,43 @@ class SimulationEngine:
                             "location": loc_id,
                             "cost_usd": gen_res["cost_usd"],
                             "from_cassette": gen_res["from_cassette"],
+                            "global_tick": global_tick,
                         },
                     )
                 )
+
+                # D7 ContinueGate pour décider si on poursuit l'échange
+                if turn_idx < max_turns - 1:
+                    d7_res = self.decider.ask(
+                        f"Après {turn_idx + 1} réplique(s), {active_speaker.persona.name} discute avec {active_listener.persona.name}.",
+                        {"D7": build_d7_continue_gate(turn_idx + 1)},
+                    )
+                    d7_ans = d7_res["D7"]
+                    th_d7 = ConfidenceThresholds(
+                        green=self.thresholds_cfg.get("D7", {}).get("green", 0.60),
+                        orange=self.thresholds_cfg.get("D7", {}).get("orange", 0.40),
+                    )
+                    zone_d7 = classify_zone(d7_ans["confidence"], th_d7)
+                    fallback_d7 = False
+                    want_continue = d7_ans["value"]
+                    if zone_d7 == "red":
+                        want_continue = True
+                        fallback_d7 = True
+
+                    self._log_decision(
+                        day=day,
+                        tick=tick,
+                        global_tick=global_tick,
+                        agent_id=active_speaker.persona.id,
+                        decision_type="D7",
+                        question_text=f"Poursuivre la conversation après {turn_idx + 1} répliques",
+                        answer_dict=d7_ans,
+                        options_or_criteria={"true": "Poursuivre", "false": "Terminer"},
+                        zone=zone_d7,
+                        fallback_used=fallback_d7,
+                    )
+                    if not want_continue:
+                        break
 
             # Transmission de l'information / rumeur si fact_id présent (FR-13)
             if shared_memory and shared_memory.fact_id:
@@ -385,20 +543,66 @@ class SimulationEngine:
                     f"{listener.persona.name} entend {speaker.persona.name} rapporter cette affirmation.",
                     {"D8": build_d8_credibility_gate(shared_memory.text, speaker.persona.name)},
                 )
-                cred_score = d8_res["D8"]["value"]
+                d8_ans = d8_res["D8"]
+                th_d8 = ConfidenceThresholds(
+                    green=self.thresholds_cfg.get("D8", {}).get("green", 0.60),
+                    orange=self.thresholds_cfg.get("D8", {}).get("orange", 0.40),
+                )
+                zone_d8 = classify_zone(d8_ans["confidence"], th_d8)
+                fallback_d8 = False
+                cred_score = d8_ans["value"]
+                if zone_d8 == "red":
+                    cred_score = 0.50 * speaker.persona.relationships.get(listener.persona.id, 0.5)
+                    fallback_d8 = True
+
+                self._log_decision(
+                    day=day,
+                    tick=tick,
+                    global_tick=global_tick,
+                    agent_id=listener.persona.id,
+                    decision_type="D8",
+                    question_text=f"Crédibilité de l'affirmation rapportée par {speaker.persona.name}",
+                    answer_dict=d8_ans,
+                    options_or_criteria=d8_ans.get("legend", {}),
+                    zone=zone_d8,
+                    fallback_used=fallback_d8,
+                )
 
                 # D2 — ImportanceScorer chez le listener
                 d2_res = self.decider.ask(
                     f"{listener.persona.name} évalue l'importance de ce fait.",
                     {"D2": build_d2_importance_scorer(shared_memory.text)},
                 )
-                imp_score = d2_res["D2"]["value"]
+                d2_ans = d2_res["D2"]
+                th_d2 = ConfidenceThresholds(
+                    green=self.thresholds_cfg.get("D2", {}).get("green", 0.55),
+                    orange=self.thresholds_cfg.get("D2", {}).get("orange", 0.35),
+                )
+                zone_d2 = classify_zone(d2_ans["confidence"], th_d2)
+                fallback_d2 = False
+                imp_score = d2_ans["value"]
+                if zone_d2 == "red":
+                    imp_score = 0.50
+                    fallback_d2 = True
+
+                self._log_decision(
+                    day=day,
+                    tick=tick,
+                    global_tick=global_tick,
+                    agent_id=listener.persona.id,
+                    decision_type="D2",
+                    question_text=f"Importance du fait pour {listener.persona.name}",
+                    answer_dict=d2_ans,
+                    options_or_criteria=d2_ans.get("legend", {}),
+                    zone=zone_d2,
+                    fallback_used=fallback_d2,
+                )
 
                 # Nouveau souvenir chez le listener
                 new_mem = MemoryRecord(
-                    id=f"mem_hear_{listener.persona.id}_{tick}",
+                    id=f"mem_hear_{listener.persona.id}_{global_tick}",
                     agent_id=listener.persona.id,
-                    tick=tick,
+                    tick=global_tick,
                     type="hearsay",
                     text=f"{speaker.persona.name} m'a dit : « {shared_memory.text} »",
                     entities=list(set(shared_memory.entities + [speaker.persona.id])),
@@ -406,9 +610,9 @@ class SimulationEngine:
                     source_agent=speaker.persona.id,
                     hop_count=shared_memory.hop_count + 1,
                     importance=imp_score,
-                    confidence=d8_res["D8"]["confidence"],
+                    confidence=d8_ans["confidence"],
                     decision_author="decider",
-                    last_accessed_tick=tick,
+                    last_accessed_tick=global_tick,
                 )
                 listener.add_memory(new_mem)
                 listener.set_believed_fact(shared_memory.fact_id, cred_score)
@@ -427,6 +631,7 @@ class SimulationEngine:
                             "credibility": cred_score,
                             "importance": imp_score,
                             "text": shared_memory.text,
+                            "global_tick": global_tick,
                         },
                     )
                 )
@@ -434,7 +639,7 @@ class SimulationEngine:
                     f"{speaker.persona.name} a transmis à {listener.persona.name} l'information : {shared_memory.fact_id} (crédibilité: {cred_score:.2f})"
                 )
 
-    def _process_evening_reflections(self, day: int, tick: int) -> None:
+    def _process_evening_reflections(self, day: int, tick: int, global_tick: int) -> None:
         """Déclenche les réflexions du soir avec D6 et Bedrock (B2)."""
         for agent in self.agents.values():
             if not agent.memories:
@@ -444,29 +649,59 @@ class SimulationEngine:
                 f"{agent.persona.name} termine sa journée à {agent.persona.home_id}.",
                 {"D6": build_d6_reflect_gate()},
             )
-            if not d6_res["D6"]["value"]:
+            d6_ans = d6_res["D6"]
+            th_d6 = ConfidenceThresholds(
+                green=self.thresholds_cfg.get("D6", {}).get("green", 0.70),
+                orange=self.thresholds_cfg.get("D6", {}).get("orange", 0.50),
+            )
+            zone_d6 = classify_zone(d6_ans["confidence"], th_d6)
+            fallback_d6 = False
+            do_reflect = d6_ans["value"]
+            if zone_d6 == "red":
+                do_reflect = len(agent.memories) >= 5
+                fallback_d6 = True
+
+            self._log_decision(
+                day=day,
+                tick=tick,
+                global_tick=global_tick,
+                agent_id=agent.persona.id,
+                decision_type="D6",
+                question_text="Bilan et réflexion de fin de journée",
+                answer_dict=d6_ans,
+                options_or_criteria={"true": "Prendre un temps calme", "false": "Poursuivre sans introspection"},
+                zone=zone_d6,
+                fallback_used=fallback_d6,
+            )
+
+            if not do_reflect:
                 continue
 
             cands = [
                 MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
                 for m in agent.memories
             ]
-            top_mems = self.memory_gate.score_and_rank(cands, tick, "Bilan du soir")
+            top_mems = self.memory_gate.score_and_rank(
+                cands,
+                global_tick,
+                "Bilan du soir",
+                on_decision=self._make_on_d3_decision(day, tick, global_tick, agent.persona.id),
+            )
 
             gen_res = generate_reflection(self.bedrock, agent, top_mems)
             reflection_text = gen_res["text"]
 
             ref_mem = MemoryRecord(
-                id=f"mem_refl_{agent.persona.id}_{day}",
+                id=f"mem_refl_{agent.persona.id}_{global_tick}",
                 agent_id=agent.persona.id,
-                tick=tick,
+                tick=global_tick,
                 type="reflection",
                 text=reflection_text,
                 entities=[agent.persona.id],
                 importance=0.90,
                 confidence=1.0,
                 decision_author="bedrock",
-                last_accessed_tick=tick,
+                last_accessed_tick=global_tick,
             )
             agent.add_memory(ref_mem)
 

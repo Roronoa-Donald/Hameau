@@ -84,7 +84,7 @@ f2 = os.path.join(tmpdir, 'run2.jsonl')
 run_with_seed(1234, f1)
 run_with_seed(5678, f2)
 
-# Compare lines ignoring timestamps
+# Compare lines ignoring timestamps and wall-clock latencies
 def strip_ts(lines):
     import json
     out = []
@@ -92,6 +92,8 @@ def strip_ts(lines):
         if not l.strip(): continue
         d = json.loads(l)
         d.pop('real_timestamp', None)
+        if 'payload' in d and isinstance(d['payload'], dict):
+            d['payload'].pop('latency_ms', None)
         out.append(json.dumps(d, sort_keys=True))
     return out
 
