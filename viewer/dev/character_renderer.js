@@ -278,40 +278,150 @@ class CharacterRenderer2D {
     const tick = state.tick || 0;
     const agentSeed = (charDef.name.charCodeAt(0) * 17 + charDef.age * 31) % 1000;
 
-    // Cinématique temporelle déterministe
-    const breathPhase = (tick * 0.12 + agentSeed) % (Math.PI * 2);
-    const breathY = Math.sin(breathPhase) * 1.5;
+    // 1. Détection de l'état actif
+    const isWalking = !!state.isWalking;
+    const isTalking = !!state.isTalking;
+    const hasRumor = !!state.hasRumor;
+    const hasDebunk = !!state.hasDebunk;
+    const didStock = !!state.didStock;
+    const isHesitating = !!state.isHesitating;
+    const isNight = !!state.isNight;
 
-    // Détection de clignement déterministe (fermeture de 150ms toutes les 4s environ)
-    const blinkCycle = (tick + agentSeed * 3) % 48;
-    const isBlinking = blinkCycle === 0 || blinkCycle === 1;
+    // 2. Cinématique respiratoire adaptée au comportement
+    let breathFreq = 0.08;
+    let breathAmp = 2.2;
+    if (isWalking) { breathFreq = 0.25; breathAmp = 1.0; }
+    else if (isTalking) { breathFreq = 0.16; breathAmp = 1.8; }
+    else if (hasRumor) { breathFreq = 0.30; breathAmp = 2.0; } // Respiration saccadée
+    else if (hasDebunk) { breathFreq = 0.05; breathAmp = 3.4; } // Grand soupir de soulagement
+    else if (didStock) { breathFreq = 0.14; breathAmp = 2.6; } // Effort de portage
+    else if (isHesitating) { breathFreq = 0.07; breathAmp = 1.8; } // Respiration lente concentrée
+    else if (isNight) { breathFreq = 0.035; breathAmp = 3.2; } // Respiration nocturne lente
 
-    // Cinématique de marche
-    const isWalking = state.isWalking || false;
-    const walkPhase = isWalking ? (tick * 0.45) % (Math.PI * 2) : 0;
-    const stride = isWalking ? Math.sin(walkPhase) : 0;
-    const bobbing = isWalking ? Math.abs(Math.cos(walkPhase)) * 2 : 0;
+    const breathPhase = (tick * breathFreq + agentSeed) % (Math.PI * 2);
+    const breathY = Math.sin(breathPhase) * breathAmp;
+
+    // 3. Clignement d'yeux déterministe
+    const blinkCycle = (tick + agentSeed * 3) % (hasRumor ? 28 : 50);
+    const isBlinking = blinkCycle === 0 || blinkCycle === 1 || isNight;
+
+    // 4. Variables cinématiques squelettiques par état
+    let bodyTilt = 0;       // Inclinaison latérale du torse
+    let headTilt = 0;       // Inclinaison de la tête
+    let headTurn = 0;       // Rotation / coup d'œil furtif
+    let headNod = 0;        // Hochement vertical de tête
+    let leftArmAngle = 0;   // Rotation bras gauche (degrés)
+    let rightArmAngle = 0;  // Rotation bras droit (degrés)
+    let leftLegOffset = 0;  // Déplacement jambe arrière
+    let rightLegOffset = 0; // Déplacement jambe avant
+    let bobbing = 0;        // Rebond vertical
+
+    if (isWalking) {
+      // Marche : foulée vive, balancement opposé des membres et bobbing
+      const walkPhase = (tick * 0.30) % (Math.PI * 2);
+      const stride = Math.sin(walkPhase);
+      bobbing = Math.abs(Math.cos(walkPhase)) * 3.2;
+      leftLegOffset = -stride * 7.5;
+      rightLegOffset = stride * 7.5;
+      leftArmAngle = stride * 24;
+      rightArmAngle = -stride * 24;
+      bodyTilt = Math.sin(walkPhase) * 2.0;
+      headTilt = -Math.sin(walkPhase) * 1.5;
+    } else if (isTalking) {
+      // Parole : gestuelle oratoire de main levée, hochements de tête d'emphase
+      bodyTilt = Math.sin(tick * 0.10) * 2.2;
+      headNod = Math.sin(tick * 0.32) * 4.5;
+      headTilt = Math.sin(tick * 0.18) * 3.0;
+      bobbing = Math.abs(Math.sin(tick * 0.15)) * 1.2;
+      // Bras droit expressif qui monte et descend au fil du discours
+      rightArmAngle = -42 + Math.sin(tick * 0.22) * 26 + Math.cos(tick * 0.45) * 10;
+      leftArmAngle = 10 + Math.sin(tick * 0.16 + 1.2) * 12;
+    } else if (hasRumor) {
+      // Rumeur R1 : coups d'œil furtifs à gauche puis à droite, épaules rentrées
+      const glance = Math.sin(tick * 0.08 + agentSeed);
+      headTurn = glance > 0.35 ? 3.2 : glance < -0.35 ? -3.2 : 0;
+      headTilt = 2.0 + Math.sin(tick * 0.16) * 2.5;
+      bodyTilt = Math.sin(tick * 0.4) * 0.8; // Frémissement nerveux
+      // Bras resserrés défensivement contre soi
+      leftArmAngle = -18 + Math.sin(tick * 0.28) * 5;
+      rightArmAngle = -22 + Math.cos(tick * 0.28) * 5;
+    } else if (hasDebunk) {
+      // Démenti R2 : soupir apaisé, épaules qui descendent doucement, balancement serein
+      const reliefSway = Math.sin(tick * 0.05);
+      bodyTilt = reliefSway * 1.8;
+      headTilt = -reliefSway * 2.0;
+      headNod = Math.sin(tick * 0.08) * 2.0;
+      leftArmAngle = 8 + reliefSway * 10;
+      rightArmAngle = -8 - reliefSway * 10;
+    } else if (didStock) {
+      // Stockage : torse penché pour compenser le lourd panier, heurtement périodique
+      bodyTilt = -3.8;
+      headTilt = -1.8;
+      const heave = Math.sin(tick * 0.12);
+      rightArmAngle = -52 + heave * 10;
+      leftArmAngle = 14 + heave * 5;
+    } else if (isHesitating) {
+      // Doute (Zone Rouge) : main au menton qui tapote, bras gauche croisé, regard en l'air
+      const fingerTap = Math.sin(tick * 0.35);
+      rightArmAngle = -108 + fingerTap * 6;
+      leftArmAngle = -40; // Bras croisé sous le coude droit
+      headTilt = -6.5 + Math.sin(tick * 0.08) * 2.5;
+      // Pied qui tapote doucement
+      rightLegOffset = Math.sin(tick * 0.35) > 0.6 ? -2.2 : 0;
+    } else if (isNight) {
+      // Nuit / Sommeil : tête doucement affaissée, corps totalement relâché
+      headNod = 4.0 + Math.sin(tick * 0.035) * 1.8;
+      bodyTilt = Math.sin(tick * 0.035) * 0.8;
+      leftArmAngle = 3;
+      rightArmAngle = -3;
+    } else {
+      // Repos (Idle) : doux balancement de hanche organique
+      const idleSway = Math.sin(tick * 0.05 + agentSeed);
+      bodyTilt = idleSway * 1.8;
+      headTilt = -idleSway * 1.2;
+      leftArmAngle = idleSway * 5;
+      rightArmAngle = -idleSway * 5;
+    }
+
+    const animPayload = {
+      breathY,
+      isBlinking,
+      bodyTilt,
+      headTilt,
+      headTurn,
+      headNod,
+      leftArmAngle,
+      rightArmAngle,
+      leftLegOffset,
+      rightLegOffset,
+      bobbing,
+      isWalking,
+      isTalking,
+      hasRumor,
+      hasDebunk,
+      didStock,
+      isHesitating,
+      isNight
+    };
 
     ctx.save();
     ctx.translate(opts.x || 0, opts.y || 0);
     ctx.scale(scale, scale);
 
-    // 1. Ombre portée au sol (pour les personnages en pied uniquement)
+    // 5. Ombre portée au sol
     if (!isPortrait) {
-      this.drawGroundShadow(ctx, charDef, stride);
+      this.drawGroundShadow(ctx, charDef, leftLegOffset / 6);
     }
 
     if (isPortrait) {
-      // Rendu Buste Haute Résolution (pour l'Inspecteur d'Agent et la Gazette)
-      this.drawBustPortrait(ctx, charDef, state, { breathY, isBlinking });
+      this.drawBustPortrait(ctx, charDef, state, animPayload);
     } else {
-      // Rendu Sprite Entier Corps (~7 têtes)
-      this.drawFullBody(ctx, charDef, state, { breathY, isBlinking, stride, bobbing });
+      this.drawFullBody(ctx, charDef, state, animPayload);
     }
 
-    // 2. Filtre de nuit si sommeil ou nocturne
+    // 6. Filtre d'ambiance nocturne
     if (state.isNight) {
-      ctx.fillStyle = "rgba(30, 41, 59, 0.35)";
+      ctx.fillStyle = "rgba(30, 41, 59, 0.40)";
       ctx.fillRect(-35, -95, 70, 110);
     }
 
@@ -336,7 +446,25 @@ class CharacterRenderer2D {
   }
 
   drawFullBody(ctx, charDef, state, anim) {
-    const { breathY, isBlinking, stride, bobbing } = anim;
+    const {
+      breathY,
+      isBlinking,
+      bodyTilt,
+      headTilt,
+      headTurn,
+      headNod,
+      leftArmAngle,
+      rightArmAngle,
+      leftLegOffset,
+      rightLegOffset,
+      bobbing,
+      isTalking,
+      hasRumor,
+      hasDebunk,
+      didStock,
+      isHesitating
+    } = anim;
+
     const skin = charDef.skin;
     const pal = charDef.palette;
 
@@ -344,120 +472,112 @@ class CharacterRenderer2D {
     ctx.translate(0, -bobbing);
 
     // --- COUCHE 1 : JAMBES & PIEDS ---
-    const legOffset = stride * 6;
     // Jambe Arrière (gauche)
-    this.drawLimb(ctx, -5 - legOffset, -30, -6 - legOffset, -2, 5, pal.trousers || pal.primaryShadow, "#0f172a");
-    // Chaussure Arrière
+    this.drawLimb(ctx, -5 + leftLegOffset, -30, -6 + leftLegOffset, -2, 5, pal.trousers || pal.primaryShadow, "#0f172a");
     ctx.fillStyle = "#1e293b";
     ctx.beginPath();
-    ctx.ellipse(-7 - legOffset, -1, 5, 2.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(-7 + leftLegOffset, -1, 5, 2.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Jambe Avant (droite)
-    this.drawLimb(ctx, 5 + legOffset, -30, 6 + legOffset, -2, 5.5, pal.trousers || pal.primary, "#0f172a");
-    // Chaussure Avant
+    this.drawLimb(ctx, 5 + rightLegOffset, -30, 6 + rightLegOffset, -2, 5.5, pal.trousers || pal.primary, "#0f172a");
     ctx.fillStyle = "#0f172a";
     ctx.beginPath();
-    ctx.ellipse(7 + legOffset, 0, 5.5, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(7 + rightLegOffset, 0, 5.5, 3, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- COUCHE 2 : BASSIN & TORSE ---
+    // --- COUCHE 2 : BASSIN & TORSE (avec inclinaison et respiration) ---
     ctx.save();
-    ctx.translate(0, breathY * 0.4);
+    ctx.translate(0, -38 + breathY * 0.4);
+    ctx.rotate(bodyTilt * (Math.PI / 180));
 
     // Bassin / Hanches
     ctx.fillStyle = pal.primaryShadow;
     ctx.beginPath();
-    ctx.roundRect(-10, -38, 20, 10, 3);
+    ctx.roundRect(-10, 0, 20, 10, 3);
     ctx.fill();
 
     // Torse / Veste
     ctx.fillStyle = pal.primary;
     ctx.beginPath();
-    ctx.moveTo(-11, -38);
-    ctx.lineTo(-13, -56);
-    ctx.lineTo(13, -56);
-    ctx.lineTo(11, -38);
+    ctx.moveTo(-11, 0);
+    ctx.lineTo(-13, -18);
+    ctx.lineTo(13, -18);
+    ctx.lineTo(11, 0);
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = "#1c1917";
     ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    // Reflet de volume torse (ombrage haut-gauche)
-    const torsoGrad = ctx.createLinearGradient(-13, -56, 13, -38);
-    torsoGrad.addColorStop(0, "rgba(255, 255, 255, 0.12)");
+    // Reflet de volume torse
+    const torsoGrad = ctx.createLinearGradient(-13, -18, 13, 0);
+    torsoGrad.addColorStop(0, "rgba(255, 255, 255, 0.14)");
     torsoGrad.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-    torsoGrad.addColorStop(1, "rgba(0, 0, 0, 0.22)");
+    torsoGrad.addColorStop(1, "rgba(0, 0, 0, 0.24)");
     ctx.fillStyle = torsoGrad;
     ctx.fill();
 
-    // Tablier ou couche secondaire spécifique
+    // Spécificités vestimentaires
     if (charDef.id === "awa") {
       ctx.fillStyle = pal.secondary;
       ctx.beginPath();
-      ctx.moveTo(-9, -52);
-      ctx.lineTo(9, -52);
-      ctx.lineTo(11, -35);
-      ctx.lineTo(-11, -35);
+      ctx.moveTo(-9, -14);
+      ctx.lineTo(9, -14);
+      ctx.lineTo(11, 3);
+      ctx.lineTo(-11, 3);
       ctx.closePath();
       ctx.fill();
       ctx.strokeStyle = "#dcd2c4";
       ctx.stroke();
-      // Farine sur tablier
-      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
       ctx.beginPath();
-      ctx.arc(3, -42, 4, 0, Math.PI * 2);
+      ctx.arc(3, -4, 4, 0, Math.PI * 2);
       ctx.fill();
     } else if (charDef.id === "kofi") {
-      // Écharpe tricolore municipale
       ctx.strokeStyle = pal.sash;
       ctx.lineWidth = 3.5;
       ctx.beginPath();
-      ctx.moveTo(-12, -56);
-      ctx.lineTo(10, -38);
+      ctx.moveTo(-12, -18);
+      ctx.lineTo(10, 0);
       ctx.stroke();
     } else if (charDef.id === "samuel") {
-      // Tablier de cuir
       ctx.fillStyle = pal.primary;
-      ctx.fillRect(-9, -52, 18, 20);
+      ctx.fillRect(-9, -14, 18, 20);
       ctx.strokeStyle = "#451a03";
-      ctx.strokeRect(-9, -52, 18, 20);
+      ctx.strokeRect(-9, -14, 18, 20);
     }
 
     // Col / Chemise
     ctx.fillStyle = pal.secondary;
     ctx.beginPath();
-    ctx.moveTo(-4, -56);
-    ctx.lineTo(0, -48);
-    ctx.lineTo(4, -56);
+    ctx.moveTo(-4, -18);
+    ctx.lineTo(0, -10);
+    ctx.lineTo(4, -18);
     ctx.closePath();
     ctx.fill();
 
     // --- COUCHE 3 : BRAS GAUCHE (arrière) ---
-    const armSwing = stride * 12;
     ctx.save();
-    ctx.translate(-12, -54);
-    ctx.rotate((state.didStock ? -45 : armSwing) * (Math.PI / 180));
+    ctx.translate(-12, -16);
+    ctx.rotate(leftArmAngle * (Math.PI / 180));
     ctx.fillStyle = pal.primaryShadow;
     ctx.fillRect(-2, 0, 4.5, 16);
-    // Main gauche
     ctx.fillStyle = skin.shadow;
     ctx.beginPath();
     ctx.arc(0.5, 17, 2.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
-    // --- COUCHE 4 : COU & TÊTE ---
-    // Cou
+    // --- COUCHE 4 : COU & TÊTE (avec hochement, inclinaison et rotation) ---
     ctx.fillStyle = skin.shadow;
-    ctx.fillRect(-3, -60, 6, 6);
+    ctx.fillRect(-3, -22, 6, 6);
 
-    // Forme du crâne & mâchoire
     ctx.save();
-    ctx.translate(0, -68);
+    ctx.translate(headTurn, -30 + headNod);
+    ctx.rotate((headTilt) * (Math.PI / 180));
 
-    // Tête
+    // Forme de tête
     ctx.fillStyle = skin.base;
     ctx.beginPath();
     ctx.ellipse(0, 0, 7.5, 9, 0, 0, Math.PI * 2);
@@ -466,7 +586,7 @@ class CharacterRenderer2D {
     ctx.lineWidth = 1.0;
     ctx.stroke();
 
-    // Ombrage volumétrique du visage (lumière haut-gauche)
+    // Ombrage volumétrique du visage
     const faceGrad = ctx.createLinearGradient(-7, -7, 7, 7);
     faceGrad.addColorStop(0, skin.highlight);
     faceGrad.addColorStop(0.5, skin.base);
@@ -474,10 +594,10 @@ class CharacterRenderer2D {
     ctx.fillStyle = faceGrad;
     ctx.fill();
 
-    // Yeux & Regard
-    this.drawEyes(ctx, charDef, state, isBlinking);
+    // Yeux, regard et sourcils
+    this.drawEyes(ctx, charDef, state, isBlinking, anim);
 
-    // Nez discret
+    // Nez sculpté
     ctx.fillStyle = skin.shadow;
     ctx.beginPath();
     ctx.moveTo(0, -1);
@@ -486,10 +606,10 @@ class CharacterRenderer2D {
     ctx.closePath();
     ctx.fill();
 
-    // Bouche (animée si l'agent parle)
-    this.drawMouth(ctx, charDef, state);
+    // Bouche animée
+    this.drawMouth(ctx, charDef, state, anim);
 
-    // Chevelure / Chapeau / Coiffure
+    // Chevelure et couvre-chef
     this.drawHairAndHeadwear(ctx, charDef);
 
     // Lunettes pour Élise
@@ -506,34 +626,26 @@ class CharacterRenderer2D {
 
     ctx.restore(); // Fin tête
 
-    // --- COUCHE 5 : BRAS DROIT (avant) ---
+    // --- COUCHE 5 : BRAS DROIT (avant, articulé par état) ---
     ctx.save();
-    ctx.translate(12, -54);
-    const rightArmAngle = state.isHesitating
-      ? -110 // Main au menton
-      : state.isTalking
-      ? -35 + Math.sin(tick * 0.3) * 15 // Geste expressif
-      : -armSwing;
+    ctx.translate(12, -16);
     ctx.rotate(rightArmAngle * (Math.PI / 180));
     ctx.fillStyle = pal.primary;
     ctx.fillRect(-2.5, 0, 5, 16);
-    // Main droite
     ctx.fillStyle = skin.base;
     ctx.beginPath();
     ctx.arc(0, 17, 2.8, 0, Math.PI * 2);
     ctx.fill();
 
     // Accessoires tenus en main droite
-    if (state.didStock || charDef.accessory === "bread_basket" || charDef.accessory === "vegetable_basket") {
+    if (didStock || charDef.accessory === "bread_basket" || charDef.accessory === "vegetable_basket") {
       this.drawBasket(ctx, charDef, state);
     } else if (charDef.accessory === "blacksmith_hammer") {
-      // Marteau de forgeron
       ctx.fillStyle = "#78350f";
       ctx.fillRect(-1, 8, 2, 14);
       ctx.fillStyle = "#475569";
       ctx.fillRect(-4, 6, 8, 4);
     } else if (charDef.accessory === "fishing_cane") {
-      // Canne à pêche en bambou
       ctx.strokeStyle = "#a16207";
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -541,7 +653,6 @@ class CharacterRenderer2D {
       ctx.lineTo(4, -25);
       ctx.stroke();
     } else if (charDef.accessory === "press_notebook") {
-      // Bloc-notes de Claire
       ctx.fillStyle = "#f8fafc";
       ctx.fillRect(-2, 15, 6, 8);
       ctx.strokeStyle = "#78350f";
@@ -553,7 +664,8 @@ class CharacterRenderer2D {
     ctx.restore(); // Fin root translate
   }
 
-  drawEyes(ctx, charDef, state, isBlinking) {
+  drawEyes(ctx, charDef, state, isBlinking, anim = {}) {
+    const tick = state.tick || 0;
     if (isBlinking || state.isNight) {
       // Yeux fermés (arc fin)
       ctx.strokeStyle = "#1c1917";
@@ -570,41 +682,83 @@ class CharacterRenderer2D {
       ctx.fillRect(-4.5, -3, 3, 2.2);
       ctx.fillRect(1.5, -3, 3, 2.2);
 
+      // Calcul dynamique du regard (Gaze tracking)
+      let gazeX = 0;
+      let gazeY = 0;
+      if (state.hasRumor) {
+        gazeX = Math.sin(tick * 0.18) * 1.5;
+      } else if (state.isHesitating) {
+        gazeX = 0.8;
+        gazeY = -1.2;
+      }
+
       // Iris
       ctx.fillStyle = charDef.eyes.color || "#1c1917";
-      const gazeShift = state.hasRumor ? 0.8 : 0; // Regard en coin si porteur de rumeur
       ctx.beginPath();
-      ctx.arc(-3 + gazeShift, -2, 1.0, 0, Math.PI * 2);
-      ctx.arc(3 + gazeShift, -2, 1.0, 0, Math.PI * 2);
+      ctx.arc(-3 + gazeX, -2 + gazeY, 1.0, 0, Math.PI * 2);
+      ctx.arc(3 + gazeX, -2 + gazeY, 1.0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Sourcils
+      // Sourcils expressifs
       ctx.strokeStyle = charDef.hair.color;
       ctx.lineWidth = 0.8;
-      const browTilt = state.hasRumor ? 0.8 : state.isHesitating ? -0.5 : 0;
+      let browTilt = 0;
+      let browY = 0;
+      if (state.hasRumor) {
+        browTilt = 1.2;
+        browY = Math.sin(tick * 0.25) * 0.5;
+      } else if (state.isHesitating) {
+        browTilt = -0.8;
+      } else if (state.isTalking) {
+        browY = Math.sin(tick * 0.3) * 0.8;
+      }
+
       ctx.beginPath();
-      ctx.moveTo(-5, -4.5 + browTilt);
-      ctx.lineTo(-2, -4.5 - browTilt);
-      ctx.moveTo(2, -4.5 - browTilt);
-      ctx.lineTo(5, -4.5 + browTilt);
+      ctx.moveTo(-5, -4.5 + browTilt + browY);
+      ctx.lineTo(-2, -4.5 - browTilt + browY);
+      ctx.moveTo(2, -4.5 - browTilt + browY);
+      ctx.lineTo(5, -4.5 + browTilt + browY);
       ctx.stroke();
     }
   }
 
-  drawMouth(ctx, charDef, state) {
+  drawMouth(ctx, charDef, state, anim = {}) {
+    const tick = state.tick || 0;
     ctx.fillStyle = "#7f1d1d";
+
     if (state.isTalking) {
-      // Bouche ouverte animée
-      const mouthOpen = (Math.sin((state.tick || 0) * 0.8) + 1) * 1.0;
+      // Articulation phonétique dynamique
+      const syllable = Math.sin(tick * 0.55) * Math.cos(tick * 0.28);
+      const openY = 0.8 + Math.max(0, syllable) * 2.2;
+      const openX = 2.0 - Math.max(0, syllable) * 0.4;
       ctx.beginPath();
-      ctx.ellipse(0, 4, 1.8, 0.8 + mouthOpen, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 3.8, openX, openY, 0, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = "#4c0519";
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
     } else if (state.hasDebunk) {
-      // Sourire apaisé
+      // Sourire apaisé détendu
       ctx.strokeStyle = "#7f1d1d";
-      ctx.lineWidth = 0.8;
+      ctx.lineWidth = 0.9;
       ctx.beginPath();
-      ctx.arc(0, 2.5, 2.2, 0.2 * Math.PI, 0.8 * Math.PI);
+      ctx.arc(0, 2.2, 2.4, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx.stroke();
+    } else if (state.hasRumor) {
+      // Bouche serrée d'anxiété
+      ctx.strokeStyle = "#451a03";
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(-1.6, 4.0);
+      ctx.lineTo(1.6, 4.0);
+      ctx.stroke();
+    } else if (state.isHesitating) {
+      // Moue dubitative sur le côté
+      ctx.strokeStyle = "#7f1d1d";
+      ctx.lineWidth = 0.9;
+      ctx.beginPath();
+      ctx.moveTo(-1.2, 3.8);
+      ctx.lineTo(1.8, 4.4);
       ctx.stroke();
     } else {
       // Lèvre neutre
@@ -782,16 +936,24 @@ class CharacterRenderer2D {
   /**
    * Rendu Buste Haute Définition pour l'Inspecteur d'Agent & la Gazette.
    */
-  drawBustPortrait(ctx, charDef, state, anim) {
-    const { breathY, isBlinking } = anim;
+  drawBustPortrait(ctx, charDef, state, anim = {}) {
+    const {
+      breathY = 0,
+      isBlinking = false,
+      bodyTilt = 0,
+      headTilt = 0,
+      headTurn = 0,
+      headNod = 0
+    } = anim;
     const skin = charDef.skin;
     const pal = charDef.palette;
+    const tick = state.tick || 0;
 
     ctx.save();
-    // Épaules et Veste Buste
+    // Épaules et Veste Buste avec légère respiration
     ctx.fillStyle = pal.primary;
     ctx.beginPath();
-    ctx.ellipse(0, 26 + breathY, 24, 16, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 26 + breathY, 24, 16, bodyTilt * (Math.PI / 180), 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = "#1c1917";
     ctx.lineWidth = 1.5;
@@ -800,81 +962,172 @@ class CharacterRenderer2D {
     // Col / Chemise
     ctx.fillStyle = pal.secondary;
     ctx.beginPath();
-    ctx.moveTo(-7, 10);
-    ctx.lineTo(0, 20);
-    ctx.lineTo(7, 10);
+    ctx.moveTo(-7, 10 + breathY * 0.6);
+    ctx.lineTo(0, 20 + breathY * 0.6);
+    ctx.lineTo(7, 10 + breathY * 0.6);
     ctx.closePath();
     ctx.fill();
 
     // Cou
     ctx.fillStyle = skin.shadow;
-    ctx.fillRect(-6, -4, 12, 15);
+    ctx.fillRect(-6, -4 + breathY * 0.4, 12, 15);
 
-    // Tête haute résolution
+    // Tête haute résolution avec mouvements organiques
+    ctx.save();
+    ctx.translate(headTurn * 1.5, -16 + breathY * 0.3 + headNod * 0.8);
+    ctx.rotate(headTilt * (Math.PI / 180));
+
     ctx.fillStyle = skin.base;
     ctx.beginPath();
-    ctx.ellipse(0, -16, 15, 18, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, 15, 18, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = "#1c1917";
     ctx.lineWidth = 1.6;
     ctx.stroke();
+
+    // Ombrage volumétrique du visage en buste
+    const faceGrad = ctx.createLinearGradient(-15, -15, 15, 15);
+    faceGrad.addColorStop(0, skin.highlight);
+    faceGrad.addColorStop(0.5, skin.base);
+    faceGrad.addColorStop(1, skin.shadow);
+    ctx.fillStyle = faceGrad;
+    ctx.fill();
 
     // Yeux Buste
     if (isBlinking || state.isNight) {
       ctx.strokeStyle = "#1c1917";
       ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(-6, -16, 3.5, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.arc(-6, 0, 3.5, 0.1 * Math.PI, 0.9 * Math.PI);
       ctx.stroke();
       ctx.beginPath();
-      ctx.arc(6, -16, 3.5, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.arc(6, 0, 3.5, 0.1 * Math.PI, 0.9 * Math.PI);
       ctx.stroke();
     } else {
       // Yeux détaillés avec iris et pupille
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.ellipse(-6, -16, 4.5, 3.2, 0, 0, Math.PI * 2);
-      ctx.ellipse(6, -16, 4.5, 3.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(-6, 0, 4.5, 3.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(6, 0, 4.5, 3.2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
+      // Regard dynamique
+      let gazeX = 0;
+      let gazeY = 0;
+      if (state.hasRumor) {
+        gazeX = Math.sin(tick * 0.18) * 2.0;
+      } else if (state.isHesitating) {
+        gazeX = 1.4;
+        gazeY = -1.6;
+      }
+
       ctx.fillStyle = charDef.eyes.color || "#1c1917";
       ctx.beginPath();
-      ctx.arc(-6, -16, 2.0, 0, Math.PI * 2);
-      ctx.arc(6, -16, 2.0, 0, Math.PI * 2);
+      ctx.arc(-6 + gazeX, 0 + gazeY, 2.0, 0, Math.PI * 2);
+      ctx.arc(6 + gazeX, 0 + gazeY, 2.0, 0, Math.PI * 2);
       ctx.fill();
 
       // Reflet spéculaire blanc
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.arc(-6.8, -16.8, 0.7, 0, Math.PI * 2);
-      ctx.arc(5.2, -16.8, 0.7, 0, Math.PI * 2);
+      ctx.arc(-6.8 + gazeX * 0.5, -0.8 + gazeY * 0.5, 0.7, 0, Math.PI * 2);
+      ctx.arc(5.2 + gazeX * 0.5, -0.8 + gazeY * 0.5, 0.7, 0, Math.PI * 2);
       ctx.fill();
+
+      // Sourcils expressifs en buste
+      ctx.strokeStyle = charDef.hair.color;
+      ctx.lineWidth = 1.5;
+      let browTilt = 0;
+      let browY = 0;
+      if (state.hasRumor) {
+        browTilt = 2.0;
+        browY = Math.sin(tick * 0.25) * 1.0;
+      } else if (state.isHesitating) {
+        browTilt = -1.5;
+      } else if (state.isTalking) {
+        browY = Math.sin(tick * 0.3) * 1.4;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(-9, -4.5 + browTilt + browY);
+      ctx.lineTo(-3, -4.5 - browTilt + browY);
+      ctx.moveTo(3, -4.5 - browTilt + browY);
+      ctx.lineTo(9, -4.5 + browTilt + browY);
+      ctx.stroke();
     }
 
     // Nez sculpté
     ctx.strokeStyle = skin.shadow;
     ctx.lineWidth = 1.6;
     ctx.beginPath();
-    ctx.moveTo(-0.5, -18);
-    ctx.lineTo(1.8, -10);
-    ctx.lineTo(-1.0, -9);
+    ctx.moveTo(-0.5, -2);
+    ctx.lineTo(1.8, 6);
+    ctx.lineTo(-1.0, 7);
     ctx.stroke();
 
-    // Bouche buste
+    // Bouche buste animée
     ctx.fillStyle = "#881337";
-    ctx.beginPath();
-    ctx.ellipse(0, -4, 3.5, 1.5, 0, 0, Math.PI * 2);
-    ctx.fill();
+    if (state.isTalking) {
+      const syllable = Math.sin(tick * 0.55) * Math.cos(tick * 0.28);
+      const openY = 1.2 + Math.max(0, syllable) * 3.2;
+      const openX = 3.5 - Math.max(0, syllable) * 0.5;
+      ctx.beginPath();
+      ctx.ellipse(0, 11, openX, openY, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#4c0519";
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    } else if (state.hasDebunk) {
+      // Sourire apaisé
+      ctx.strokeStyle = "#881337";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, 9, 4.5, 0.15 * Math.PI, 0.85 * Math.PI);
+      ctx.stroke();
+    } else if (state.hasRumor) {
+      // Bouche pincée anxieuse
+      ctx.strokeStyle = "#451a03";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(-3, 11);
+      ctx.lineTo(3, 11);
+      ctx.stroke();
+    } else if (state.isHesitating) {
+      // Smirk hésitant
+      ctx.strokeStyle = "#881337";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-2.5, 10.5);
+      ctx.lineTo(3.2, 12.5);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.ellipse(0, 11, 3.5, 1.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // Coiffure buste agrandie
     ctx.save();
     ctx.scale(1.9, 1.9);
-    ctx.translate(0, -6.5);
+    ctx.translate(0, -2.5);
     this.drawHairAndHeadwear(ctx, charDef);
     ctx.restore();
 
-    ctx.restore();
+    // Lunettes Élise en buste
+    if (charDef.id === "elise") {
+      ctx.strokeStyle = "#d97706";
+      ctx.lineWidth = 1.6;
+      ctx.strokeRect(-9, -4, 7, 6);
+      ctx.strokeRect(2, -4, 7, 6);
+      ctx.beginPath();
+      ctx.moveTo(-2, -1);
+      ctx.lineTo(2, -1);
+      ctx.stroke();
+    }
+
+    ctx.restore(); // Fin tête buste
+    ctx.restore(); // Fin buste global
   }
 }
 
