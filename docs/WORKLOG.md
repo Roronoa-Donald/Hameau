@@ -147,10 +147,16 @@ This document tracks all engineering actions, measurements, and commits in chron
     - Canvas mousemove displays pointer cursor and highlights adjacent network ties.
 - **Multi-Day Timeline & Replay Enhancement**:
   - Timeline slider updated to support 576 ticks (3 full simulation days).
-  - Added milestone markers for Day 1 R1 rumor, Day 2 R2 debunk, Day 3 R3 market opening, and Day 3 evening gazette.
-  - Multi-day clock display (`JOUR 1` to `JOUR 3`, 06:00 to 22:00 per day).
-  - Epidemic diffusion curve updated with R3 resolution curve in emerald green.
-  - Synchronized `viewer/sample_run.jsonl` with full 3-day 12,098-event run.
+### Bugfix: Resolved totalTicks ReferenceError in viewer/app.js (COMPLETED)
+- **Root Cause Analysis**:
+  - Captured runtime exception via Chrome DevTools Protocol (`ReferenceError: totalTicks is not defined at HameauViewer.drawRumorCurve`).
+  - `totalTicks` was accessed at line 611 before its declaration at line 615 in `drawRumorCurve()`.
+  - The resulting unhandled error in the initialization promise chain aborted automatic JSONL loading, leaving UI counters at 0.
+- **Fix**:
+  - Moved `const totalTicks = Math.max(1, this.maxTick || 576);` to the top of `drawRumorCurve()`.
+  - Verified in Google Chrome headless via CDP that `sample_run.jsonl` (12,098 events) loads immediately and increments ticks/counters as expected.
+  - Confirmed switching between Map and Network views works without error.
+  - Verification suite `scripts/verify.sh` passes 100%.
 
 
 

@@ -593,6 +593,7 @@ class HameauViewer {
     const padBottom = 20;
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
+    const totalTicks = Math.max(1, this.maxTick || 576);
 
     ctx.strokeStyle = "#334155";
     ctx.lineWidth = 1;
