@@ -82,13 +82,13 @@
         </div>
 
         <div class="timeline-slider-container">
-          <input type="range" id="timeline-slider" min="0" max="192" value="0" step="1">
+          <input type="range" id="timeline-slider" min="0" max="576" value="0" step="1">
           <div class="timeline-ticks-labels">
-            <span>06h00 (Départ)</span>
-            <span>08h00 (Rumeur R1)</span>
-            <span>12h00</span>
-            <span>18h00</span>
-            <span>22h00 (Gazette)</span>
+            <span>J1 06h (Départ)</span>
+            <span>J1 08h (R1 Rumeur)</span>
+            <span>J2 10h (R2 Démenti)</span>
+            <span>J3 07h (R3 Grand Marché)</span>
+            <span>J3 22h (Résolution Finale)</span>
           </div>
         </div>
 
@@ -101,10 +101,14 @@
         </div>
       </div>
 
-      <!-- Canvas Carte du Village -->
+      <!-- Canvas Carte du Village & Graphe Social -->
       <div class="canvas-wrapper">
+        <div class="canvas-view-toggle">
+          <button id="btn-view-map" class="view-toggle-btn active" data-mode="map">🗺️ Plan du Village</button>
+          <button id="btn-view-network" class="view-toggle-btn" data-mode="network">🕸️ Réseau Social & Confiance</button>
+        </div>
         <canvas id="village-canvas" width="1000" height="640"></canvas>
-        <div class="map-overlay-legend">
+        <div class="map-overlay-legend" id="canvas-legend">
           <span class="legend-item"><span class="dot dot-habitant"></span> Habitant</span>
           <span class="legend-item"><span class="dot dot-rumeur"></span> Porte la Rumeur R1</span>
           <span class="legend-item"><span class="dot dot-dementi"></span> A reçu le Démenti R2</span>
@@ -183,6 +187,7 @@
             <div id="inspector-beliefs-list" class="beliefs-list">
               <div class="belief-pill">R1 (Fermeture marché) : <span id="r1-cred">Non informé</span></div>
               <div class="belief-pill">R2 (Démenti officiel) : <span id="r2-cred">Non informé</span></div>
+              <div class="belief-pill">R3 (Marché ouvert) : <span id="r3-cred">Non informé</span></div>
             </div>
           </div>
 

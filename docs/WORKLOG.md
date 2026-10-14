@@ -127,8 +127,30 @@ This document tracks all engineering actions, measurements, and commits in chron
     - Dissipates panic stockpiling (`did_stock_provisions = False`) when market opening is confirmed.
     - Preserves maximum established credibility for known facts against noisy hearsay degradation.
 - **Verification & Testing**:
-  - Added `test_three_day_simulation_and_r3_climax` in `tests/test_multi_day.py` verifying full 3-day run with >100 decisions per day and peaceful market resolution.
-  - Updated `scripts/verify.sh` to enforce 3-day simulation and log completeness across Days 1, 2, and 3.
-  - All tests and verification checks PASS.
+### Step E2: Interactive Social Network Graph & Trust Diffusion Visualization (COMPLETED)
+- **Interactive Social Network View on Canvas (`viewer/app.js`, `viewer/index.html`, `viewer/styles.css`)**:
+  - Implemented dynamic view mode toggle above Canvas: `🗺️ Plan du Village` ⟷ `🕸️ Réseau Social & Confiance`.
+  - Defined 14 canonical social relationships and relationship labels (`SOCIAL_RELATIONSHIPS`) reflecting village connections (trade partners, civic elders, apprentice links, neighborhood friendship).
+  - Designed high-fidelity dark canvas visualization with radial gradient depth, concentric orbital rings, and central town square civic hub.
+  - Interactive edge rendering:
+    - Focuses and highlights edges connected to hovered or selected villagers (`rgba(56, 189, 248, 0.85)`).
+    - Renders floating relationship pill badge (`Partenaires de marché`, `Conseil des aînés`, etc.) on active edges.
+  - Live animated transmission pulses:
+    - Glowing electric particles travel along edges between communicating villagers in real time.
+    - Fact-coded colors: `#f43f5e` (R1 rumor panic), `#06b6d4` (R2 mayoral debunk), `#10b981` (R3 market opening resolution).
+  - Node rendering with dynamic belief states:
+    - Halos: Emerald `#10b981` (R3 open market), Cyan `#06b6d4` (R2 debunk), Rose `#f43f5e` (R1 panic), Slate `#64748b` (neutral).
+    - Rotating dashed amber outer ring (`#f59e0b`) when an agent is in hoarding panic (`didStock`).
+    - Centered avatar emojis, bold names, and live belief badges (`Marché Ouvert 100%`, `Démenti 99%`, `Rumeur 85%`, `Serein`).
+  - Bi-directional interactivity:
+    - Canvas click and hover select agent in inspector panel (`selectedAgentId`).
+    - Canvas mousemove displays pointer cursor and highlights adjacent network ties.
+- **Multi-Day Timeline & Replay Enhancement**:
+  - Timeline slider updated to support 576 ticks (3 full simulation days).
+  - Added milestone markers for Day 1 R1 rumor, Day 2 R2 debunk, Day 3 R3 market opening, and Day 3 evening gazette.
+  - Multi-day clock display (`JOUR 1` to `JOUR 3`, 06:00 to 22:00 per day).
+  - Epidemic diffusion curve updated with R3 resolution curve in emerald green.
+  - Synchronized `viewer/sample_run.jsonl` with full 3-day 12,098-event run.
+
 
 
