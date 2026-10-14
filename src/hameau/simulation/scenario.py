@@ -12,6 +12,7 @@ class ScenarioManager:
     def __init__(self):
         self.r1_injected: bool = False
         self.r2_injected: bool = False
+        self.r3_injected: bool = False
 
     def check_injections(
         self,
@@ -104,5 +105,46 @@ class ScenarioManager:
                         },
                     )
                 )
+
+        # J3 - 07h00 (tick 12) : Ouverture officielle du Grand Marché du Samedi (Climax R3)
+        if day == 3 and tick == 12 and not self.r3_injected:
+            r3_text = "Le Grand Marché du Samedi est officiellement ouvert sur la place : les étals débordent de vivres et l'activité bat son plein."
+            for target_id in ("awa", "yao"):
+                target = agents.get(target_id)
+                if target:
+                    mem = MemoryRecord(
+                        id=f"mem_r3_{target_id}",
+                        agent_id=target_id,
+                        tick=global_tick,
+                        type="observation",
+                        text=r3_text,
+                        entities=["marche", "samedi", "place"],
+                        fact_id="R3_ouverture_marche",
+                        source_agent="marche",
+                        hop_count=0,
+                        importance=0.98,
+                        confidence=1.0,
+                        decision_author="scenario",
+                        last_accessed_tick=global_tick,
+                    )
+                    target.add_memory(mem)
+                    target.set_believed_fact("R3_ouverture_marche", 1.0)
+                    events.append(
+                        LogEvent(
+                            tick=tick,
+                            day=day,
+                            agent_id=target_id,
+                            event_type="rumor_hop",
+                            payload={
+                                "fact_id": "R3_ouverture_marche",
+                                "sender": "marche",
+                                "receiver": target_id,
+                                "hop_count": 0,
+                                "credibility": 1.0,
+                                "text": r3_text,
+                            },
+                        )
+                    )
+            self.r3_injected = True
 
         return events

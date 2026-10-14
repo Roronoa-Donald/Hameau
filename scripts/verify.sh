@@ -31,8 +31,8 @@ run_check "Unit Tests (pytest -m 'not defect_repro')" "uv run pytest -m 'not def
 # 2. Scan de secrets (git log et fichiers)
 run_check "Secret Scan" "! git log -p | grep -iE 'AKIA[0-9A-Z]{16}|aws_secret_access_key|BEGIN .*PRIVATE KEY' | grep -v 'AKIAEXAMPLE'"
 
-# 3. Exécution d'une simulation 2 jours en mock
-run_check "Simulation 2-Days Mock Run" "uv run hameau --days 2 --ticks-per-day 192 --mock-decider --config config.yaml"
+# 3. Exécution d'une simulation 3 jours en mock
+run_check "Simulation 3-Days Mock Run" "uv run hameau --days 3 --ticks-per-day 192 --mock-decider --config config.yaml"
 
 # 4. Complétude du journal (compteurs du bilan = lignes réelles)
 run_check "Log Completeness Audit" "python3 - << 'EOF'
@@ -46,10 +46,12 @@ lines = [json.loads(l) for l in log_path.read_text(encoding='utf-8').splitlines(
 decisions = [l for l in lines if l['event_type'] == 'decision']
 llm_calls = [l for l in lines if l['event_type'] in ('conversation_turn', 'llm_call', 'reflection', 'gazette')]
 
-# Vérifie que les jours 1 et 2 sont présents
+# Vérifie que les jours 1, 2 et 3 sont présents
 days_present = {l['day'] for l in lines if 'day' in l}
 print(f'Events: {len(lines)}, Decisions: {len(decisions)}, Days: {days_present}')
 assert 1 in days_present, 'Day 1 missing'
+assert 2 in days_present, 'Day 2 missing'
+assert 3 in days_present, 'Day 3 missing'
 EOF"
 
 # 5. Test de déterminisme (PYTHONHASHSEED)

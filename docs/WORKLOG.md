@@ -116,6 +116,19 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Authored comprehensive English README including architecture diagram, problem statement, MemoryGate HookProvider code, measured calibration & benchmark tables, quickstart guide, security practices, and repository layout.
 - **Architectural Decision Records (`docs/DECISIONS.md`)**:
   - Added DEC-004 through DEC-008 explaining the decoupled Decider/LLM pattern, MemoryGate as HookProvider, global tick clock, localhost serving, and SHA-256 determinism.
-- **Final Verification**:
-  - Executed `scripts/verify.sh` covering unit tests, secret scan, 2-day simulation run, log completeness audit, and determinism check (ALL CHECKS PASSED).
+### Step E1: 3-Day Simulation Expansion & Saturday Market Climax (COMPLETED)
+- **Multi-Day Expansion (3 Days / 576 Ticks)**:
+  - Updated default configuration in `config.yaml` to `simulation.days: 3` (576 ticks).
+  - Implemented Saturday morning climax event `R3_ouverture_marche` at Day 3 tick 12 (07:00) in `src/hameau/simulation/scenario.py`.
+  - Delivered direct observation of open market stalls to key villagers Awa and Yao (`credibility: 1.0`, `confidence: 1.0`).
+- **Belief State Dynamics Hardening**:
+  - Enhanced `set_believed_fact()` in `src/hameau/models/agent.py`:
+    - Prevents old closure rumors (`R1_fermeture_marche`) from triggering panic stockpiling when the market is confirmed open (`R3_ouverture_marche >= 0.55`).
+    - Dissipates panic stockpiling (`did_stock_provisions = False`) when market opening is confirmed.
+    - Preserves maximum established credibility for known facts against noisy hearsay degradation.
+- **Verification & Testing**:
+  - Added `test_three_day_simulation_and_r3_climax` in `tests/test_multi_day.py` verifying full 3-day run with >100 decisions per day and peaceful market resolution.
+  - Updated `scripts/verify.sh` to enforce 3-day simulation and log completeness across Days 1, 2, and 3.
+  - All tests and verification checks PASS.
+
 

@@ -72,3 +72,51 @@ def test_memory_gate_recency_across_days():
     recency = scored[0].recency_score
     # exp(-ln(2) * 192 / 192) = 0.50
     assert 0.45 <= recency <= 0.55, f"Expected recency ~0.50 after 1 half-life, got {recency}"
+
+
+def test_three_day_simulation_and_r3_climax(tmp_path):
+    """Verify 3-day simulation execution and Day 3 market opening resolution (R3)."""
+    cfg = yaml.safe_load(open("config.yaml"))
+    cfg["logging"]["runs_dir"] = str(tmp_path)
+    cfg["logging"]["log_filename"] = "three_day_test.jsonl"
+
+    dec = DeciderClient(mock=True, seed=42)
+    br = BedrockClient(cassettes_dir="cassettes", use_cassettes=True, seed=42)
+    engine = SimulationEngine(
+        build_default_village(),
+        build_canonical_agents(),
+        dec,
+        br,
+        MemoryGate(dec),
+        ScenarioManager(),
+        cfg,
+    )
+
+    summary = engine.run(days=3, ticks_per_day=192)
+
+    log_file = tmp_path / "three_day_test.jsonl"
+    lines = [json.loads(l) for l in log_file.read_text().splitlines() if l.strip()]
+
+    decisions_d1 = [l for l in lines if l.get("event_type") == "decision" and l.get("day") == 1]
+    decisions_d2 = [l for l in lines if l.get("event_type") == "decision" and l.get("day") == 2]
+    decisions_d3 = [l for l in lines if l.get("event_type") == "decision" and l.get("day") == 3]
+
+    assert len(decisions_d1) >= 100, f"Expected >=100 Day 1 decisions, got {len(decisions_d1)}"
+    assert len(decisions_d2) >= 100, f"Expected >=100 Day 2 decisions, got {len(decisions_d2)}"
+    assert len(decisions_d3) >= 100, f"Expected >=100 Day 3 decisions, got {len(decisions_d3)}"
+
+    # Check that R1, R2, and R3 are all injected in log
+    r_events = [l for l in lines if l.get("event_type") == "rumor_hop"]
+    facts = {e.get("payload", {}).get("fact_id") for e in r_events}
+    assert "R1_fermeture_marche" in facts, "R1 missing from rumor hops"
+    assert "R2_dementi_maire" in facts, "R2 missing from rumor hops"
+    assert "R3_ouverture_marche" in facts, "R3 missing from rumor hops"
+
+    # Verify agent state at end of Day 3
+    awa = engine.agents["awa"]
+    yao = engine.agents["yao"]
+    assert "R3_ouverture_marche" in awa.persona.believed_facts
+    assert "R3_ouverture_marche" in yao.persona.believed_facts
+    assert not awa.persona.did_stock_provisions
+    assert not yao.persona.did_stock_provisions
+

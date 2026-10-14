@@ -7,7 +7,7 @@ simulation:
   ticks_per_day: 192       # 6h00 à 22h00, 5 min / tick
   start_hour: 6
   end_hour: 22
-  days: 2
+  days: 3
   num_agents: 12           # 12 agents fondateurs pour le scénario MVP de référence
   time_step_minutes: 5
 

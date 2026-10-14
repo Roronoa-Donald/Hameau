@@ -45,15 +45,24 @@ class Agent:
         return self.persona.believed_facts.get(fact_id)
 
     def set_believed_fact(self, fact_id: str, credibility: float) -> None:
+        # On conserve la certitude la plus forte acquise pour un même fait
+        prev_cred = self.persona.believed_facts.get(fact_id, 0.0)
+        credibility = max(prev_cred, credibility)
         self.persona.believed_facts[fact_id] = credibility
+
+        r2_cred = self.persona.believed_facts.get("R2_dementi_maire", 0.0)
+        r3_cred = self.persona.believed_facts.get("R3_ouverture_marche", 0.0)
+
         # Déclenchement du changement de comportement (FR-15)
         if fact_id == "R1_fermeture_marche" and credibility >= 0.55:
-            # Si le démenti R2 n'est pas plus fort
-            r2_cred = self.persona.believed_facts.get("R2_dementi_maire", 0.0)
-            if credibility > r2_cred:
+            # Si le marché est ouvert (R3 >= 0.55) ou le démenti (R2 >= 0.60) prévaut, pas de panique
+            if r3_cred < 0.55 and credibility > r2_cred:
                 self.persona.did_stock_provisions = True
         elif fact_id == "R2_dementi_maire" and credibility >= 0.60:
             # Le démenti apaise l'inquiétude
+            self.persona.did_stock_provisions = False
+        elif fact_id == "R3_ouverture_marche" and credibility >= 0.55:
+            # L'ouverture effective du marché dissipe toute crainte de pénurie
             self.persona.did_stock_provisions = False
 
     def is_available(self) -> bool:
