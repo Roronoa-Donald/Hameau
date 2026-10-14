@@ -32,14 +32,14 @@ run_check "Unit Tests (pytest -m 'not defect_repro')" "uv run pytest -m 'not def
 run_check "Secret Scan" "! git log -p | grep -iE 'AKIA[0-9A-Z]{16}|aws_secret_access_key|BEGIN .*PRIVATE KEY' | grep -v 'AKIAEXAMPLE'"
 
 # 3. Exécution d'une simulation 3 jours en mock
-run_check "Simulation 3-Days Mock Run" "uv run hameau --days 3 --ticks-per-day 192 --mock-decider --config config.yaml"
+run_check "Simulation 3-Days Mock Run" "uv run hameau --days 3 --ticks-per-day 192 --mock-decider --config config.yaml --output runs/verify_mock_run.jsonl"
 
 # 4. Complétude du journal (compteurs du bilan = lignes réelles)
 run_check "Log Completeness Audit" "python3 - << 'EOF'
 import json
 from pathlib import Path
 
-log_path = Path('runs/hameau_run.jsonl')
+log_path = Path('runs/verify_mock_run.jsonl')
 assert log_path.exists(), 'Log file does not exist'
 
 lines = [json.loads(l) for l in log_path.read_text(encoding='utf-8').splitlines() if l.strip()]

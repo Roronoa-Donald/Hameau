@@ -158,5 +158,22 @@ This document tracks all engineering actions, measurements, and commits in chron
   - Confirmed switching between Map and Network views works without error.
   - Verification suite `scripts/verify.sh` passes 100%.
 
-
-
+### Live GPU & AWS Bedrock Run (100% Real Weights & Live API) (COMPLETED)
+- **Live GPU Execution (Strands Decider 2B)**:
+  - Executed on NVIDIA GeForce RTX 3050 Laptop GPU (CUDA) using model `StrandsAgents/strands-decider-2B-hobson-v21` (~3.86 GB VRAM).
+  - 152 real decision forward passes across D1 (action selection), D4 (dialogue engagement), and D5 (rumor transmission).
+  - Real decision latencies measured: ~960ms (5-choice actions) and ~450ms (binary decisions).
+- **Live AWS Bedrock Execution (Amazon Nova Micro)**:
+  - Executed live against `amazon.nova-micro-v1:0` in `us-east-1` with `--no-cassettes` (0 cached calls).
+  - 11 live Bedrock API calls for dynamic dialogue generation and daily Gazette editorial.
+  - Real AWS cost incurred: $0.00018 (0.018 cents).
+  - Real Decider-to-LLM ratio: 13.8 : 1 over 35 ticks.
+- **CLI & Simulation Enhancements**:
+  - Added `--output` flag to `src/hameau/cli.py` and `src/hameau/simulation/engine.py` to allow custom JSONL run output paths.
+  - Isolated `scripts/verify.sh` mock run output to `runs/verify_mock_run.jsonl` to protect live simulation run logs.
+- **Viewer Live Run Integration**:
+  - Added "⚡ Run GPU/AWS" button to `viewer/index.html` to instantly toggle between the 3-day benchmark (12,098 events) and live GPU/AWS runs (`viewer/live_run.jsonl`).
+  - Strengthened `viewer/app.js` DOM initialization to handle both `document.readyState === "loading"` and already-ready DOM states.
+  - Tested and verified in headless Google Chrome via Chrome DevTools Protocol: 174 live events loaded and playing seamlessly.
+- **Verification**:
+  - `bash scripts/verify.sh` passes 100% (unit tests, secret scan, mock run, log audit, determinism).

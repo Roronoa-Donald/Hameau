@@ -42,6 +42,7 @@ htmlcov/
 *.log
 runs/*.jsonl
 runs/*.csv
+viewer/live_run.jsonl
 cassettes/*.json
 !cassettes/reference_*.json
 

@@ -65,6 +65,7 @@ def main():
     parser.add_argument("--ticks-per-day", type=int, default=None, help="Nombre de ticks par jour (défaut 192)")
     parser.add_argument("--mock-decider", action="store_true", help="Utiliser le mock déterministe au lieu du GPU local")
     parser.add_argument("--no-cassettes", action="store_true", help="Désactiver le cache des cassettes Bedrock")
+    parser.add_argument("--output", type=str, default=None, help="Chemin du fichier de journalisation JSONL (ex: runs/real_gpu_run.jsonl)")
     parser.add_argument("--serve", action="store_true", help="Lancer un serveur web local pour le visualiseur")
     parser.add_argument("--port", type=int, default=8000, help="Port pour le serveur web local (défaut 8000)")
 
@@ -90,6 +91,9 @@ def main():
 
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
+
+    if args.output:
+        cfg.setdefault("logging", {})["log_filename"] = args.output
 
     days = args.days or cfg.get("simulation", {}).get("days", 1)
     ticks_per_day = args.ticks_per_day or cfg.get("simulation", {}).get("ticks_per_day", 192)

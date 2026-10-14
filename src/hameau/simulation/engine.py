@@ -60,7 +60,13 @@ class SimulationEngine:
         self.log_events: List[LogEvent] = []
         self.runs_dir = Path(config.get("logging", {}).get("runs_dir", "runs"))
         self.runs_dir.mkdir(parents=True, exist_ok=True)
-        self.log_filepath = self.runs_dir / config.get("logging", {}).get("log_filename", "hameau_run.jsonl")
+        raw_log = config.get("logging", {}).get("log_filename", "hameau_run.jsonl")
+        p = Path(raw_log)
+        if p.is_absolute() or len(p.parts) > 1:
+            self.log_filepath = p
+        else:
+            self.log_filepath = self.runs_dir / p
+        self.log_filepath.parent.mkdir(parents=True, exist_ok=True)
 
         # Résumé quotidien pour la Gazette
         self.daily_events_summary: List[str] = []

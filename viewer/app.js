@@ -233,13 +233,32 @@ class HameauViewer {
       }
     });
 
-    // Bouton rejeu échantillon
-    document.getElementById("btn-load-sample").addEventListener("click", () => {
-      fetch("../runs/hameau_run.jsonl")
-        .then((r) => r.text())
-        .then((txt) => this.loadJSONLContent(txt))
-        .catch(() => this.generateSyntheticRun());
-    });
+    // Boutons rejeu échantillon et run live
+    const btnSample = document.getElementById("btn-load-sample");
+    if (btnSample) {
+      btnSample.addEventListener("click", () => {
+        fetch("sample_run.jsonl")
+          .then((r) => r.text())
+          .then((txt) => this.loadJSONLContent(txt))
+          .catch(() => this.generateSyntheticRun());
+      });
+    }
+
+    const btnLive = document.getElementById("btn-load-live");
+    if (btnLive) {
+      btnLive.addEventListener("click", () => {
+        fetch("live_run.jsonl")
+          .then((r) => {
+            if (!r.ok) throw new Error("live_run.jsonl non trouvé");
+            return r.text();
+          })
+          .then((txt) => this.loadJSONLContent(txt))
+          .catch((err) => {
+            console.warn(err);
+            alert("Fichier live_run.jsonl non disponible. Lancez d'abord une simulation réelle.");
+          });
+      });
+    }
 
     // Raccourcis clavier (Espace, Flèches)
     window.addEventListener("keydown", (e) => {
@@ -1233,15 +1252,22 @@ class HameauViewer {
   }
 }
 
-// Initialisation au chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
+// Initialisation au chargement du DOM (robuste à readyState)
+function initHameau() {
+  if (window.hameauViewer) return;
   window.hameauViewer = new HameauViewer();
-  // Chargement automatique du run s'il est présent
-  fetch("sample_run.jsonl")
+  // Chargement automatique : live_run.jsonl en priorité, puis sample_run.jsonl
+  fetch("live_run.jsonl")
     .then((r) => {
       if (r.ok) return r.text();
-      return fetch("../runs/hameau_run.jsonl").then((r2) => r2.text());
+      return fetch("sample_run.jsonl").then((r2) => r2.text());
     })
     .then((txt) => window.hameauViewer.loadJSONLContent(txt))
     .catch(() => console.log("Prêt pour chargement JSONL"));
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initHameau);
+} else {
+  initHameau();
+}
