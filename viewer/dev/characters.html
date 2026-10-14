@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAMEAU — Planche-Contact des 12 Habitants 2D (Phase P1 Validation)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-rgb: 56, 189, 248;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #f43f5e;
+      --font-ui: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    header {
+      max-width: 1400px;
+      margin: 0 auto 2rem auto;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+    }
+
+    .badge-p1 {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 850px;
+      line-height: 1.5;
+    }
+
+    /* Barre d'outils interactive */
+    .controls-bar {
+      max-width: 1400px;
+      margin: 0 auto 2.5rem auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 0.5rem;
+    }
+
+    .btn-state {
+      background: #1e293b;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-state:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .btn-state.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* Grille des personnages */
+    .characters-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .char-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .char-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .char-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .char-title h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .char-role {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .char-age-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #1e293b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    .canvas-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 1.5rem 1rem;
+      background: radial-gradient(circle at center, #172033 0%, #0d131f 100%);
+      border-bottom: 1px solid var(--card-border);
+      min-height: 220px;
+    }
+
+    .preview-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .preview-col-label {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .char-canvas {
+      display: block;
+      image-rendering: auto;
+    }
+
+    .char-details {
+      padding: 1rem 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex-grow: 1;
+    }
+
+    .char-details strong {
+      color: var(--text);
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.25rem;
+    }
+
+    .color-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Section Portrait en Buste */
+    .bust-section {
+      max-width: 1400px;
+      margin: 4rem auto 2rem auto;
+      border-top: 1px solid var(--card-border);
+      padding-top: 2.5rem;
+    }
+
+    .bust-section h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .bust-section p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+
+    .busts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .bust-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .bust-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .bust-role {
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    footer {
+      max-width: 1400px;
+      margin: 4rem auto 1rem auto;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge-p1">Porte de Validation Visuelle (Phase P1)</div>
+    <h1>Planche-Contact des 12 Habitants du Hameau</h1>
+    <p class="subtitle">
+      Rendu procédural Canvas 2D haute définition : proportions humaines réalistes (~7 têtes), volumes sculptés par l'éclairage zénithal à 45°, anatomie articulée, palettes textiles identifiables et postures reflétant les croyances et comportements de la simulation.
+    </p>
+  </header>
+
+  <!-- Barre de commande des états de simulation -->
+  <section class="controls-bar">
+    <div class="filter-group">
+      <span class="filter-label">État de simulation :</span>
+      <button class="btn-state active" data-state="idle">🌿 Repos (Idle)</button>
+      <button class="btn-state" data-state="walk">🚶 Marche (Walk)</button>
+      <button class="btn-state" data-state="talk">💬 Parole (Talk)</button>
+      <button class="btn-state" data-state="rumor">⚡ Rumeur R1 (Inquiet)</button>
+      <button class="btn-state" data-state="debunk">🕊️ Démenti R2 (Apaisé)</button>
+      <button class="btn-state" data-state="stock">🧺 Stockage (Panier)</button>
+      <button class="btn-state" data-state="hesitate">❓ Doute (Zone Rouge)</button>
+      <button class="btn-state" data-state="night">🌙 Nuit (Sommeil)</button>
+    </div>
+
+    <div class="filter-group">
+      <button id="btn-toggle-anim" class="btn-state">⏸ Pause Animation</button>
+    </div>
+  </section>
+
+  <!-- Grille des 12 Habitants -->
+  <main class="characters-grid" id="characters-grid"></main>
+
+  <!-- Section Galerie des Bustes (Inspecteur d'Agent & Gazette) -->
+  <section class="bust-section">
+    <h2>Portraits en Buste — Inspecteur d'Agent & Gazette</h2>
+    <p>Rendu expressif haute fidélité utilisé pour le panneau d'inspection, le réseau social de confiance et la Une de La Gazette du Hameau.</p>
+    <div class="busts-row" id="busts-container"></div>
+  </section>
+
+  <footer>
+    <p>HAMEAU 2D Character Renderer &bull; Design System Impeccable &bull; Apache-2.0 &bull; 0 dépendance externe</p>
+  </footer>
+
+  <script src="character_renderer.js"></script>
+  <script>
+    const renderer = new CharacterRenderer2D();
+    const grid = document.getElementById("characters-grid");
+    const bustsRow = document.getElementById("busts-container");
+
+    let currentAnimState = {
+      tick: 0,
+      isWalking: false,
+      isTalking: false,
+      hasRumor: false,
+      hasDebunk: false,
+      didStock: false,
+      isHesitating: false,
+      isNight: false
+    };
+
+    let isPaused = false;
+    const canvases1x = [];
+    const canvases2x = [];
+    const canvases4x = [];
+    const bustCanvases = [];
+
+    // Construction de la grille pour chaque personnage
+    Object.values(HAMEAU_CHARACTERS).forEach(charDef => {
+      // 1. Carte Personnage en pied
+      const card = document.createElement("div");
+      card.className = "char-card";
+
+      card.innerHTML = `
+        <div class="char-header">
+          <div class="char-title">
+            <h2>${charDef.name}</h2>
+            <div class="char-role">${charDef.role}</div>
+          </div>
+          <div class="char-age-badge">${charDef.age} ans</div>
+        </div>
+        <div class="canvas-preview-row">
+          <div class="preview-col">
+            <span class="preview-col-label">1x (64px)</span>
+            <canvas class="char-canvas" width="64" height="84" data-id="${charDef.id}" data-scale="0.8"></canvas>
+          </div>
+          <div class="preview-col">
+            <span class="preview-col-label">2x (128px)</span>
+            <canvas class="char-canvas" width="96" height="120" data-id="${charDef.id}" data-scale="1.25"></canvas>
+          </div>
+          <div class="preview-col">
+            <span class="preview-col-label">4x (256px)</span>
+            <canvas class="char-canvas" width="130" height="160" data-id="${charDef.id}" data-scale="1.8"></canvas>
+          </div>
+        </div>
+        <div class="char-details">
+          <div><strong>Silhouette :</strong> ${charDef.build} &bull; ${charDef.gender === "f" ? "Femme" : "Homme"}</div>
+          <div><strong>Accessoire :</strong> ${charDef.accessory.replace(/_/g, " ")}</div>
+          <div class="color-swatches">
+            <div class="color-swatch" style="background:${charDef.skin.base};" title="Peau base"></div>
+            <div class="color-swatch" style="background:${charDef.palette.primary};" title="Vêtement primaire"></div>
+            <div class="color-swatch" style="background:${charDef.palette.secondary};" title="Vêtement secondaire"></div>
+            <div class="color-swatch" style="background:${charDef.hair.color};" title="Chevelure"></div>
+          </div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+
+      // Collecte des canvas pour boucle de rendu
+      const c1 = card.querySelector('canvas[data-scale="0.8"]');
+      const c2 = card.querySelector('canvas[data-scale="1.25"]');
+      const c4 = card.querySelector('canvas[data-scale="1.8"]');
+      canvases1x.push({ canvas: c1, ctx: c1.getContext("2d"), charDef, scale: 0.8, x: 32, y: 74 });
+      canvases2x.push({ canvas: c2, ctx: c2.getContext("2d"), charDef, scale: 1.25, x: 48, y: 108 });
+      canvases4x.push({ canvas: c4, ctx: c4.getContext("2d"), charDef, scale: 1.8, x: 65, y: 146 });
+
+      // 2. Carte Portrait en Buste
+      const bustCard = document.createElement("div");
+      bustCard.className = "bust-card";
+      bustCard.innerHTML = `
+        <canvas width="120" height="120" data-bust-id="${charDef.id}"></canvas>
+        <div class="bust-name">${charDef.name}</div>
+        <div class="bust-role">${charDef.role}</div>
+      `;
+      bustsRow.appendChild(bustCard);
+
+      const bc = bustCard.querySelector("canvas");
+      bustCanvases.push({ canvas: bc, ctx: bc.getContext("2d"), charDef, x: 60, y: 68, scale: 1.6 });
+    });
+
+    // Boucle d'animation à 60 FPS
+    function renderFrame() {
+      if (!isPaused) {
+        currentAnimState.tick++;
+      }
+
+      const allTargets = [...canvases1x, ...canvases2x, ...canvases4x];
+      allTargets.forEach(({ canvas, ctx, charDef, scale, x, y }) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        renderer.draw(ctx, charDef, currentAnimState, { scale, x, y, isPortrait: false });
+      });
+
+      bustCanvases.forEach(({ canvas, ctx, charDef, x, y, scale }) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Fond cercle subtil pour le buste
+        ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+        ctx.beginPath();
+        ctx.arc(60, 60, 56, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.2)";
+        ctx.stroke();
+
+        renderer.draw(ctx, charDef, currentAnimState, { scale, x, y, isPortrait: true });
+      });
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    renderFrame();
+
+    // Gestion des boutons d'état
+    document.querySelectorAll(".btn-state[data-state]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-state[data-state]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const st = btn.dataset.state;
+        currentAnimState = {
+          tick: currentAnimState.tick,
+          isWalking: st === "walk",
+          isTalking: st === "talk",
+          hasRumor: st === "rumor",
+          hasDebunk: st === "debunk",
+          didStock: st === "stock",
+          isHesitating: st === "hesitate",
+          isNight: st === "night"
+        };
+      });
+    });
+
+    // Bouton pause/reprise
+    const btnPause = document.getElementById("btn-toggle-anim");
+    btnPause.addEventListener("click", () => {
+      isPaused = !isPaused;
+      btnPause.textContent = isPaused ? "▶ Reprendre Animation" : "⏸ Pause Animation";
+      btnPause.classList.toggle("active", isPaused);
+    });
+  </script>
+</body>
+</html>

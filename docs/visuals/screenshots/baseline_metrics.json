@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-10-14T09:57:21.173Z",
+  "metrics": {
+    "meanFrameMs": 0.14,
+    "p50FrameMs": 0.1,
+    "p95FrameMs": 0.3,
+    "measuredFPS": 60.2
+  },
+  "screenshots": {
+    "before_1x": "docs/visuals/screenshots/before_1x.png",
+    "before_2x": "docs/visuals/screenshots/before_2x.png",
+    "before_market_crop_400": "docs/visuals/screenshots/before_market_crop_400.png"
+  }
+}
