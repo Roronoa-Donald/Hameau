@@ -8,3 +8,5 @@ Chaque statut `VERIFIED` doit impérativement provenir d'une entrée de ce regis
 | 2026-10-14 09:33 | Connectivité AWS Bedrock | `uv run python probe_bedrock.py` | `Statut: SUCCÈS, Latence: 1548.6ms, Coût: 0.0000080$` | VERIFIED |
 | 2026-10-14 10:18 | Cinématique 8 états | `node scripts/verify_animations.js` | `TOUS LES 8 ÉTATS SONT VIVANTS ET ANIMÉS DE FAÇON DISTINCTE (0 erreur console)` | VERIFIED |
 | 2026-10-14 10:19 | Non-régression projet | `bash scripts/verify.sh` | `OVERALL RESULT: ALL CHECKS PASSED` | VERIFIED |
+| 2026-10-14 11:47 | Intégration Tranches S1-S9 | `node scripts/verify_viewer_integration.js` | `Anti-collision >=36px, 60.3 FPS (16.59ms/frame), 0 erreur console` | VERIFIED |
+| 2026-10-14 11:47 | Non-régression finale | `bash scripts/verify.sh` | `OVERALL RESULT: ALL CHECKS PASSED` | VERIFIED |

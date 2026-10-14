@@ -107,6 +107,7 @@
         <div class="canvas-view-toggle">
           <button id="btn-view-map" class="view-toggle-btn active" data-mode="map">🗺️ Plan du Village</button>
           <button id="btn-view-network" class="view-toggle-btn" data-mode="network">🕸️ Réseau Social & Confiance</button>
+          <button id="btn-toggle-render-mode" class="view-toggle-btn active" data-render-mode="characters" title="Basculer entre Personnages Illustrés et Points Schématiques">🎭 Personnages 2D</button>
         </div>
         <canvas id="village-canvas" width="1000" height="640"></canvas>
         <div class="map-overlay-legend" id="canvas-legend">
@@ -161,7 +162,8 @@
 
         <div class="agent-card" id="agent-profile-card">
           <div class="agent-header">
-            <div class="agent-avatar" id="inspector-avatar">📦</div>
+            <canvas id="inspector-bust-canvas" width="56" height="56" class="agent-bust-canvas" title="Portrait en buste"></canvas>
+            <div class="agent-avatar" id="inspector-avatar" style="display: none;">📦</div>
             <div class="agent-title">
               <h2 id="inspector-name">Yao</h2>
               <p id="inspector-job">Livreur du marché &bull; 28 ans</p>
@@ -288,8 +290,13 @@
       <div class="tab-content" id="tab-gazette">
         <div class="gazette-newspaper">
           <div class="gazette-masthead">
-            <h1>LA GAZETTE DU HAMEAU</h1>
-            <p class="gazette-date" id="gazette-date">Édition Quotidienne &bull; Rédaction : Claire</p>
+            <div class="gazette-author-badge">
+              <canvas id="gazette-author-canvas" width="46" height="46" class="agent-bust-canvas" title="Claire, rédactrice"></canvas>
+              <div>
+                <h1>LA GAZETTE DU HAMEAU</h1>
+                <p class="gazette-date" id="gazette-date">Édition Quotidienne &bull; Rédaction : Claire</p>
+              </div>
+            </div>
           </div>
           <article class="gazette-body" id="gazette-content">
             <p class="gazette-empty">La Gazette paraît chaque soir à 22h00.</p>
@@ -299,6 +306,7 @@
     </aside>
   </main>
 
+  <script src="character_renderer.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

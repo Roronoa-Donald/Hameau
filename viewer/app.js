@@ -80,8 +80,11 @@ class HameauViewer {
     this.currentDay = 1;
 
     this.viewMode = "map"; // "map" | "network"
+    this.renderMode = "characters"; // "characters" | "dots"
+    this.charRenderer = typeof CharacterRenderer2D !== "undefined" ? new CharacterRenderer2D() : null;
     this.hoveredAgentId = null;
     this.networkNodePositions = {};
+    this.agentMapPositions = {};
 
     this.isPlaying = false;
     this.playbackSpeed = 1;
@@ -212,6 +215,7 @@ class HameauViewer {
     // Bascule de mode de vue (Plan du village vs Réseau social)
     document.getElementById("btn-view-map")?.addEventListener("click", () => this.setViewMode("map"));
     document.getElementById("btn-view-network")?.addEventListener("click", () => this.setViewMode("network"));
+    document.getElementById("btn-toggle-render-mode")?.addEventListener("click", () => this.toggleRenderMode());
 
     // Onglets
     document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -351,6 +355,7 @@ class HameauViewer {
         this.deciderLatencies.push(payload.latency_ms);
       }
       if (agent_id && this.agentsState[agent_id]) {
+        this.agentsState[agent_id].confidenceZone = payload.zone;
         this.decisionsHistory[agent_id].unshift({
           tick,
           decision: payload.decision,
@@ -375,15 +380,18 @@ class HameauViewer {
       this.totalCost += payload.cost_usd || 0.0;
 
       if (agent_id && this.agentsState[agent_id]) {
-        this.agentsState[agent_id].isTalking = true;
+        this.agentsState[agent_id].isTalking = isCurrentTick;
+        this.agentsState[agent_id].lastUtterance = payload.utterance;
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-talk", "Bedrock", `« ${payload.utterance} » (${payload.speaker})`);
       }
     } else if (event_type === "move") {
       if (agent_id && this.agentsState[agent_id]) {
-        this.agentsState[agent_id].prevLocation = payload.from;
-        this.agentsState[agent_id].location = payload.to;
+        const ag = this.agentsState[agent_id];
+        ag.prevLocation = payload.from || ag.location;
+        ag.location = payload.to;
+        ag.travelProgress = isCurrentTick ? 0.0 : 1.0;
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-move", "Déplacement", `${AGENTS_META[agent_id]?.name || agent_id} -> ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`);
@@ -784,6 +792,17 @@ class HameauViewer {
         }
       }
     } else {
+      // 1. Vérifier si un agent a été cliqué directement
+      for (const [id, pos] of Object.entries(this.agentMapPositions)) {
+        const d = Math.hypot(pos.x - canvasX, pos.y - canvasY);
+        if (d <= pos.radius + 6 * this.dpr) {
+          this.selectedAgentId = id;
+          if (this.agentSelect) this.agentSelect.value = id;
+          this.updateInspector();
+          return;
+        }
+      }
+
       const clickX = (e.clientX - rect.left) / rect.width;
       const clickY = (e.clientY - rect.top) / rect.height;
 
@@ -803,7 +822,7 @@ class HameauViewer {
         for (const [id, a] of Object.entries(this.agentsState)) {
           if (a.location === closestLoc.id) {
             this.selectedAgentId = id;
-            this.agentSelect.value = id;
+            if (this.agentSelect) this.agentSelect.value = id;
             this.updateInspector();
             break;
           }
@@ -831,8 +850,16 @@ class HameauViewer {
       this.hoveredAgentId = hovered;
       this.canvas.style.cursor = hovered ? "pointer" : "default";
     } else {
-      this.hoveredAgentId = null;
-      this.canvas.style.cursor = "default";
+      let hovered = null;
+      for (const [id, pos] of Object.entries(this.agentMapPositions)) {
+        const d = Math.hypot(pos.x - canvasX, pos.y - canvasY);
+        if (d <= pos.radius + 6 * this.dpr) {
+          hovered = id;
+          break;
+        }
+      }
+      this.hoveredAgentId = hovered;
+      this.canvas.style.cursor = hovered ? "pointer" : "default";
     }
   }
 
@@ -840,6 +867,16 @@ class HameauViewer {
     this.viewMode = mode;
     document.getElementById("btn-view-map")?.classList.toggle("active", mode === "map");
     document.getElementById("btn-view-network")?.classList.toggle("active", mode === "network");
+    this.updateCanvasLegend();
+  }
+
+  toggleRenderMode() {
+    this.renderMode = this.renderMode === "characters" ? "dots" : "characters";
+    const btn = document.getElementById("btn-toggle-render-mode");
+    if (btn) {
+      btn.textContent = this.renderMode === "characters" ? "🎭 Personnages 2D" : "⚪ Points Schématiques";
+      btn.classList.toggle("active", this.renderMode === "characters");
+    }
     this.updateCanvasLegend();
   }
 
@@ -855,6 +892,13 @@ class HameauViewer {
           { dot: "dot-dementi", label: "Démenti R2" },
           { dot: "dot-resolution", label: "Marché Ouvert R3" },
           { dot: "dot-stocking", label: "Cercle pointillé : Panique provisions" },
+        ]
+      : this.renderMode === "characters"
+      ? [
+          { dot: "dot-habitant", label: "Habitant Illustré 2D" },
+          { dot: "dot-rumeur", label: "Inquiétude R1 (Regard furtif)" },
+          { dot: "dot-dementi", label: "Soulagement R2 (Soupir apaisé)" },
+          { dot: "dot-stocking", label: "Stockage (Panier garni)" },
         ]
       : [
           { dot: "dot-habitant", label: "Habitant" },
@@ -879,6 +923,14 @@ class HameauViewer {
     const dt = (timestamp - this.lastFrameTime) / 1000.0;
     this.lastFrameTime = timestamp;
 
+    // Progression fluide des déplacements de marche
+    const travelSpeed = 1.35 * this.playbackSpeed;
+    for (const a of Object.values(this.agentsState)) {
+      if (a.travelProgress < 1.0) {
+        a.travelProgress = Math.min(1.0, a.travelProgress + (dt > 0 && dt < 0.2 ? dt : 0.016) * travelSpeed);
+      }
+    }
+
     if (this.isPlaying) {
       this.accumulatedTime += dt * this.playbackSpeed;
       const stepDuration = 0.4; // 400ms par tick à vitesse 1x
@@ -893,7 +945,79 @@ class HameauViewer {
     }
 
     this.renderCanvas();
+    this.renderInspectorBust();
+    this.renderGazetteBust();
     requestAnimationFrame(this.animate);
+  }
+
+  renderInspectorBust() {
+    const canvas = document.getElementById("inspector-bust-canvas");
+    if (!canvas || !this.charRenderer) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const charDef = HAMEAU_CHARACTERS[this.selectedAgentId] || HAMEAU_CHARACTERS["yao"];
+    const a = this.agentsState[this.selectedAgentId] || {};
+    const currentHour = 6 + Math.floor((this.currentTick % 192) / 8);
+    const isNight = currentHour >= 22 || currentHour < 6;
+
+    ctx.save();
+    // Fond camée subtil
+    ctx.fillStyle = "rgba(15, 23, 42, 0.6)";
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    this.charRenderer.draw(ctx, charDef, {
+      tick: this.currentTick,
+      isWalking: false,
+      isTalking: a.isTalking || false,
+      hasRumor: a.believedFacts && a.believedFacts["R1_fermeture_marche"] > 0,
+      hasDebunk: a.believedFacts && a.believedFacts["R2_dementi_maire"] > 0,
+      didStock: a.didStock || false,
+      isHesitating: a.confidenceZone === "red",
+      isNight
+    }, {
+      scale: 0.75,
+      x: canvas.width / 2,
+      y: canvas.height / 2 + 10,
+      isPortrait: true
+    });
+    ctx.restore();
+  }
+
+  renderGazetteBust() {
+    const canvas = document.getElementById("gazette-author-canvas");
+    if (!canvas || !this.charRenderer) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const charDef = HAMEAU_CHARACTERS["claire"];
+    ctx.save();
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    this.charRenderer.draw(ctx, charDef, {
+      tick: this.currentTick,
+      isWalking: false,
+      isTalking: true,
+      hasRumor: false,
+      hasDebunk: true,
+      didStock: false,
+      isHesitating: false,
+      isNight: false
+    }, {
+      scale: 0.62,
+      x: canvas.width / 2,
+      y: canvas.height / 2 + 8,
+      isPortrait: true
+    });
+    ctx.restore();
   }
 
   renderCanvas() {
@@ -972,57 +1096,252 @@ class HameauViewer {
       // Nom du lieu
       ctx.font = `600 ${10 * this.dpr}px var(--font-ui)`;
       ctx.fillStyle = "#cbd5e1";
-      ctx.fillText(loc.name, px, py + radius + 12 * this.dpr);
+      const nameY = this.renderMode === "characters" ? py - radius - 9 * this.dpr : py + radius + 12 * this.dpr;
+      ctx.fillText(loc.name, px, nameY);
     }
 
     // 4. Dessin des habitants
-    const agentsByLoc = {};
-    for (const [id, a] of Object.entries(this.agentsState)) {
-      agentsByLoc[a.location] = agentsByLoc[a.location] || [];
-      agentsByLoc[a.location].push(a);
+    if (this.renderMode === "dots" || !this.charRenderer) {
+      const agentsByLoc = {};
+      for (const [id, a] of Object.entries(this.agentsState)) {
+        agentsByLoc[a.location] = agentsByLoc[a.location] || [];
+        agentsByLoc[a.location].push(a);
+      }
+
+      for (const [locId, agents] of Object.entries(agentsByLoc)) {
+        const loc = VILLAGE_LOCATIONS[locId];
+        if (!loc) continue;
+
+        const basePx = loc.x * w;
+        const basePy = loc.y * h;
+
+        agents.forEach((a, i) => {
+          const angle = (i / Math.max(1, agents.length)) * Math.PI * 2;
+          const offset = agents.length > 1 ? 32 * this.dpr : 0;
+          const ax = basePx + Math.cos(angle) * offset;
+          const ay = basePy + Math.sin(angle) * offset;
+
+          this.agentMapPositions[a.id] = { x: ax, y: ay, radius: 14 * this.dpr };
+
+          const isSelected = a.id === this.selectedAgentId;
+          const hasRumor = a.believedFacts["R1_fermeture_marche"] > 0;
+          const hasDebunk = a.believedFacts["R2_dementi_maire"] > 0;
+          const hasOpen = a.believedFacts["R3_ouverture_marche"] > 0;
+
+          // Halo d'état
+          ctx.beginPath();
+          ctx.arc(ax, ay, (isSelected ? 14 : 10) * this.dpr, 0, Math.PI * 2);
+          ctx.fillStyle = hasOpen ? "#10b981" : hasDebunk ? "#06b6d4" : hasRumor ? "#f43f5e" : "#38bdf8";
+          ctx.fill();
+
+          if (isSelected) {
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3 * this.dpr;
+            ctx.stroke();
+          }
+
+          // Bulle de discussion si l'agent parle
+          if (a.isTalking) {
+            ctx.font = `${14 * this.dpr}px sans-serif`;
+            ctx.fillText("💬", ax, ay - 14 * this.dpr);
+          }
+
+          // Nom de l'agent
+          ctx.font = `700 ${9 * this.dpr}px var(--font-ui)`;
+          ctx.fillStyle = isSelected ? "#ffffff" : "#94a3b8";
+          ctx.fillText(a.name, ax, ay - 12 * this.dpr);
+        });
+      }
+      return;
     }
 
-    for (const [locId, agents] of Object.entries(agentsByLoc)) {
+    // --- Mode Personnages Illustrés 2D Haute Définition ---
+    const currentHour = 6 + Math.floor((this.currentTick % 192) / 8);
+    const isNight = currentHour >= 22 || currentHour < 6;
+
+    const stationaryByLoc = {};
+    const travelingAgents = [];
+
+    for (const [id, a] of Object.entries(this.agentsState)) {
+      if (a.travelProgress < 1.0 && a.prevLocation && a.prevLocation !== a.location) {
+        travelingAgents.push(a);
+      } else {
+        stationaryByLoc[a.location] = stationaryByLoc[a.location] || [];
+        stationaryByLoc[a.location].push(a);
+      }
+    }
+
+    // Rendu des agents en transit (marche le long du chemin)
+    travelingAgents.forEach((a) => {
+      const locFrom = VILLAGE_LOCATIONS[a.prevLocation] || VILLAGE_LOCATIONS[a.location];
+      const locTo = VILLAGE_LOCATIONS[a.location];
+      if (!locFrom || !locTo) return;
+
+      const t = Math.max(0, Math.min(1, a.travelProgress));
+      const s = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      const x1 = locFrom.x * w;
+      const y1 = locFrom.y * h + 24 * this.dpr;
+      const x2 = locTo.x * w;
+      const y2 = locTo.y * h + 24 * this.dpr;
+
+      const arcH = -18 * this.dpr * Math.sin(t * Math.PI);
+      const ax = x1 + (x2 - x1) * s;
+      const ay = y1 + (y2 - y1) * s + arcH;
+      const facing = (x2 - x1) >= 0 ? 1 : -1;
+
+      this.drawMapCharacter(ctx, a, ax, ay, facing, true, isNight);
+    });
+
+    // Rendu des agents stationnaires avec disposition anti-collision en arc étagé
+    for (const [locId, agents] of Object.entries(stationaryByLoc)) {
       const loc = VILLAGE_LOCATIONS[locId];
       if (!loc) continue;
 
       const basePx = loc.x * w;
       const basePy = loc.y * h;
+      const radius = (loc.category === "residence" ? 18 : 26) * this.dpr;
+      const K = agents.length;
+
+      // Tri déterministe pour éviter tout sautillement
+      agents.sort((x, y) => x.id.localeCompare(y.id));
 
       agents.forEach((a, i) => {
-        const angle = (i / Math.max(1, agents.length)) * Math.PI * 2;
-        const offset = agents.length > 1 ? 32 * this.dpr : 0;
-        const ax = basePx + Math.cos(angle) * offset;
-        const ay = basePy + Math.sin(angle) * offset;
-
-        const isSelected = a.id === this.selectedAgentId;
-        const hasRumor = a.believedFacts["R1_fermeture_marche"] > 0;
-        const hasDebunk = a.believedFacts["R2_dementi_maire"] > 0;
-        const hasOpen = a.believedFacts["R3_ouverture_marche"] > 0;
-
-        // Halo d'état
-        ctx.beginPath();
-        ctx.arc(ax, ay, (isSelected ? 14 : 10) * this.dpr, 0, Math.PI * 2);
-        ctx.fillStyle = hasOpen ? "#10b981" : hasDebunk ? "#06b6d4" : hasRumor ? "#f43f5e" : "#38bdf8";
-        ctx.fill();
-
-        if (isSelected) {
-          ctx.strokeStyle = "#ffffff";
-          ctx.lineWidth = 3 * this.dpr;
-          ctx.stroke();
+        let ax, ay;
+        if (K === 1) {
+          ax = basePx;
+          ay = basePy + radius + 32 * this.dpr;
+        } else {
+          const spreadX = Math.min(36 * this.dpr, (130 * this.dpr) / K);
+          const offsetX = (i - (K - 1) / 2) * spreadX;
+          const arcDroop = Math.abs(i - (K - 1) / 2) * 5 * this.dpr;
+          ax = basePx + offsetX;
+          ay = basePy + radius + 30 * this.dpr + arcDroop;
         }
 
-        // Bulle de discussion si l'agent parle
-        if (a.isTalking) {
-          ctx.font = `${14 * this.dpr}px sans-serif`;
-          ctx.fillText("💬", ax, ay - 14 * this.dpr);
-        }
-
-        // Nom de l'agent
-        ctx.font = `700 ${9 * this.dpr}px var(--font-ui)`;
-        ctx.fillStyle = isSelected ? "#ffffff" : "#94a3b8";
-        ctx.fillText(a.name, ax, ay - 12 * this.dpr);
+        this.drawMapCharacter(ctx, a, ax, ay, 1, false, isNight);
       });
+    }
+  }
+
+  drawMapCharacter(ctx, a, ax, ay, facing, isWalking, isNight) {
+    this.agentMapPositions[a.id] = { x: ax, y: ay, radius: 20 * this.dpr };
+
+    const isSelected = a.id === this.selectedAgentId;
+    const isHovered = a.id === this.hoveredAgentId;
+    const hasRumor = a.believedFacts && a.believedFacts["R1_fermeture_marche"] > 0;
+    const hasDebunk = a.believedFacts && a.believedFacts["R2_dementi_maire"] > 0;
+    const didStock = a.didStock || (a.inventory && a.inventory["farine"] > 2);
+    const isHesitating = a.confidenceZone === "red";
+    const isTalking = a.isTalking;
+
+    // 1. Halo d'ambiance / croyance
+    if (hasRumor || hasDebunk || didStock) {
+      ctx.save();
+      const haloColor = hasDebunk ? "rgba(6, 182, 212, 0.40)" : hasRumor ? "rgba(244, 63, 94, 0.40)" : "rgba(245, 158, 11, 0.40)";
+      const hGrad = ctx.createRadialGradient(ax, ay, 2 * this.dpr, ax, ay, 22 * this.dpr);
+      hGrad.addColorStop(0, haloColor);
+      hGrad.addColorStop(0.65, haloColor.replace("0.40", "0.12"));
+      hGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = hGrad;
+      ctx.beginPath();
+      ctx.ellipse(ax, ay, 24 * this.dpr, 9 * this.dpr, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 2. Anneau de sélection
+    if (isSelected || isHovered) {
+      ctx.save();
+      ctx.strokeStyle = isSelected ? "#38bdf8" : "#f59e0b";
+      ctx.lineWidth = (isSelected ? 2.5 : 1.5) * this.dpr;
+      ctx.beginPath();
+      ctx.ellipse(ax, ay, 18 * this.dpr, 7 * this.dpr, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. Dessin du personnage vectoriel
+    ctx.save();
+    ctx.translate(ax, ay);
+    if (facing === -1) {
+      ctx.scale(-1, 1);
+    }
+    const charDef = HAMEAU_CHARACTERS[a.id] || HAMEAU_CHARACTERS["yao"];
+    this.charRenderer.draw(ctx, charDef, {
+      tick: this.currentTick,
+      isWalking,
+      isTalking,
+      hasRumor,
+      hasDebunk,
+      didStock,
+      isHesitating,
+      isNight
+    }, {
+      scale: 0.68 * this.dpr,
+      x: 0,
+      y: 0,
+      isPortrait: false
+    });
+    ctx.restore();
+
+    // 4. Étiquette du nom (sous les pieds)
+    ctx.save();
+    ctx.font = `700 ${8.5 * this.dpr}px var(--font-ui)`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    const nameText = a.name;
+    const metrics = ctx.measureText(nameText);
+    const padX = 4 * this.dpr;
+    const tagH = 13 * this.dpr;
+    ctx.fillStyle = isSelected ? "rgba(56, 189, 248, 0.25)" : "rgba(15, 23, 42, 0.85)";
+    ctx.strokeStyle = isSelected ? "#38bdf8" : "rgba(255, 255, 255, 0.12)";
+    ctx.lineWidth = 1 * this.dpr;
+    ctx.beginPath();
+    ctx.roundRect(ax - metrics.width / 2 - padX, ay + 6 * this.dpr, metrics.width + padX * 2, tagH, 3 * this.dpr);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = isSelected ? "#ffffff" : "#cbd5e1";
+    ctx.fillText(nameText, ax, ay + 7 * this.dpr);
+    ctx.restore();
+
+    // 5. Bulle de dialogue éditoriale si l'agent parle
+    if (isTalking) {
+      const bubbleText = a.lastUtterance
+        ? (a.lastUtterance.length > 38 ? `« ${a.lastUtterance.slice(0, 36)}… »` : `« ${a.lastUtterance} »`)
+        : "« Bonjour ! »";
+      const bx = ax;
+      const by = ay - 68 * this.dpr;
+
+      ctx.save();
+      ctx.font = `600 ${9 * this.dpr}px var(--font-ui)`;
+      const textW = ctx.measureText(bubbleText).width;
+      const bw = Math.max(68 * this.dpr, textW + 16 * this.dpr);
+      const bh = 22 * this.dpr;
+
+      ctx.fillStyle = "#fffbeb";
+      ctx.strokeStyle = "#d97706";
+      ctx.lineWidth = 1.2 * this.dpr;
+      ctx.beginPath();
+      ctx.roundRect(bx - bw / 2, by - bh, bw, bh, 5 * this.dpr);
+      ctx.fill();
+      ctx.stroke();
+
+      // Queue triangulaire
+      ctx.fillStyle = "#fffbeb";
+      ctx.beginPath();
+      ctx.moveTo(bx - 4 * this.dpr, by);
+      ctx.lineTo(bx, by + 6 * this.dpr);
+      ctx.lineTo(bx + 4 * this.dpr, by);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#78350f";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(bubbleText, bx, by - bh / 2);
+      ctx.restore();
     }
   }
 

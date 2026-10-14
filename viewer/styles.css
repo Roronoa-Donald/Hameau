@@ -568,6 +568,16 @@ body {
   border-radius: 50%;
 }
 
+.agent-bust-canvas {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  background: var(--bg-surface-elevated);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
 .agent-title h2 {
   font-size: 1.15rem;
   font-weight: 700;
@@ -717,6 +727,13 @@ body {
   border-bottom: 2px solid #1c1917;
   padding-bottom: 0.75rem;
   margin-bottom: 1rem;
+}
+
+.gazette-author-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
 }
 
 .gazette-masthead h1 {
