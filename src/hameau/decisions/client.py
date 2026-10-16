@@ -71,6 +71,8 @@ class DeciderClient:
 
             try:
                 self._engine = load_engine(self.checkpoint, device=target_device)
+                if hasattr(self._engine, "cfg"):
+                    self._engine.cfg.max_batch = 4
                 self.device = target_device
             except Exception as e:
                 # Jamais de repli silencieux vers le mock : lever une erreur explicite
@@ -97,6 +99,8 @@ class DeciderClient:
             input_tokens = len(str(state).split()) + sum(len(str(q).split()) for q in questions.values())
         else:
             response: SystemOneResponse = self._engine.ask(state, questions)
+            if self.device == "cuda" and torch.cuda.is_available():
+                torch.cuda.empty_cache()
             latency_ms = round((time.perf_counter() - t_start) * 1000, 2)
             input_tokens = response.usage.input_tokens
             results = {}

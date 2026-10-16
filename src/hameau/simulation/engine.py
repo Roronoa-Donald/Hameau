@@ -442,7 +442,7 @@ class SimulationEngine:
 
             # D3 & D5 : Scoring des souvenirs du speaker via MemoryGate
             cands_speaker = [
-                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
+                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id, m.source_agent, m.hop_count)
                 for m in speaker.memories
             ]
             speaker_top_mems = self.memory_gate.score_and_rank(
@@ -453,9 +453,11 @@ class SimulationEngine:
             )
 
             # D5 — ShareScorer : choisir le souvenir à raconter parmi les top souvenirs MemoryGate
-            d5_candidates = [m.candidate for m in speaker_top_mems] if speaker_top_mems else (
+            # Ne pas re-raconter à l'interlocuteur ce qu'il nous a lui-même rapporté
+            raw_cands = [m.candidate for m in speaker_top_mems] if speaker_top_mems else (
                 cands_speaker[-5:] if cands_speaker else []
             )
+            d5_candidates = [c for c in raw_cands if getattr(c, "source", None) != listener.persona.id] or raw_cands
 
             shared_memory: Optional[MemoryRecord] = None
             if d5_candidates:
@@ -644,13 +646,18 @@ class SimulationEngine:
                     effective_choice=imp_score,
                 )
 
-                # Nouveau souvenir chez le listener
+                # Nouveau souvenir chez le listener (dé-imbrication pour éviter l'explosion de tokens)
+                clean_text = shared_memory.text
+                while "m'a dit : « " in clean_text and clean_text.endswith(" »"):
+                    start_idx = clean_text.find("m'a dit : « ") + len("m'a dit : « ")
+                    clean_text = clean_text[start_idx:-2].strip()
+
                 new_mem = MemoryRecord(
                     id=f"mem_hear_{listener.persona.id}_{global_tick}",
                     agent_id=listener.persona.id,
                     tick=global_tick,
                     type="hearsay",
-                    text=f"{speaker.persona.name} m'a dit : « {shared_memory.text} »",
+                    text=f"{speaker.persona.name} m'a dit : « {clean_text} »",
                     entities=list(set(shared_memory.entities + [speaker.persona.id])),
                     fact_id=shared_memory.fact_id,
                     source_agent=speaker.persona.id,
@@ -724,11 +731,11 @@ class SimulationEngine:
                 continue
 
             cands = [
-                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
+                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id, m.source_agent, m.hop_count)
                 for m in agent.memories
             ]
             top_mems = self.memory_gate.score_and_rank(
-                cands,
+                self.memory_gate.preselect(cands, global_tick, [agent.persona.home_id, agent.persona.id]),
                 global_tick,
                 "Bilan du soir",
                 on_decision=self._make_on_d3_decision(day, tick, global_tick, agent.persona.id),

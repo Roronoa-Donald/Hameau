@@ -82,13 +82,13 @@ class MemoryGate(HookProvider):
         self,
         all_memories: List[MemoryCandidate],
         current_tick: int,
-        situation_entities: List[str],
+        situation_entities: Optional[List[str]] = None,
     ) -> List[MemoryCandidate]:
         """Étape 1 : Présélection déterministe de 12 candidats maximum."""
         if len(all_memories) <= self.max_candidates:
             return list(all_memories)
 
-        entity_set = set(situation_entities)
+        entity_set = set(situation_entities or [])
         selected_ids = set()
         candidates: List[MemoryCandidate] = []
 
@@ -126,15 +126,18 @@ class MemoryGate(HookProvider):
         if not candidates:
             return []
 
-        # Préparation des questions D3 pour Decider
+        # Préparation et évaluation par petits lots (max 4) pour préserver la VRAM
         from hameau.decisions.questions import build_d3_relevance_scorer
-        questions = {
-            f"rel_{c.id}": build_d3_relevance_scorer(c.text)
-            for c in candidates
-        }
-
-        # Appel groupé Decider (évaluation en parallèle sur préfixe partagé)
-        decider_responses = self.decider.ask(situation_context, questions)
+        chunk_size = 4
+        decider_responses = {}
+        for start_idx in range(0, len(candidates), chunk_size):
+            chunk = candidates[start_idx:start_idx + chunk_size]
+            questions = {
+                f"rel_{c.id}": build_d3_relevance_scorer(c.text)
+                for c in chunk
+            }
+            res = self.decider.ask(situation_context, questions)
+            decider_responses.update(res)
 
         scored: List[ScoredMemory] = []
 
