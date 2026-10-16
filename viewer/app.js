@@ -6,7 +6,7 @@
 // Définition canonique des 15 lieux du village
 const VILLAGE_LOCATIONS = {
   marche: { id: "marche", name: "Place du Marché", category: "commerce", x: 0.50, y: 0.45, icon: "🧺" },
-  boulangerie: { id: "boulangerie", name: "Boulangerie d'Awa", category: "artisanat", x: 0.38, y: 0.35, icon: "🥖" },
+  boulangerie: { id: "boulangerie", name: "Boulangerie d'Awa", category: "artisanat", x: 0.34, y: 0.34, icon: "🥖" },
   mairie: { id: "mairie", name: "Mairie du Hameau", category: "civique", x: 0.50, y: 0.22, icon: "🏛️" },
   ecole: { id: "ecole", name: "École communale", category: "education", x: 0.68, y: 0.28, icon: "📚" },
   bibliotheque: { id: "bibliotheque", name: "Bibliothèque", category: "culture", x: 0.72, y: 0.48, icon: "📖" },
@@ -17,7 +17,7 @@ const VILLAGE_LOCATIONS = {
   ferme: { id: "ferme", name: "Ferme des Hauts", category: "agriculture", x: 0.18, y: 0.72, icon: "🌾" },
   maison_nord: { id: "maison_nord", name: "Maisons Nord", category: "residence", x: 0.58, y: 0.14, icon: "🏡" },
   maison_ouest: { id: "maison_ouest", name: "Maisons Ouest", category: "residence", x: 0.18, y: 0.38, icon: "🏡" },
-  maison_centre: { id: "maison_centre", name: "Maisons Centre", category: "residence", x: 0.42, y: 0.52, icon: "🏡" },
+  maison_centre: { id: "maison_centre", name: "Maisons Centre", category: "residence", x: 0.38, y: 0.56, icon: "🏡" },
   maison_est: { id: "maison_est", name: "Maisons Est", category: "residence", x: 0.82, y: 0.38, icon: "🏡" },
   maison_sud: { id: "maison_sud", name: "Maisons Sud", category: "residence", x: 0.40, y: 0.82, icon: "🏡" },
 };
@@ -96,6 +96,7 @@ class HameauViewer {
     // État dynamique des agents
     this.agentsState = {};
     this.decisionsHistory = {};
+    this.scoredMemories = {};
     this.rumorHops = [];
     this.gazetteContent = "";
 
@@ -173,6 +174,7 @@ class HameauViewer {
         isTalking: false,
       };
       this.decisionsHistory[id] = [];
+      this.scoredMemories[id] = [];
     }
   }
 
@@ -366,6 +368,18 @@ class HameauViewer {
         if (this.decisionsHistory[agent_id].length > 10) {
           this.decisionsHistory[agent_id].pop();
         }
+
+        // Mise à jour de l'action en cours pour D1 (BUG-06)
+        if (payload.decision === "D1" || payload.decision_type === "D1") {
+          const act = (payload.options && payload.options[payload.chosen_option]) || payload.chosen_option;
+          if (act) {
+            this.agentsState[agent_id].currentAction = act;
+          }
+        }
+        // Enregistrement dynamique des souvenirs D3 MemoryGate (BUG-03, BUG-05)
+        if (payload.decision === "D3" || payload.decision_type === "D3") {
+          this.recordScoredMemory(agent_id, payload, tick);
+        }
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-decision", "Decider", `${AGENTS_META[agent_id]?.name || agent_id} : ${payload.chosen_option} (${payload.zone ? payload.zone.toUpperCase() : ""})`);
@@ -382,9 +396,25 @@ class HameauViewer {
       if (agent_id && this.agentsState[agent_id]) {
         this.agentsState[agent_id].isTalking = isCurrentTick;
         this.agentsState[agent_id].lastUtterance = payload.utterance;
+        const otherName = AGENTS_META[payload.listener]?.name || payload.listener;
+        this.agentsState[agent_id].currentAction = `discute avec ${otherName}`;
+      }
+      if (payload.listener && this.agentsState[payload.listener]) {
+        const speakerName = AGENTS_META[payload.speaker]?.name || payload.speaker;
+        this.agentsState[payload.listener].currentAction = `écoute ${speakerName}`;
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-talk", "Bedrock", `« ${payload.utterance} » (${payload.speaker})`);
+      }
+    } else if (event_type === "reflection") {
+      this.bedrockCount++;
+      if (payload.from_cassette) this.cassetteCount++;
+      this.totalCost += payload.cost_usd || 0.0;
+      if (agent_id && this.agentsState[agent_id]) {
+        this.agentsState[agent_id].currentAction = "synthétise ses pensées";
+      }
+      if (isCurrentTick && agent_id) {
+        this.addFeedItem(tick, "tag-talk", "Réflexion", `${AGENTS_META[agent_id]?.name || agent_id} synthétise sa journée`);
       }
     } else if (event_type === "move") {
       if (agent_id && this.agentsState[agent_id]) {
@@ -392,6 +422,7 @@ class HameauViewer {
         ag.prevLocation = payload.from || ag.location;
         ag.location = payload.to;
         ag.travelProgress = isCurrentTick ? 0.0 : 1.0;
+        ag.currentAction = `se déplace vers ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`;
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-move", "Déplacement", `${AGENTS_META[agent_id]?.name || agent_id} -> ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`);
@@ -418,9 +449,111 @@ class HameauViewer {
         this.addFeedItem(tick, "tag-rumor", "Rumeur", `${payload.sender} a transmis ${payload.fact_id} à ${payload.receiver}`);
       }
     } else if (event_type === "gazette") {
+      this.bedrockCount++;
+      if (payload.from_cassette) this.cassetteCount++;
+      this.totalCost += payload.cost_usd || 0.0;
       this.gazetteContent = payload.gazette_text;
-      document.getElementById("gazette-content").textContent = payload.gazette_text;
+      this.renderGazetteFormatted(payload.gazette_text);
     }
+  }
+
+  recordScoredMemory(agent_id, payload, tick) {
+    if (!this.scoredMemories[agent_id]) {
+      this.scoredMemories[agent_id] = [];
+    }
+    const memId = payload.memory_id || (payload.question ? payload.question.replace("Pertinence du souvenir ", "").trim() : `mem_${tick}`);
+    let memText = payload.memory_text;
+    if (!memText) {
+      if (memId === "mem_r1_init") {
+        memText = "A entendu une rumeur sur la fermeture prochaine du marché hebdomadaire.";
+      } else if (memId === "mem_r2_init") {
+        memText = "Le maire a formellement démenti toute fermeture du marché.";
+      } else if (memId.startsWith("mem_hear_")) {
+        memText = "Échange de propos récents lors d'une discussion au village.";
+      } else {
+        memText = `Souvenir (${memId})`;
+      }
+    }
+
+    const rel = typeof payload.relevance_score === "number" ? payload.relevance_score : (typeof payload.chosen_option === "number" ? payload.chosen_option : 0.5);
+    const imp = typeof payload.importance_score === "number" ? payload.importance_score : 0.6;
+    const rec = typeof payload.recency_score === "number" ? payload.recency_score : 0.7;
+    const comp = typeof payload.composite_score === "number" ? payload.composite_score : Math.round((0.4 * rel + 0.3 * imp + 0.3 * rec) * 100) / 100;
+    const zone = payload.zone || "green";
+    const latency = payload.latency_ms || 115;
+
+    const entry = {
+      id: memId,
+      text: memText,
+      relevance: rel,
+      importance: imp,
+      recency: rec,
+      composite: comp,
+      zone: zone,
+      latency: latency,
+      tick: tick,
+      fallbackUsed: !!payload.fallback_used,
+    };
+
+    const list = this.scoredMemories[agent_id];
+    const existingIdx = list.findIndex(m => m.id === memId);
+    if (existingIdx !== -1) {
+      list[existingIdx] = entry;
+    } else {
+      list.push(entry);
+    }
+    list.sort((a, b) => b.composite - a.composite);
+    if (list.length > 20) {
+      list.pop();
+    }
+  }
+
+  renderGazetteFormatted(markdownText) {
+    const container = document.getElementById("gazette-content");
+    if (!container) return;
+    container.textContent = "";
+
+    if (!markdownText) {
+      container.textContent = "Aucune édition disponible pour le moment.";
+      return;
+    }
+
+    const lines = markdownText.split("\n");
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+      if (trimmed.startsWith("### ")) {
+        const h3 = document.createElement("h3");
+        this.appendFormattedInline(h3, trimmed.slice(4));
+        container.appendChild(h3);
+      } else if (trimmed.startsWith("## ")) {
+        const h2 = document.createElement("h2");
+        this.appendFormattedInline(h2, trimmed.slice(3));
+        container.appendChild(h2);
+      } else if (trimmed.startsWith("# ")) {
+        const h1 = document.createElement("h1");
+        this.appendFormattedInline(h1, trimmed.slice(2));
+        container.appendChild(h1);
+      } else {
+        const p = document.createElement("p");
+        this.appendFormattedInline(p, trimmed);
+        container.appendChild(p);
+      }
+    });
+  }
+
+  appendFormattedInline(parentEl, text) {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    parts.forEach((part) => {
+      if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+        const strong = document.createElement("strong");
+        strong.textContent = part.slice(2, -2);
+        parentEl.appendChild(strong);
+      } else if (part.length > 0) {
+        parentEl.appendChild(document.createTextNode(part));
+      }
+    });
+  }
   }
 
   addFeedItem(tick, tagClass, tagText, message) {
@@ -561,6 +694,47 @@ class HameauViewer {
         box.appendChild(timeDiv);
         decList.appendChild(box);
       });
+    }
+
+    // Souvenirs scorés par MemoryGate (BUG-05)
+    const memList = document.getElementById("inspector-memories-list");
+    if (memList) {
+      memList.textContent = "";
+      const memories = this.scoredMemories[this.selectedAgentId] || [];
+      if (memories.length === 0) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.style.cssText = "color:var(--text-muted);font-size:0.75rem;padding:4px 0;";
+        emptyDiv.textContent = "Aucun souvenir noté pour le moment.";
+        memList.appendChild(emptyDiv);
+      } else {
+        memories.slice(0, 3).forEach((m, idx) => {
+          const item = document.createElement("div");
+          item.className = "memory-item";
+          item.style.cssText = "background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:6px 8px;margin-bottom:6px;font-size:0.75rem;";
+
+          const head = document.createElement("div");
+          head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;";
+
+          const badge = document.createElement("span");
+          badge.className = `zone-tag ${m.zone}`;
+          badge.textContent = `TOP ${idx + 1} (${m.zone.toUpperCase()})`;
+
+          const scoreSpan = document.createElement("span");
+          scoreSpan.style.cssText = "font-size:0.7rem;color:var(--text-muted);";
+          scoreSpan.textContent = `Score : ${m.composite.toFixed(2)}`;
+
+          head.appendChild(badge);
+          head.appendChild(scoreSpan);
+
+          const body = document.createElement("div");
+          body.style.cssText = "color:var(--text-secondary);line-height:1.3;";
+          body.textContent = m.text;
+
+          item.appendChild(head);
+          item.appendChild(body);
+          memList.appendChild(item);
+        });
+      }
     }
   }
 
@@ -730,21 +904,33 @@ class HameauViewer {
     this.diffRawContent.textContent = "";
     this.diffGatedContent.textContent = "";
 
-    const candidates = [
-      { id: "m1", text: "Yao propage la fermeture imminente du marché hebdomadaire.", imp: 0.9, rel: 0.95, zone: "green" },
-      { id: "m2", text: "Le maire Kofi dément fermement toute interruption des commerces.", imp: 0.9, rel: 0.90, zone: "green" },
-      { id: "m3", text: `Dernière action : ${a.currentAction} à ${VILLAGE_LOCATIONS[a.location]?.name || a.location}.`, imp: 0.6, rel: 0.75, zone: "green" },
-      { id: "m4", text: "Le four de la boulangerie a été allumé à 5h30.", imp: 0.3, rel: 0.20, zone: "orange" },
-      { id: "m5", text: "Deux enfants couraient près de la fontaine publique.", imp: 0.1, rel: 0.10, zone: "red" },
-      { id: "m6", text: "Le docteur Diallo a commandé de l'alcool médical.", imp: 0.4, rel: 0.15, zone: "red" },
-      { id: "m7", text: "Une brise fraîche traverse la rue principale.", imp: 0.05, rel: 0.05, zone: "red" },
-      { id: "m8", text: "Moussa a affûté une série de socs de charrue.", imp: 0.35, rel: 0.25, zone: "orange" },
-      { id: "m9", text: "La cloche de l'église a sonné les heures de la matinée.", imp: 0.1, rel: 0.05, zone: "red" },
-      { id: "m10", text: "Des caisses de légumes ont été livrées à l'épicerie.", imp: 0.5, rel: 0.40, zone: "orange" },
-      { id: "m11", text: "Claire a noté les potins du lavoir pour la Gazette.", imp: 0.4, rel: 0.30, zone: "orange" },
-      { id: "m12", text: "Un chien aboie au loin vers la ferme des hauts.", imp: 0.05, rel: 0.05, zone: "red" },
-    ];
+    // Récupérer les souvenirs scorés réels de l'agent
+    const agentMemories = this.scoredMemories[this.selectedAgentId] || [];
 
+    // Si l'agent a des souvenirs scorés réels issus de la simulation
+    let candidates = [];
+    if (agentMemories.length > 0) {
+      candidates = agentMemories.map((m, idx) => ({
+        id: m.id || `m${idx + 1}`,
+        text: m.text,
+        imp: m.importance,
+        rel: m.relevance,
+        comp: m.composite,
+        zone: m.zone || "green",
+        latency: m.latency || 115,
+      }));
+    } else {
+      // Contexte initial canonique de l'agent (avant ses premières interactions)
+      const locName = VILLAGE_LOCATIONS[a.location]?.name || a.location;
+      const meta = AGENTS_META[this.selectedAgentId];
+      candidates = [
+        { id: "c1", text: `${a.name} est à ${locName} (${a.currentAction}).`, imp: 0.7, rel: 0.85, comp: 0.78, zone: "green", latency: 115 },
+        { id: "c2", text: `Résidence principale : ${VILLAGE_LOCATIONS[meta?.home]?.name || meta?.home}.`, imp: 0.5, rel: 0.60, comp: 0.55, zone: "orange", latency: 115 },
+        { id: "c3", text: "Le village s'éveille paisiblement au lever du soleil.", imp: 0.2, rel: 0.15, comp: 0.18, zone: "red", latency: 115 },
+      ];
+    }
+
+    // Afficher tous les candidats dans la colonne "Brut (Sans MemoryGate)"
     candidates.forEach((c) => {
       const item = document.createElement("div");
       item.className = "diff-memory-item";
@@ -752,6 +938,7 @@ class HameauViewer {
       this.diffRawContent.appendChild(item);
     });
 
+    // Sélectionner le Top 3 retenu (Avec MemoryGate)
     const top3 = candidates.slice(0, 3);
     top3.forEach((c, idx) => {
       const item = document.createElement("div");
@@ -770,8 +957,28 @@ class HameauViewer {
       this.diffGatedContent.appendChild(item);
     });
 
-    if (this.diffTokensSaved) this.diffTokensSaved.textContent = "-78 %";
-    if (this.diffNoiseRemoved) this.diffNoiseRemoved.textContent = "9 / 12 souvenirs";
+    // Estimation réaliste des tokens (~3.8 caractères par token pour le français + base prompt)
+    const basePromptTokens = 350;
+    const rawTokens = basePromptTokens + candidates.reduce((sum, c) => sum + Math.ceil(c.text.length / 3.8) + 12, 0);
+    const gatedTokens = basePromptTokens + top3.reduce((sum, c) => sum + Math.ceil(c.text.length / 3.8) + 12, 0);
+    const tokensSavedPct = Math.max(0, Math.round((1 - (gatedTokens / rawTokens)) * 100));
+
+    const rawBadge = document.getElementById("tokens-raw-badge");
+    if (rawBadge) rawBadge.textContent = `~${rawTokens} tokens`;
+
+    const gatedBadge = document.getElementById("tokens-gated-badge");
+    if (gatedBadge) gatedBadge.textContent = `~${gatedTokens} tokens`;
+
+    if (this.diffTokensSaved) this.diffTokensSaved.textContent = `-${tokensSavedPct} %`;
+    if (this.diffNoiseRemoved) {
+      const noise = Math.max(0, candidates.length - top3.length);
+      this.diffNoiseRemoved.textContent = `${noise} / ${candidates.length} souvenirs`;
+    }
+    const latEl = document.getElementById("diff-decider-latency");
+    if (latEl) {
+      const p50 = candidates[0]?.latency ? candidates[0].latency.toFixed(0) : "115";
+      latEl.textContent = `${p50} ms`;
+    }
   }
 
   handleCanvasClick(e) {
@@ -1094,7 +1301,7 @@ class HameauViewer {
       ctx.fillText(loc.icon, px, py);
 
       // Nom du lieu
-      ctx.font = `600 ${10 * this.dpr}px var(--font-ui)`;
+      ctx.font = `600 ${10 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
       ctx.fillStyle = "#cbd5e1";
       const nameY = this.renderMode === "characters" ? py - radius - 9 * this.dpr : py + radius + 12 * this.dpr;
       ctx.fillText(loc.name, px, nameY);
@@ -1147,7 +1354,7 @@ class HameauViewer {
           }
 
           // Nom de l'agent
-          ctx.font = `700 ${9 * this.dpr}px var(--font-ui)`;
+          ctx.font = `700 ${9 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
           ctx.fillStyle = isSelected ? "#ffffff" : "#94a3b8";
           ctx.fillText(a.name, ax, ay - 12 * this.dpr);
         });
@@ -1210,13 +1417,13 @@ class HameauViewer {
         let ax, ay;
         if (K === 1) {
           ax = basePx;
-          ay = basePy + radius + 32 * this.dpr;
+          ay = basePy + radius + 44 * this.dpr;
         } else {
-          const spreadX = Math.min(36 * this.dpr, (130 * this.dpr) / K);
+          const spreadX = Math.min(52 * this.dpr, (180 * this.dpr) / K);
           const offsetX = (i - (K - 1) / 2) * spreadX;
           const arcDroop = Math.abs(i - (K - 1) / 2) * 5 * this.dpr;
           ax = basePx + offsetX;
-          ay = basePy + radius + 30 * this.dpr + arcDroop;
+          ay = basePy + radius + 42 * this.dpr + arcDroop;
         }
 
         this.drawMapCharacter(ctx, a, ax, ay, 1, false, isNight);
@@ -1287,7 +1494,7 @@ class HameauViewer {
 
     // 4. Étiquette du nom (sous les pieds)
     ctx.save();
-    ctx.font = `700 ${8.5 * this.dpr}px var(--font-ui)`;
+    ctx.font = `700 ${8.5 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     const nameText = a.name;
@@ -1314,7 +1521,7 @@ class HameauViewer {
       const by = ay - 68 * this.dpr;
 
       ctx.save();
-      ctx.font = `600 ${9 * this.dpr}px var(--font-ui)`;
+      ctx.font = `600 ${9 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
       const textW = ctx.measureText(bubbleText).width;
       const bw = Math.max(68 * this.dpr, textW + 16 * this.dpr);
       const bh = 22 * this.dpr;
@@ -1372,10 +1579,10 @@ class HameauViewer {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🏛️", cx, cy - 8 * this.dpr);
-    ctx.font = `700 ${10 * this.dpr}px var(--font-ui)`;
+    ctx.font = `700 ${10 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = "#94a3b8";
     ctx.fillText("PLACE DU MARCHÉ", cx, cy + 16 * this.dpr);
-    ctx.font = `500 ${8 * this.dpr}px var(--font-ui)`;
+    ctx.font = `500 ${8 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = "#64748b";
     ctx.fillText("Réseau de Confiance", cx, cy + 28 * this.dpr);
 
@@ -1423,7 +1630,7 @@ class HameauViewer {
         // Label de la relation au centre
         const mx = (p1.x + p2.x) / 2;
         const my = (p1.y + p2.y) / 2;
-        ctx.font = `600 ${8.5 * this.dpr}px var(--font-ui)`;
+        ctx.font = `600 ${8.5 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
         const labelText = rel.label;
         const textMetrics = ctx.measureText(labelText);
         const padX = 6 * this.dpr;
@@ -1559,12 +1766,12 @@ class HameauViewer {
       }
 
       // Nom de l'agent
-      ctx.font = `700 ${10 * this.dpr}px var(--font-ui)`;
+      ctx.font = `700 ${10 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
       ctx.fillStyle = isSelected ? "#ffffff" : isHovered ? "#38bdf8" : "#e2e8f0";
       ctx.fillText(a.name, pos.x, pos.y + 28 * this.dpr);
 
       // Badge de croyance
-      ctx.font = `600 ${8 * this.dpr}px var(--font-ui)`;
+      ctx.font = `600 ${8 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
       ctx.fillStyle = statusColor;
       ctx.fillText(statusText, pos.x, pos.y + 40 * this.dpr);
     });

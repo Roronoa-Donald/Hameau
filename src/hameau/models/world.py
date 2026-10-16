@@ -68,7 +68,7 @@ def build_default_village() -> WorldGraph:
     # 10 Lieux publics
     locs = [
         Location("marche", "Place du Marché", "commerce", 0.50, 0.45, default_routine="tenir son étal ou faire ses courses"),
-        Location("boulangerie", "Boulangerie d'Awa", "artisanat", 0.38, 0.35, default_routine="pétrir et cuire le pain"),
+        Location("boulangerie", "Boulangerie d'Awa", "artisanat", 0.34, 0.34, default_routine="pétrir et cuire le pain"),
         Location("mairie", "Mairie du Hameau", "civique", 0.50, 0.22, default_routine="administrer les affaires communales"),
         Location("ecole", "École communale", "education", 0.68, 0.28, default_routine="enseigner et corriger les cahiers"),
         Location("bibliotheque", "Bibliothèque municipale", "culture", 0.72, 0.48, default_routine="classer les livres et archives"),
@@ -80,7 +80,7 @@ def build_default_village() -> WorldGraph:
         # Nœuds de résidences
         Location("maison_nord", "Maisons du Quartier Nord", "residence", 0.58, 0.14, default_routine="se reposer chez soi"),
         Location("maison_ouest", "Maisons des Artisans", "residence", 0.18, 0.38, default_routine="se reposer chez soi"),
-        Location("maison_centre", "Maisons de la Place", "residence", 0.42, 0.52, default_routine="se reposer chez soi"),
+        Location("maison_centre", "Maisons de la Place", "residence", 0.38, 0.56, default_routine="se reposer chez soi"),
         Location("maison_est", "Maisons de l'Est", "residence", 0.82, 0.38, default_routine="se reposer chez soi"),
         Location("maison_sud", "Maisons de la Rivière", "residence", 0.40, 0.82, default_routine="se reposer chez soi"),
     ]

@@ -18,7 +18,7 @@ def test_simulation_short_run(tmp_path):
     # Paramètres temporaires de test
     cfg["logging"]["runs_dir"] = str(tmp_path)
     cfg["logging"]["log_filename"] = "test_run.jsonl"
-    cfg["bedrock"]["cassettes_dir"] = str(tmp_path / "cassettes")
+    cfg["bedrock"]["cassettes_dir"] = "cassettes"
 
     world = build_default_village()
     agents = build_canonical_agents()
@@ -26,7 +26,7 @@ def test_simulation_short_run(tmp_path):
     bedrock = BedrockClient(
         model_id=cfg["bedrock"]["model_id"],
         region_name=cfg["bedrock"]["region"],
-        cassettes_dir=str(tmp_path / "cassettes"),
+        cassettes_dir="cassettes",
         use_cassettes=True,
     )
     mg = MemoryGate(decider_client=decider, top_k=3)

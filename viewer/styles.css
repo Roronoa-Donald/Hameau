@@ -855,7 +855,8 @@ body {
 }
 
 .legend-color.r1 { background: #f43f5e; }
-.legend-color.r2 { background: #10b981; }
+.legend-color.r2 { background: #06b6d4; }
+.legend-color.r3 { background: #10b981; }
 
 #rumor-curve-canvas {
   width: 100%;

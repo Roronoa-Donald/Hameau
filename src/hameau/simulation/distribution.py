@@ -151,12 +151,26 @@ def build_canonical_agents() -> Dict[str, Agent]:
         )
         agents[p["id"]] = Agent(persona=persona, state=state)
 
-    # Initialisation de quelques relations de proximité
-    agents["awa"].persona.relationships["yao"] = 0.6
-    agents["awa"].persona.relationships["mariam"] = 0.7
-    agents["kofi"].persona.relationships["claire"] = 0.5
-    agents["kofi"].persona.relationships["samuel"] = 0.8
-    agents["mariam"].persona.relationships["ibrahim"] = 0.75
-    agents["paul"].persona.relationships["tom"] = 0.65
+    # Initialisation des relations sociales bidirectionnelles (Graphe social canonique)
+    social_ties = [
+        ("awa", "yao", 0.65),
+        ("awa", "mariam", 0.70),
+        ("yao", "elise", 0.60),
+        ("yao", "mariam", 0.65),
+        ("kofi", "claire", 0.60),
+        ("kofi", "samuel", 0.80),
+        ("kofi", "awa", 0.60),
+        ("mariam", "ibrahim", 0.75),
+        ("paul", "tom", 0.65),
+        ("elise", "lea", 0.70),
+        ("samuel", "nadia", 0.65),
+        ("nadia", "awa", 0.60),
+        ("claire", "lea", 0.65),
+        ("ibrahim", "paul", 0.55),
+    ]
+    for u, v, w in social_ties:
+        if u in agents and v in agents:
+            agents[u].persona.relationships[v] = w
+            agents[v].persona.relationships[u] = w
 
     return agents

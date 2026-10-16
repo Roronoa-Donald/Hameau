@@ -1,5 +1,5 @@
 strategy,decisions_count,bedrock_calls,ratio,p50_latency_ms,total_cost_usd,rumor_diffusion_rate,coherence_score,execution_time_s
 Strategy_A_Pure_Heuristic,144,0,0:0,0.05,0.0,0.083,0.25,0.02
-Strategy_B_All_LLM_NovaMicro,221,244,1.0,680.0,0.0051,0.083,0.82,165.92
-Strategy_C_Hybrid_Hameau,221,23,9.6,115.0,0.0,0.083,1.0,0.01
-Ablation_No_MemoryGate,215,23,9.3,115.0,0.0,0.083,0.75,0.01
+Strategy_B_All_LLM_NovaMicro,210,243,1.0,680.0,0.0051,0.167,0.82,165.24
+Strategy_C_Hybrid_Hameau,210,33,6.4,115.0,0.0,0.167,1.0,0.01
+Ablation_No_MemoryGate,203,33,6.2,115.0,0.0,0.167,1.0,0.01

@@ -28,8 +28,33 @@ run_check() {
 # 1. Tests unitaires standard
 run_check "Unit Tests (pytest -m 'not defect_repro')" "uv run pytest -m 'not defect_repro' -q"
 
-# 2. Scan de secrets (git log et fichiers)
-run_check "Secret Scan" "! git log -p | grep -iE 'AKIA[0-9A-Z]{16}|aws_secret_access_key|BEGIN .*PRIVATE KEY' | grep -v 'AKIAEXAMPLE'"
+# 2. Scan de secrets (fichiers physiques et git log si disponible)
+run_check "Secret Scan" "python3 -c '
+import os, re, subprocess
+pat = re.compile(r\"AKIA[0-9A-Z]{16}|aws_secret_access_key|BEGIN .*PRIVATE KEY\", re.I)
+# Check git log if repo exists
+if os.path.exists(\".git\"):
+    p = subprocess.run([\"git\", \"log\", \"-p\"], capture_output=True, text=True)
+    for line in p.stdout.splitlines():
+        if \"AKIAEXAMPLE\" not in line and pat.search(line):
+            print(\"Secret detected in git log:\", line[:60])
+            exit(1)
+# Check current directory
+for root, dirs, files in os.walk(\".\"):
+    if \".git\" in root or \".venv\" in root or \"runs\" in root: continue
+    for f in files:
+        if f.endswith((\".lock\", \".pyc\", \".zip\", \".log\")): continue
+        fp = os.path.join(root, f)
+        try:
+            with open(fp, \"r\", encoding=\"utf-8\", errors=\"ignore\") as fh:
+                for idx, line in enumerate(fh):
+                    if \"AKIAEXAMPLE\" not in line and \"pat = re.compile\" not in line and pat.search(line):
+                        print(f\"Secret detected in {fp}:{idx+1}\")
+                        exit(1)
+        except Exception:
+            pass
+exit(0)
+'"
 
 # 3. Exécution d'une simulation 3 jours en mock
 run_check "Simulation 3-Days Mock Run" "uv run hameau --days 3 --ticks-per-day 192 --mock-decider --config config.yaml --output runs/verify_mock_run.jsonl"

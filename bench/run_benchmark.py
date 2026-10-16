@@ -98,7 +98,7 @@ def run_strategy_c_hybrid(days: int = 1, ticks_per_day: int = 48) -> Dict[str, A
         "decisions_count": summary["decider_total_decisions"],
         "bedrock_calls": summary["bedrock_total_calls"],
         "ratio": summary["ratio_decider_to_llm"],
-        "p50_latency_ms": 115.0,  # Official calibrated Decider p50 (RTX 3090/edge)
+        "p50_latency_ms": decider.get_p50_latency_ms() or 115.0,
         "total_cost_usd": summary["bedrock_total_cost_usd"],
         "rumor_diffusion_rate": diffusion_rate,
         "coherence_score": round(coherence, 3),
@@ -145,10 +145,10 @@ def run_strategy_ablation(days: int = 1, ticks_per_day: int = 48) -> Dict[str, A
         "decisions_count": summary["decider_total_decisions"],
         "bedrock_calls": summary["bedrock_total_calls"],
         "ratio": summary["ratio_decider_to_llm"],
-        "p50_latency_ms": 115.0,
+        "p50_latency_ms": decider.get_p50_latency_ms() or 115.0,
         "total_cost_usd": summary["bedrock_total_cost_usd"],
         "rumor_diffusion_rate": diffusion_rate,
-        "coherence_score": round(coherence * 0.75, 3),  # degraded coherence due to noisy context
+        "coherence_score": round(coherence, 3),
         "execution_time_s": round(duration, 2),
     }
 

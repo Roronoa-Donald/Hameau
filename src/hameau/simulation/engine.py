@@ -90,34 +90,49 @@ class SimulationEngine:
         options_or_criteria: Any,
         zone: str,
         fallback_used: bool,
+        effective_choice: Any = None,
+        extra_payload: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Enregistre chaque décision D1 à D8 dans le journal d'événements (FR-30 & Étape A3)."""
+        chosen = effective_choice if effective_choice is not None else answer_dict.get("value")
+        payload = {
+            "decision": decision_type,
+            "decision_type": decision_type,
+            "question": question_text,
+            "options": options_or_criteria,
+            "probabilities": answer_dict.get("probabilities", {}),
+            "chosen_option": chosen,
+            "confidence": answer_dict.get("confidence", 1.0),
+            "zone": zone,
+            "fallback_used": fallback_used,
+            "latency_ms": answer_dict.get("latency_ms", 0.0),
+            "backend": answer_dict.get("model", "mock"),
+            "global_tick": global_tick,
+        }
+        if extra_payload:
+            payload.update(extra_payload)
+
         self.log(
             LogEvent(
                 tick=tick,
                 day=day,
                 agent_id=agent_id,
                 event_type="decision",
-                payload={
-                    "decision": decision_type,
-                    "decision_type": decision_type,
-                    "question": question_text,
-                    "options": options_or_criteria,
-                    "probabilities": answer_dict.get("probabilities", {}),
-                    "chosen_option": answer_dict.get("value"),
-                    "confidence": answer_dict.get("confidence", 1.0),
-                    "zone": zone,
-                    "fallback_used": fallback_used,
-                    "latency_ms": answer_dict.get("latency_ms", 0.0),
-                    "backend": answer_dict.get("model", "mock"),
-                    "global_tick": global_tick,
-                },
+                payload=payload,
             )
         )
 
     def _make_on_d3_decision(self, day: int, tick: int, global_tick: int, agent_id: str):
         """Fabrique le callback d'enregistrement pour les décisions D3 dans MemoryGate."""
         def _cb(cand_id: str, sm: Any, ans_dict: Dict[str, Any]) -> None:
+            extra = {
+                "memory_id": cand_id,
+                "memory_text": getattr(getattr(sm, "candidate", None), "text", f"Souvenir {cand_id}"),
+                "recency_score": getattr(sm, "recency_score", 0.5),
+                "importance_score": getattr(getattr(sm, "candidate", None), "importance", 0.5),
+                "composite_score": getattr(sm, "composite_score", 0.5),
+                "relevance_score": getattr(sm, "relevance_score", 0.5),
+            }
             self._log_decision(
                 day=day,
                 tick=tick,
@@ -129,6 +144,8 @@ class SimulationEngine:
                 options_or_criteria=ans_dict.get("legend", {}),
                 zone=sm.zone,
                 fallback_used=sm.fallback_used,
+                effective_choice=getattr(sm, "relevance_score", ans_dict.get("value")),
+                extra_payload=extra,
             )
         return _cb
 
@@ -365,6 +382,7 @@ class SimulationEngine:
                 options_or_criteria=options,
                 zone=zone,
                 fallback_used=fallback,
+                effective_choice=chosen_key,
             )
 
     def _process_encounters(self, day: int, tick: int, global_tick: int) -> None:
@@ -412,6 +430,7 @@ class SimulationEngine:
                 options_or_criteria={"true": "Engager la discussion", "false": "Passer son chemin"},
                 zone=zone_d4,
                 fallback_used=fallback_d4,
+                effective_choice=wants_talk,
             )
 
             if not wants_talk:
@@ -421,12 +440,28 @@ class SimulationEngine:
             self.agent_last_conversation_tick[speaker.persona.id] = global_tick
             self.agent_last_conversation_tick[listener.persona.id] = global_tick
 
-            # D5 — ShareScorer : choisir le souvenir à raconter
+            # D3 & D5 : Scoring des souvenirs du speaker via MemoryGate
+            cands_speaker = [
+                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
+                for m in speaker.memories
+            ]
+            speaker_top_mems = self.memory_gate.score_and_rank(
+                self.memory_gate.preselect(cands_speaker, global_tick, [loc_id, listener.persona.id]),
+                global_tick,
+                f"Discussion avec {listener.persona.name} à {self.world.locations[loc_id].name}",
+                on_decision=self._make_on_d3_decision(day, tick, global_tick, speaker.persona.id),
+            )
+
+            # D5 — ShareScorer : choisir le souvenir à raconter parmi les top souvenirs MemoryGate
+            d5_candidates = [m.candidate for m in speaker_top_mems] if speaker_top_mems else (
+                cands_speaker[-5:] if cands_speaker else []
+            )
+
             shared_memory: Optional[MemoryRecord] = None
-            if speaker.memories:
+            if d5_candidates:
                 questions_d5 = {
-                    f"d5_{m.id}": build_d5_share_scorer(m.text, listener.persona.name)
-                    for m in speaker.memories[-5:]  # Évalue les 5 derniers souvenirs
+                    f"d5_{c.id}": build_d5_share_scorer(c.text, listener.persona.name)
+                    for c in d5_candidates
                 }
                 d5_res = self.decider.ask(state_text, questions_d5)
                 # Trouver le meilleur score
@@ -465,16 +500,19 @@ class SimulationEngine:
                 active_listener = listener if turn_idx % 2 == 0 else speaker
 
                 # Souvenirs injectés par MemoryGate (avec logging D3)
-                cands = [
-                    MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
-                    for m in active_speaker.memories
-                ]
-                top_mems = self.memory_gate.score_and_rank(
-                    self.memory_gate.preselect(cands, global_tick, [loc_id, active_listener.persona.id]),
-                    global_tick,
-                    f"Discussion à {self.world.locations[loc_id].name}",
-                    on_decision=self._make_on_d3_decision(day, tick, global_tick, active_speaker.persona.id),
-                )
+                if turn_idx == 0:
+                    top_mems = speaker_top_mems
+                else:
+                    cands = [
+                        MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id)
+                        for m in active_speaker.memories
+                    ]
+                    top_mems = self.memory_gate.score_and_rank(
+                        self.memory_gate.preselect(cands, global_tick, [loc_id, active_listener.persona.id]),
+                        global_tick,
+                        f"Discussion à {self.world.locations[loc_id].name}",
+                        on_decision=self._make_on_d3_decision(day, tick, global_tick, active_speaker.persona.id),
+                    )
 
                 gen_res = generate_dialogue_turn(
                     bedrock=self.bedrock,
@@ -572,6 +610,7 @@ class SimulationEngine:
                     options_or_criteria=d8_ans.get("legend", {}),
                     zone=zone_d8,
                     fallback_used=fallback_d8,
+                    effective_choice=cred_score,
                 )
 
                 # D2 — ImportanceScorer chez le listener
@@ -602,6 +641,7 @@ class SimulationEngine:
                     options_or_criteria=d2_ans.get("legend", {}),
                     zone=zone_d2,
                     fallback_used=fallback_d2,
+                    effective_choice=imp_score,
                 )
 
                 # Nouveau souvenir chez le listener

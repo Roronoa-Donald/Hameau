@@ -52,7 +52,9 @@ class BedrockClient:
     @property
     def client(self):
         if self._client is None:
-            self._client = boto3.client("bedrock-runtime", region_name=self.region_name)
+            from botocore.config import Config
+            config = Config(read_timeout=15, retries={"max_attempts": 3, "mode": "standard"})
+            self._client = boto3.client("bedrock-runtime", region_name=self.region_name, config=config)
         return self._client
 
     def _compute_cassette_key(
@@ -118,7 +120,10 @@ class BedrockClient:
         if system_prompt:
             kwargs["system"] = [{"text": system_prompt}]
 
-        response = self.client.converse(**kwargs)
+        try:
+            response = self.client.converse(**kwargs)
+        except Exception as e:
+            raise RuntimeError(f"Amazon Bedrock converse failed for model {self.model_id}: {e}") from e
         latency_ms = round((time.perf_counter() - t0) * 1000, 2)
 
         # Extraction

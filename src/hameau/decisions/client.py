@@ -53,6 +53,7 @@ class DeciderClient:
         self.total_decisions: int = 0
         self.total_tokens: int = 0
         self.total_latency_ms: float = 0.0
+        self.latencies_ms: List[float] = []
 
         if self.mock:
             import random
@@ -105,6 +106,7 @@ class DeciderClient:
         self.total_decisions += len(questions)
         self.total_tokens += input_tokens
         self.total_latency_ms += latency_ms
+        self.latencies_ms.append(latency_ms)
 
         # Injection métadonnées globales
         for name in results:
@@ -112,6 +114,13 @@ class DeciderClient:
             results[name]["model"] = "mock" if self.mock else self.checkpoint
 
         return results
+
+    def get_p50_latency_ms(self) -> float:
+        """Calcule la médiane (p50) réelle des temps de réponse observés."""
+        if not self.latencies_ms:
+            return 0.0
+        sorted_lat = sorted(self.latencies_ms)
+        return float(sorted_lat[len(sorted_lat) // 2])
 
     def _format_answer(self, ans: Answer) -> Dict[str, Any]:
         """Convertit la réponse System One en format unifié."""
