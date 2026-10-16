@@ -292,23 +292,42 @@ class SimulationEngine:
             if global_tick < agent.state.action_end_tick:
                 continue
 
-            # Construction des options pour D1
+            # Construction des options pour D1 avec rythme de village
             curr_loc = agent.state.current_location_id
             workplace = agent.persona.workplace_id
             home = agent.persona.home_id
+
+            hour = 6 + tick // 12
+            minute = (tick % 12) * 5
+            time_str = f"{hour:02d}h{minute:02d}"
+
+            is_morning = 6 <= hour < 8
+            is_work_time = (8 <= hour < 12) or (14 <= hour < 17)
+            is_lunch = 12 <= hour < 14
+            is_evening = hour >= 17
 
             options = {
                 "routine": f"Effectuer sa tâche : {self.world.locations[curr_loc].default_routine}",
                 "pause": "Faire une pause et observer les alentours",
             }
             if curr_loc != workplace:
-                options["aller_travail"] = f"Se rendre à son travail ({self.world.locations[workplace].name})"
+                if is_work_time or is_morning:
+                    options["aller_travail"] = f"Se rendre à son travail ({self.world.locations[workplace].name})"
             if curr_loc != home:
-                options["rentrer"] = f"Rentrer chez soi ({self.world.locations[home].name})"
+                if is_evening or is_morning:
+                    options["rentrer"] = f"Rentrer chez soi ({self.world.locations[home].name})"
             if curr_loc != "marche":
-                options["aller_marche"] = "Aller sur la place du marché"
+                if is_lunch:
+                    options["aller_marche"] = "Aller sur la place du marché pour déjeuner et voir du monde"
+                elif is_evening:
+                    options["aller_marche"] = "Aller sur la place du marché pour discuter en fin de journée"
+                else:
+                    options["aller_marche"] = "Aller sur la place du marché"
             if curr_loc != "cafe":
-                options["aller_cafe"] = "Aller au café de la rivière"
+                if is_lunch or is_evening:
+                    options["aller_cafe"] = "Aller au café de la rivière pour faire une pause"
+                else:
+                    options["aller_cafe"] = "Aller au café de la rivière"
 
             # Présélection et scoring MemoryGate
             mem_candidates = [
@@ -319,18 +338,28 @@ class SimulationEngine:
                     importance=m.importance,
                     entities=m.entities,
                     fact_id=m.fact_id,
+                    source=m.source_agent,
+                    hop_count=m.hop_count,
                 )
                 for m in agent.memories
             ]
             top_memories = self.memory_gate.score_and_rank(
                 self.memory_gate.preselect(mem_candidates, global_tick, [curr_loc, agent.persona.id]),
                 global_tick,
-                f"{agent.persona.name} est à {self.world.locations[curr_loc].name} à {6 + tick // 12}h{(tick % 12) * 5:02d}.",
+                f"{agent.persona.name} est à {self.world.locations[curr_loc].name} à {time_str}.",
                 on_decision=self._make_on_d3_decision(day, tick, global_tick, agent.persona.id),
             )
 
+            context_period = (
+                "matinée" if is_morning
+                else "travail" if is_work_time
+                else "pause déjeuner" if is_lunch
+                else "soirée détendue"
+            )
+
             state_text = (
-                f"{agent.persona.name}, {agent.persona.job}. Lieu : {self.world.locations[curr_loc].name}. "
+                f"Il est {time_str} ({context_period}). {agent.persona.name}, {agent.persona.job}. "
+                f"Lieu actuel : {self.world.locations[curr_loc].name}. "
                 f"Énergie : {agent.state.energy:.2f}. "
                 f"Souvenirs clés : {'; '.join([sm.candidate.text for sm in top_memories]) if top_memories else 'aucun'}."
             )

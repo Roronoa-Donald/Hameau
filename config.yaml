@@ -40,7 +40,7 @@ bedrock:
   use_cassettes: true      # Enregistre et rejoue en cache pour 0$ au rejeu
 
 memory_gate:
-  max_candidates: 12
+  max_candidates: 6
   top_k_injected: 3
   recency_half_life_hours: 24.0
   weights:
