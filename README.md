@@ -121,25 +121,34 @@ source .venv/bin/activate
 uv pip install -e ".[dev]"
 ```
 
-### Run Integrity Verification Suite
-Hameau includes a single verification command executing unit tests, secret scanning, 2-day simulation run, log completeness audit, and determinism check:
+### Autonomous Launch Scripts (One-Click)
+
+The repository provides automated executable scripts for one-click execution:
 
 ```bash
-bash scripts/verify.sh
+# 1. Launch the 2D character web viewer (starts server and opens browser)
+./start.sh
+
+# 2. Run a fast 1-day mock simulation (0$ AWS, 0 GPU) and view immediately
+./start.sh --mock 1
+
+# 3. Run the complete 3-day official simulation on local GPU + AWS Bedrock
+./start.sh --real 3
+
+# 4. Run the full verification and non-regression suite
+./start.sh --verify
 ```
 
-### Run Simulation
+### Dedicated CLI Commands
 ```bash
 # Run simulation using deterministic mock (0 API cost, bit-for-bit reproducible)
 uv run hameau --days 2 --mock-decider
 
 # Run simulation using local GPU RTX 3050 and live Bedrock Nova Micro
-uv run hameau --days 2
-```
+uv run hameau --days 3
 
-### Launch Secure Replay Viewer
-```bash
-uv run hameau --serve --port 8000
+# Launch Secure Replay Viewer manually
+./scripts/run_viewer.sh   # or: uv run hameau --serve --port 8000
 ```
 Open `http://127.0.0.1:8000/index.html` in your browser.
 
