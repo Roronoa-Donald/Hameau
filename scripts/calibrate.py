@@ -191,7 +191,7 @@ def evaluate_e3(client: DeciderClient, filepath: Path) -> Dict[str, Any]:
 
 def main():
     parser = argparse.ArgumentParser(description="Strands Decider 2B Calibration Suite (E1, E2, E3)")
-    parser.add_argument("--mock", action="store_true", default=True, help="Use deterministic mock decider")
+    parser.add_argument("--mock", action="store_true", default=False, help="Use deterministic mock decider")
     parser.add_argument("--device", type=str, default="cuda", help="Device for real model (cuda/cpu)")
     parser.add_argument("--checkpoint", type=str, default="StrandsAgents/strands-decider-2B-hobson-v21")
     parser.add_argument("--output-csv", type=str, default="results/calibration.csv", help="Path to write CSV")

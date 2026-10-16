@@ -93,12 +93,13 @@ def run_strategy_c_hybrid(days: int = 1, ticks_per_day: int = 48) -> Dict[str, A
     infected = sum(1 for a in agents.values() if "R1_fermeture_marche" in a.persona.believed_facts)
     diffusion_rate = round(infected / len(agents), 3)
 
+    p50_c = decider.get_p50_latency_ms()
     return {
         "strategy": "Strategy_C_Hybrid_Hameau",
         "decisions_count": summary["decider_total_decisions"],
         "bedrock_calls": summary["bedrock_total_calls"],
         "ratio": summary["ratio_decider_to_llm"],
-        "p50_latency_ms": decider.get_p50_latency_ms() or 115.0,
+        "p50_latency_ms": round(p50_c, 2) if p50_c is not None else 0.0,
         "total_cost_usd": summary["bedrock_total_cost_usd"],
         "rumor_diffusion_rate": diffusion_rate,
         "coherence_score": round(coherence, 3),
@@ -140,12 +141,13 @@ def run_strategy_ablation(days: int = 1, ticks_per_day: int = 48) -> Dict[str, A
     infected = sum(1 for a in agents.values() if "R1_fermeture_marche" in a.persona.believed_facts)
     diffusion_rate = round(infected / len(agents), 3)
 
+    p50_abl = decider.get_p50_latency_ms()
     return {
         "strategy": "Ablation_No_MemoryGate",
         "decisions_count": summary["decider_total_decisions"],
         "bedrock_calls": summary["bedrock_total_calls"],
         "ratio": summary["ratio_decider_to_llm"],
-        "p50_latency_ms": decider.get_p50_latency_ms() or 115.0,
+        "p50_latency_ms": round(p50_abl, 2) if p50_abl is not None else 0.0,
         "total_cost_usd": summary["bedrock_total_cost_usd"],
         "rumor_diffusion_rate": diffusion_rate,
         "coherence_score": round(coherence, 3),

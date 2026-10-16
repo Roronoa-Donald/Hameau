@@ -141,8 +141,8 @@ def main():
         w_recency=mg_cfg.get("weights", {}).get("recency", 0.333),
         w_importance=mg_cfg.get("weights", {}).get("importance", 0.333),
         w_relevance=mg_cfg.get("weights", {}).get("relevance", 0.334),
-        confidence_green=decider_cfg.get("thresholds", {}).get("D3", {}).get("green", 0.55),
-        confidence_orange=decider_cfg.get("thresholds", {}).get("D3", {}).get("orange", 0.35),
+        confidence_green=decider_cfg.get("thresholds", {}).get("D3", {}).get("green", 0.40),
+        confidence_orange=decider_cfg.get("thresholds", {}).get("D3", {}).get("orange", 0.25),
     )
 
     scenario = ScenarioManager()

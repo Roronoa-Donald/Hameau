@@ -342,8 +342,8 @@ class SimulationEngine:
             chosen_key = d1_ans["value"]
             conf = d1_ans["confidence"]
             th = ConfidenceThresholds(
-                green=self.thresholds_cfg.get("D1", {}).get("green", 0.60),
-                orange=self.thresholds_cfg.get("D1", {}).get("orange", 0.40),
+                green=self.thresholds_cfg.get("D1", {}).get("green", 0.50),
+                orange=self.thresholds_cfg.get("D1", {}).get("orange", 0.30),
             )
             zone = classify_zone(conf, th)
 
@@ -409,8 +409,8 @@ class SimulationEngine:
 
             # Zone et seuils D4
             th_d4 = ConfidenceThresholds(
-                green=self.thresholds_cfg.get("D4", {}).get("green", 0.65),
-                orange=self.thresholds_cfg.get("D4", {}).get("orange", 0.45),
+                green=self.thresholds_cfg.get("D4", {}).get("green", 0.35),
+                orange=self.thresholds_cfg.get("D4", {}).get("orange", 0.18),
             )
             zone_d4 = classify_zone(d4_ans["confidence"], th_d4)
             fallback_d4 = False
@@ -471,8 +471,8 @@ class SimulationEngine:
 
                 # Enregistrement de chaque évaluation D5
                 th_d5 = ConfidenceThresholds(
-                    green=self.thresholds_cfg.get("D5", {}).get("green", 0.60),
-                    orange=self.thresholds_cfg.get("D5", {}).get("orange", 0.40),
+                    green=self.thresholds_cfg.get("D5", {}).get("green", 0.45),
+                    orange=self.thresholds_cfg.get("D5", {}).get("orange", 0.25),
                 )
                 for q_key, d5_eval in d5_res.items():
                     m_eval_id = q_key.replace("d5_", "")
@@ -555,8 +555,8 @@ class SimulationEngine:
                     )
                     d7_ans = d7_res["D7"]
                     th_d7 = ConfidenceThresholds(
-                        green=self.thresholds_cfg.get("D7", {}).get("green", 0.60),
-                        orange=self.thresholds_cfg.get("D7", {}).get("orange", 0.40),
+                        green=self.thresholds_cfg.get("D7", {}).get("green", 0.40),
+                        orange=self.thresholds_cfg.get("D7", {}).get("orange", 0.25),
                     )
                     zone_d7 = classify_zone(d7_ans["confidence"], th_d7)
                     fallback_d7 = False
@@ -589,8 +589,8 @@ class SimulationEngine:
                 )
                 d8_ans = d8_res["D8"]
                 th_d8 = ConfidenceThresholds(
-                    green=self.thresholds_cfg.get("D8", {}).get("green", 0.60),
-                    orange=self.thresholds_cfg.get("D8", {}).get("orange", 0.40),
+                    green=self.thresholds_cfg.get("D8", {}).get("green", 0.40),
+                    orange=self.thresholds_cfg.get("D8", {}).get("orange", 0.25),
                 )
                 zone_d8 = classify_zone(d8_ans["confidence"], th_d8)
                 fallback_d8 = False
@@ -620,8 +620,8 @@ class SimulationEngine:
                 )
                 d2_ans = d2_res["D2"]
                 th_d2 = ConfidenceThresholds(
-                    green=self.thresholds_cfg.get("D2", {}).get("green", 0.55),
-                    orange=self.thresholds_cfg.get("D2", {}).get("orange", 0.35),
+                    green=self.thresholds_cfg.get("D2", {}).get("green", 0.45),
+                    orange=self.thresholds_cfg.get("D2", {}).get("orange", 0.25),
                 )
                 zone_d2 = classify_zone(d2_ans["confidence"], th_d2)
                 fallback_d2 = False
@@ -697,8 +697,8 @@ class SimulationEngine:
             )
             d6_ans = d6_res["D6"]
             th_d6 = ConfidenceThresholds(
-                green=self.thresholds_cfg.get("D6", {}).get("green", 0.70),
-                orange=self.thresholds_cfg.get("D6", {}).get("orange", 0.50),
+                green=self.thresholds_cfg.get("D6", {}).get("green", 0.45),
+                orange=self.thresholds_cfg.get("D6", {}).get("orange", 0.25),
             )
             zone_d6 = classify_zone(d6_ans["confidence"], th_d6)
             fallback_d6 = False

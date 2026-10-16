@@ -20,14 +20,14 @@ decider:
   # orange <= c < green : Zone orange (acceptée mais taguée dans le log)
   # < orange : Zone rouge (repli déterministe)
   thresholds:
-    D1: { green: 0.60, orange: 0.40 }
-    D2: { green: 0.55, orange: 0.35 }
-    D3: { green: 0.55, orange: 0.35 }
-    D4: { green: 0.65, orange: 0.45 }
-    D5: { green: 0.60, orange: 0.40 }
-    D6: { green: 0.70, orange: 0.50 }
-    D7: { green: 0.60, orange: 0.40 }
-    D8: { green: 0.60, orange: 0.40 }
+    D1: { green: 0.50, orange: 0.30 }
+    D2: { green: 0.45, orange: 0.25 }
+    D3: { green: 0.40, orange: 0.25 }
+    D4: { green: 0.35, orange: 0.18 }
+    D5: { green: 0.45, orange: 0.25 }
+    D6: { green: 0.45, orange: 0.25 }
+    D7: { green: 0.40, orange: 0.25 }
+    D8: { green: 0.40, orange: 0.25 }
 
 bedrock:
   model_id: "amazon.nova-micro-v1:0"

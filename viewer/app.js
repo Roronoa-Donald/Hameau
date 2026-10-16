@@ -321,11 +321,20 @@ class HameauViewer {
   }
 
   seekToTick(targetTick) {
+    const isStepForward = targetTick === this.currentTick + 1;
     this.currentTick = targetTick;
     this.slider.value = targetTick;
 
-    // Recalcul de l'état jusqu'à ce tick
-    this.recomputeStateUpToTick(targetTick);
+    if (isStepForward) {
+      // Avance incrémentale rapide (O(1)) pour la lecture continue et le mode 15x
+      const evs = this.eventsByTick[targetTick] || [];
+      for (const ev of evs) {
+        this.applyEvent(ev, true);
+      }
+    } else {
+      // Recalcul complet déterministe lors d'un saut ou retour arrière
+      this.recomputeStateUpToTick(targetTick);
+    }
     this.updateUI();
   }
 

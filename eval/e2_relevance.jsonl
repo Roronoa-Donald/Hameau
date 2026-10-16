@@ -1,20 +1,20 @@
 {"id": "e2_01", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Une rumeur affirme que le marché sera fermé samedi.", "expected_score": 0.90, "relevant": true}
-{"id": "e2_02", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Moussa a réparé la herse de la ferme hier après-midi.", "expected_score": 0.10, "relevant": false}
+{"id": "e2_02", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Samuel a réparé la herse de la ferme hier après-midi.", "expected_score": 0.10, "relevant": false}
 {"id": "e2_03", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Le maire a formellement démenti la fermeture du marché ce matin.", "expected_score": 0.85, "relevant": true}
-{"id": "e2_04", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Fatou a enseigné la géographie aux enfants de l'école.", "expected_score": 0.05, "relevant": false}
-{"id": "e2_05", "situation": "Dr Diallo reçoit un patient fébrile au dispensaire.", "memory": "Deux autres personnes sont venues hier avec de la fièvre et toux.", "expected_score": 0.92, "relevant": true}
-{"id": "e2_06", "situation": "Dr Diallo reçoit un patient fébrile au dispensaire.", "memory": "Awa a cuit des croissants aux amandes hier matin.", "expected_score": 0.05, "relevant": false}
+{"id": "e2_04", "situation": "Awa doit décider combien de sacs de farine commander pour le marché.", "memory": "Élise a enseigné la géographie aux enfants de l'école.", "expected_score": 0.05, "relevant": false}
+{"id": "e2_05", "situation": "Dr Nadia reçoit un patient fébrile au dispensaire.", "memory": "Deux autres personnes sont venues hier avec de la fièvre et toux.", "expected_score": 0.92, "relevant": true}
+{"id": "e2_06", "situation": "Dr Nadia reçoit un patient fébrile au dispensaire.", "memory": "Awa a cuit des croissants aux amandes hier matin.", "expected_score": 0.05, "relevant": false}
 {"id": "e2_07", "situation": "Yao doit décider de réparer la clôture ou faucher le champ.", "memory": "Trois chèvres du voisin rôdent près du champ de maïs sans barrière.", "expected_score": 0.88, "relevant": true}
 {"id": "e2_08", "situation": "Yao doit décider de réparer la clôture ou faucher le champ.", "memory": "La bibliothèque a reçu de nouveaux journaux régionaux.", "expected_score": 0.05, "relevant": false}
 {"id": "e2_09", "situation": "Kofi prépare la réponse officielle aux inquiétudes des commerçants.", "memory": "Yao et Awa ont commencé à stocker des vivres par panique.", "expected_score": 0.85, "relevant": true}
-{"id": "e2_10", "situation": "Kofi prépare la réponse officielle aux inquiétudes des commerçants.", "memory": "Le docteur Diallo a nettoyé ses seringues.", "expected_score": 0.15, "relevant": false}
-{"id": "e2_11", "situation": "Moussa choisit quel métal commander au fournisseur.", "memory": "Le maire a commandé une nouvelle grille en fer forgé pour l'école.", "expected_score": 0.85, "relevant": true}
-{"id": "e2_12", "situation": "Moussa choisit quel métal commander au fournisseur.", "memory": "Les enfants jouent au ballon près de la rivière.", "expected_score": 0.05, "relevant": false}
-{"id": "e2_13", "situation": "Fatou organise la fête de fin d'année de l'école.", "memory": "La météo prévoit des orages violents pour l'après-midi de la fête.", "expected_score": 0.90, "relevant": true}
-{"id": "e2_14", "situation": "Fatou organise la fête de fin d'année de l'école.", "memory": "Yao a vendu ses courges au marché la semaine dernière.", "expected_score": 0.10, "relevant": false}
+{"id": "e2_10", "situation": "Kofi prépare la réponse officielle aux inquiétudes des commerçants.", "memory": "Le docteur Nadia a nettoyé ses seringues.", "expected_score": 0.15, "relevant": false}
+{"id": "e2_11", "situation": "Samuel choisit quel métal commander au fournisseur.", "memory": "Le maire a commandé une nouvelle grille en fer forgé pour l'école.", "expected_score": 0.85, "relevant": true}
+{"id": "e2_12", "situation": "Samuel choisit quel métal commander au fournisseur.", "memory": "Les enfants jouent au ballon près de la rivière.", "expected_score": 0.05, "relevant": false}
+{"id": "e2_13", "situation": "Élise organise la fête de fin d'année de l'école.", "memory": "La météo prévoit des orages violents pour l'après-midi de la fête.", "expected_score": 0.90, "relevant": true}
+{"id": "e2_14", "situation": "Élise organise la fête de fin d'année de l'école.", "memory": "Yao a vendu ses courges au marché la semaine dernière.", "expected_score": 0.10, "relevant": false}
 {"id": "e2_15", "situation": "Claire décide des sujets à aborder dans la Gazette du Hameau.", "memory": "La controverse sur le marché a agité la moitié du village toute la journée.", "expected_score": 0.95, "relevant": true}
 {"id": "e2_16", "situation": "Claire décide des sujets à aborder dans la Gazette du Hameau.", "memory": "Claire a bu un verre d'eau au robinet de sa cuisine à 14h.", "expected_score": 0.05, "relevant": false}
 {"id": "e2_17", "situation": "Yao hésite à vendre ses réserves de grains ou les garder.", "memory": "La rumeur de fermeture du marché pourrait bloquer les ventes pendant 2 semaines.", "expected_score": 0.80, "relevant": true}
-{"id": "e2_18", "situation": "Yao hésite à vendre ses réserves de grains ou les garder.", "memory": "Moussa a acheté un nouveau chapeau de paille.", "expected_score": 0.05, "relevant": false}
+{"id": "e2_18", "situation": "Yao hésite à vendre ses réserves de grains ou les garder.", "memory": "Samuel a acheté un nouveau chapeau de paille.", "expected_score": 0.05, "relevant": false}
 {"id": "e2_19", "situation": "Kofi arbitre un différend entre commerçants sur la place.", "memory": "Un arrêté municipal de 2024 fixe l'attribution des emplacements du marché.", "expected_score": 0.90, "relevant": true}
 {"id": "e2_20", "situation": "Kofi arbitre un différend entre commerçants sur la place.", "memory": "Un chat gris dormait sur le banc de la place ce matin.", "expected_score": 0.05, "relevant": false}

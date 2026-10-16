@@ -4,13 +4,13 @@
 {"id": "e3_04", "state": "La pâte à pain repose dans le pétrin sous un torchon propre.", "question": "Le pain risque-t-il de brûler ?", "true_label": 0}
 {"id": "e3_05", "state": "Le maire affiche un arrêté signé portant le sceau municipal annonçant l'inauguration du pont.", "question": "L'information est-elle officielle ?", "true_label": 1}
 {"id": "e3_06", "state": "Un passant inconnu murmure au café qu'un trésor est caché sous l'école.", "question": "L'information est-elle officielle ?", "true_label": 0}
-{"id": "e3_07", "state": "Dr Diallo constate une température corporelle de 39,8°C chez son patient.", "question": "Le patient a-t-il de la fièvre ?", "true_label": 1}
+{"id": "e3_07", "state": "Dr Nadia constate une température corporelle de 39,8°C chez son patient.", "question": "Le patient a-t-il de la fièvre ?", "true_label": 1}
 {"id": "e3_08", "state": "Le patient sourit, marche d'un pas vif et sa température est de 36,6°C.", "question": "Le patient a-t-il de la fièvre ?", "true_label": 0}
 {"id": "e3_09", "state": "La réserve de farine d'Awa ne contient plus que 2 kg alors qu'elle en consomme 50 kg par jour.", "question": "Le stock de farine est-il critique ?", "true_label": 1}
 {"id": "e3_10", "state": "Le hangar de la boulangerie est rempli de 80 sacs de farine fraîchement livrés.", "question": "Le stock de farine est-il critique ?", "true_label": 0}
 {"id": "e3_11", "state": "Kofi a travaillé sans pause de 6h à 21h et ses yeux se ferment tout seuls.", "question": "Kofi a-t-il besoin de repos ?", "true_label": 1}
 {"id": "e3_12", "state": "Kofi vient de se réveiller après 8 heures de sommeil profond et prend un café énergisant.", "question": "Kofi a-t-il besoin de repos ?", "true_label": 0}
-{"id": "e3_13", "state": "Moussa a éteint le foyer de sa forge et rangé ses pinces pour la nuit.", "question": "L'atelier est-il prêt pour forger du fer maintenant ?", "true_label": 0}
+{"id": "e3_13", "state": "Samuel a éteint le foyer de sa forge et rangé ses pinces pour la nuit.", "question": "L'atelier est-il prêt pour forger du fer maintenant ?", "true_label": 0}
 {"id": "e3_14", "state": "Le foyer de la forge est chauffé à blanc et les braises crépitent à pleine puissance.", "question": "L'atelier est-il prêt pour forger du fer maintenant ?", "true_label": 1}
 {"id": "e3_15", "state": "La cloche de l'école retentit à 16h30 et les enfants sortent en courant avec leurs cartables.", "question": "La journée de classe est-elle terminée ?", "true_label": 1}
 {"id": "e3_16", "state": "Les enfants sont assis en silence à leurs pupitres et écoutent la leçon de grammaire à 10h.", "question": "La journée de classe est-elle terminée ?", "true_label": 0}

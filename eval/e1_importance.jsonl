@@ -3,18 +3,18 @@
 {"id": "e1_03", "situation": "Kofi classe ses papiers à la mairie.", "observation": "Le café est tiède.", "expected_score": 0.15, "category": "trivial"}
 {"id": "e1_04", "situation": "Claire salue les passants.", "observation": "Le facteur est passé avec 5 minutes de retard.", "expected_score": 0.20, "category": "anecdotal"}
 {"id": "e1_05", "situation": "Awa cuit son pain.", "observation": "Le four a atteint sa température normale.", "expected_score": 0.25, "category": "routine"}
-{"id": "e1_06", "situation": "Moussa ouvre la forge.", "observation": "Le stock de charbon suffit pour la journée.", "expected_score": 0.35, "category": "routine"}
-{"id": "e1_07", "situation": "Fatou arrive à l'école.", "observation": "Deux élèves sont absents pour un rhume.", "expected_score": 0.40, "category": "daily_notable"}
-{"id": "e1_08", "situation": "Dr Diallo consulte au dispensaire.", "observation": "Trois villageois toussent avec des symptômes similaires.", "expected_score": 0.55, "category": "health_alert"}
+{"id": "e1_06", "situation": "Samuel ouvre la forge.", "observation": "Le stock de charbon suffit pour la journée.", "expected_score": 0.35, "category": "routine"}
+{"id": "e1_07", "situation": "Élise arrive à l'école.", "observation": "Deux élèves sont absents pour un rhume.", "expected_score": 0.40, "category": "daily_notable"}
+{"id": "e1_08", "situation": "Dr Nadia consulte au dispensaire.", "observation": "Trois villageois toussent avec des symptômes similaires.", "expected_score": 0.55, "category": "health_alert"}
 {"id": "e1_09", "situation": "Awa vérifie ses réserves.", "observation": "Le meunier annonce que le prix de la farine augmentera de 15%.", "expected_score": 0.65, "category": "economic"}
 {"id": "e1_10", "situation": "Yao inspecte ses cultures.", "observation": "Des insectes ravageurs sont apparus sur la parcelle est.", "expected_score": 0.70, "category": "agriculture_threat"}
 {"id": "e1_11", "situation": "Kofi prépare la séance municipale.", "observation": "Le préfet demande un rapport financier d'urgence.", "expected_score": 0.75, "category": "civic"}
 {"id": "e1_12", "situation": "Awa discute avec Yao.", "observation": "Une rumeur affirme que le marché hebdomadaire va fermer.", "expected_score": 0.85, "category": "rumor_major"}
 {"id": "e1_13", "situation": "Kofi réunit les commerçants.", "observation": "Le maire dément officiellement toute fermeture du marché.", "expected_score": 0.90, "category": "official_statement"}
 {"id": "e1_14", "situation": "Yao surveille la rivière.", "observation": "La digue présente une fissure importante suite aux orages.", "expected_score": 0.95, "category": "crisis"}
-{"id": "e1_15", "situation": "Fatou fait l'appel à l'école.", "observation": "Un incendie s'est déclaré dans la grange voisine.", "expected_score": 0.98, "category": "disaster"}
-{"id": "e1_16", "situation": "Claire discute au café.", "observation": "Moussa a acheté un nouveau tablier en cuir.", "expected_score": 0.20, "category": "anecdotal"}
-{"id": "e1_17", "situation": "Dr Diallo fait l'inventaire.", "observation": "La livraison de sérum antivenimeux est arrivée intacte.", "expected_score": 0.60, "category": "health_logistics"}
-{"id": "e1_18", "situation": "Moussa termine un fer à cheval.", "observation": "Le marteau principal a le manche fendu.", "expected_score": 0.50, "category": "work_tool"}
+{"id": "e1_15", "situation": "Élise fait l'appel à l'école.", "observation": "Un incendie s'est déclaré dans la grange voisine.", "expected_score": 0.98, "category": "disaster"}
+{"id": "e1_16", "situation": "Claire discute au café.", "observation": "Samuel a acheté un nouveau tablier en cuir.", "expected_score": 0.20, "category": "anecdotal"}
+{"id": "e1_17", "situation": "Dr Nadia fait l'inventaire.", "observation": "La livraison de sérum antivenimeux est arrivée intacte.", "expected_score": 0.60, "category": "health_logistics"}
+{"id": "e1_18", "situation": "Samuel termine un fer à cheval.", "observation": "Le marteau principal a le manche fendu.", "expected_score": 0.50, "category": "work_tool"}
 {"id": "e1_19", "situation": "Kofi regarde par la fenêtre.", "observation": "Des manifestants se rassemblent devant la mairie.", "expected_score": 0.88, "category": "civic_tension"}
 {"id": "e1_20", "situation": "Awa compte sa caisse du soir.", "observation": "La caisse a été forcée et il manque la moitié des recettes.", "expected_score": 0.95, "category": "crime"}

@@ -1,4 +1,4 @@
 dataset,sample_count,metric_primary,value_primary,metric_secondary,value_secondary,backend
-E1_Importance,20,MAE,0.2775,Spearman_r,0.3109,mock
-E2_Relevance,20,MAE,0.442,Spearman_r,0.1425,mock
-E3_Calibration,20,Brier_Score,0.2552,ECE,0.0585,mock
+E1_Importance,20,MAE,0.2906,Spearman_r,0.5835,gpu
+E2_Relevance,20,MAE,0.3725,Spearman_r,0.3868,gpu
+E3_Calibration,20,Brier_Score,0.0606,ECE,0.1099,gpu
