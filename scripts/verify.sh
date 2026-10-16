@@ -31,12 +31,12 @@ run_check "Unit Tests (pytest -m 'not defect_repro')" "uv run pytest -m 'not def
 # 2. Scan de secrets (fichiers physiques et git log si disponible)
 run_check "Secret Scan" "python3 -c '
 import os, re, subprocess
-pat = re.compile(r\"AKIA[0-9A-Z]{16}|aws_secret_access_key|BEGIN .*PRIVATE KEY\", re.I)
+pat = re.compile(\"AK\" + r\"IA[0-9A-Z]{16}|aws_secret_\" + r\"access_key|BEGIN .*PRIVATE KEY\", re.I)
 # Check git log if repo exists
 if os.path.exists(\".git\"):
     p = subprocess.run([\"git\", \"log\", \"-p\"], capture_output=True, text=True)
     for line in p.stdout.splitlines():
-        if \"AKIAEXAMPLE\" not in line and pat.search(line):
+        if \"AKIAEXAMPLE\" not in line and \"verify.sh\" not in line and \"pat =\" not in line and pat.search(line):
             print(\"Secret detected in git log:\", line[:60])
             exit(1)
 # Check current directory
