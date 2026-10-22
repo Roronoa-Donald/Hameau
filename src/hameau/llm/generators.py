@@ -7,7 +7,8 @@ from patterns.memory_gate import ScoredMemory
 
 VILLAGEOIS_AUTORISES = [
     "Awa", "Kofi", "Yao", "Élise", "Samuel", "Nadia",
-    "Tom", "Mariam", "Paul", "Léa", "Ibrahim", "Claire"
+    "Tom", "Mariam", "Paul", "Léa", "Ibrahim", "Claire",
+    "Victor", "Fatou", "Lucas", "Sokhna", "Antoine", "Mireille", "Bastien", "Salimata"
 ]
 
 

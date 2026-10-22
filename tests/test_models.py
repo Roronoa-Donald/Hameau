@@ -5,9 +5,11 @@ from hameau.models import build_default_village, Location, Persona, DynamicState
 
 def test_village_graph_construction():
     world = build_default_village()
-    assert len(world.locations) == 15
+    assert len(world.locations) == 19
     assert "marche" in world.locations
     assert "mairie" in world.locations
+    assert "place_fetes" in world.locations
+    assert "village_voisin" in world.locations
     assert world.travel_time("marche", "mairie") == 1
     assert world.travel_time("marche", "marche") == 0
     # Travel between marche and ferme (requires multiple hops)

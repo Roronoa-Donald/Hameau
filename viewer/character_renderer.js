@@ -254,6 +254,167 @@ const HAMEAU_CHARACTERS = {
       trim: "#0d9488"
     },
     accessory: "press_notebook"
+  },
+  victor: {
+    id: "victor",
+    name: "Victor",
+    role: "Notaire & Candidat",
+    age: 58,
+    gender: "m",
+    build: "commanding",
+    skin: { base: "#ecc3a2", shadow: "#be9070", highlight: "#f5d7bf" },
+    hair: { color: "#52525b", style: "short_greying", beard: "clean_shaven" },
+    eyes: { color: "#1e293b" },
+    palette: {
+      primary: "#334155",      // Redingote grise d'homme de loi
+      primaryShadow: "#1e293b",
+      secondary: "#f8fafc",    // Plastron blanc
+      secondaryShadow: "#cbd5e1",
+      trousers: "#1e293b",
+      trim: "#d97706"          // Boutons dorés
+    },
+    accessory: "glasses_book"
+  },
+  fatou: {
+    id: "fatou",
+    name: "Fatou",
+    role: "Meunière du Moulin",
+    age: 31,
+    gender: "f",
+    build: "robust",
+    skin: { base: "#5c3826", shadow: "#3e2316", highlight: "#784b33" },
+    hair: { color: "#1c1917", style: "turban_white" },
+    eyes: { color: "#2d1b12" },
+    palette: {
+      primary: "#0284c7",      // Robe bleu rivière
+      primaryShadow: "#0369a1",
+      secondary: "#f5efe6",    // Tablier fariné
+      secondaryShadow: "#dcd2c4",
+      trousers: "#0f172a",
+      trim: "#ca8a04"
+    },
+    accessory: "bread_basket"
+  },
+  lucas: {
+    id: "lucas",
+    name: "Lucas",
+    role: "Bûcheron & Meneur de jeu",
+    age: 19,
+    gender: "m",
+    build: "athletic",
+    skin: { base: "#d8a47f", shadow: "#aa7451", highlight: "#e5b999" },
+    hair: { color: "#78350f", style: "tousled_bangs" },
+    eyes: { color: "#1f2937" },
+    palette: {
+      primary: "#991b1b",      // Chemise à carreaux bûcheron rouge
+      primaryShadow: "#7f1d1d",
+      secondary: "#475569",    // Pantalon de travail renforcé
+      secondaryShadow: "#334155",
+      trousers: "#334155",
+      trim: "#78350f"
+    },
+    accessory: "blacksmith_hammer"
+  },
+  sokhna: {
+    id: "sokhna",
+    name: "Sokhna",
+    role: "Marchande itinérante",
+    age: 47,
+    gender: "f",
+    build: "generous",
+    skin: { base: "#825338", shadow: "#5c3520", highlight: "#9f6a4b" },
+    hair: { color: "#1c1917", style: "turban_green" },
+    eyes: { color: "#261911" },
+    palette: {
+      primary: "#d97706",      // Tissu wax doré
+      primaryShadow: "#b45309",
+      secondary: "#4338ca",    // Étole indigo voyageur
+      secondaryShadow: "#3730a3",
+      trousers: "#312e81",
+      trim: "#fbbf24"
+    },
+    accessory: "vegetable_basket"
+  },
+  antoine: {
+    id: "antoine",
+    name: "Antoine",
+    role: "Garde champêtre",
+    age: 62,
+    gender: "m",
+    build: "tall_lean",
+    skin: { base: "#c99b79", shadow: "#966847", highlight: "#dcb08f" },
+    hair: { color: "#a1a1aa", style: "newsboy_cap", beard: "salt_pepper_stache" },
+    eyes: { color: "#1e3a5f" },
+    palette: {
+      primary: "#166534",      // Vareuse vert forêt officiel
+      primaryShadow: "#14532d",
+      secondary: "#fef08a",    // Cuivreries et galons jaunes
+      secondaryShadow: "#ca8a04",
+      trousers: "#1e293b",
+      cap: "#14532d",
+      trim: "#eab308"
+    },
+    accessory: "mayoral_sash"
+  },
+  mireille: {
+    id: "mireille",
+    name: "Mireille",
+    role: "Herboriste",
+    age: 29,
+    gender: "f",
+    build: "slender",
+    skin: { base: "#ecc3a2", shadow: "#be9070", highlight: "#f5d7bf" },
+    hair: { color: "#451a03", style: "long_wavy_red" },
+    eyes: { color: "#15803d" },
+    palette: {
+      primary: "#7e22ce",      // Robe violet bruyère
+      primaryShadow: "#6b21a8",
+      secondary: "#84cc16",    // Ceinture plantes séchées
+      secondaryShadow: "#65a30d",
+      trousers: "#3f3f46",
+      trim: "#a855f7"
+    },
+    accessory: "book_tote"
+  },
+  bastien: {
+    id: "bastien",
+    name: "Bastien",
+    role: "Jeune Pêcheur",
+    age: 24,
+    gender: "m",
+    build: "lanky",
+    skin: { base: "#b57a52", shadow: "#844e2e", highlight: "#cb8e65" },
+    hair: { color: "#27272a", style: "tousled_bangs" },
+    eyes: { color: "#0284c7" },
+    palette: {
+      primary: "#0284c7",      // Marinière rayée et gilet bleu
+      primaryShadow: "#0369a1",
+      secondary: "#f8fafc",    // Rayures blanches
+      secondaryShadow: "#cbd5e1",
+      trousers: "#334155",
+      trim: "#0ea5e9"
+    },
+    accessory: "fishing_cane"
+  },
+  salimata: {
+    id: "salimata",
+    name: "Salimata",
+    role: "Aubergiste de Val-d'Or",
+    age: 38,
+    gender: "f",
+    build: "generous",
+    skin: { base: "#5c3826", shadow: "#3e2316", highlight: "#784b33" },
+    hair: { color: "#0f172a", style: "turban_white" },
+    eyes: { color: "#291b12" },
+    palette: {
+      primary: "#be123c",      // Tablier pourpre auberge
+      primaryShadow: "#9f1239",
+      secondary: "#fef3c7",    // Chemisier lin vanille
+      secondaryShadow: "#fde68a",
+      trousers: "#4c0519",
+      trim: "#f59e0b"
+    },
+    accessory: "bread_basket"
   }
 };
 

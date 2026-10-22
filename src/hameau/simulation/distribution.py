@@ -127,6 +127,87 @@ def build_canonical_agents() -> Dict[str, Agent]:
             "home": "maison_nord",
             "work": "mairie",
         },
+        # 8 Nouveaux Villageois Canoniques (Passage à 20 agents)
+        {
+            "id": "victor",
+            "name": "Victor",
+            "age": 58,
+            "job": "Notaire & Candidat",
+            "traits": ["ambitieux", "calculateur", "orateur"],
+            "goals": ["remporter l'élection municipale", "moderniser les règlements communaux"],
+            "home": "maison_nord",
+            "work": "place_fetes",
+        },
+        {
+            "id": "fatou",
+            "name": "Fatou",
+            "age": 31,
+            "job": "Meunière du Moulin",
+            "traits": ["travailleuse", "indépendante", "observatrice"],
+            "goals": ["fournir une farine irréprochable", "veiller sur le débit de la rivière"],
+            "home": "maison_sud",
+            "work": "moulin_riviere",
+        },
+        {
+            "id": "lucas",
+            "name": "Lucas",
+            "age": 19,
+            "job": "Bûcheron & Meneur de jeu",
+            "traits": ["audacieux", "espiègle", "sportif"],
+            "goals": ["sécuriser le bois de chauffe", "animer les jeux et veillées du soir"],
+            "home": "maison_ouest",
+            "work": "foret_loups",
+        },
+        {
+            "id": "sokhna",
+            "name": "Sokhna",
+            "age": 47,
+            "job": "Marchande itinérante",
+            "traits": ["polyglotte", "perspicace", "voyageuse"],
+            "goals": ["tisser des liens avec Val-d'Or", "proposer des épices et tissus rares"],
+            "home": "maison_est",
+            "work": "village_voisin",
+        },
+        {
+            "id": "antoine",
+            "name": "Antoine",
+            "age": 62,
+            "job": "Garde champêtre",
+            "traits": ["rigide", "loyal", "protecteur"],
+            "goals": ["faire respecter le calme communal", "surveiller le scrutin électoral"],
+            "home": "maison_centre",
+            "work": "place_fetes",
+        },
+        {
+            "id": "mireille",
+            "name": "Mireille",
+            "age": 29,
+            "job": "Herboriste",
+            "traits": ["intuitive", "secrète", "passionnée"],
+            "goals": ["cueillir des plantes médicinales", "partager les légendes du bois"],
+            "home": "maison_ouest",
+            "work": "foret_loups",
+        },
+        {
+            "id": "bastien",
+            "name": "Bastien",
+            "age": 24,
+            "job": "Jeune Pêcheur",
+            "traits": ["serviable", "rêveur", "bon camarade"],
+            "goals": ["épauler Paul sur les berges", "découvrir les secrets de la rivière"],
+            "home": "maison_sud",
+            "work": "riviere",
+        },
+        {
+            "id": "salimata",
+            "name": "Salimata",
+            "age": 38,
+            "job": "Aubergiste de Val-d'Or",
+            "traits": ["accueillante", "diplomate", "perspicace"],
+            "goals": ["renforcer l'alliance entre les deux villages", "approvisionner son auberge"],
+            "home": "maison_est",
+            "work": "village_voisin",
+        },
     ]
 
     agents = {}
@@ -151,22 +232,36 @@ def build_canonical_agents() -> Dict[str, Agent]:
         )
         agents[p["id"]] = Agent(persona=persona, state=state)
 
-    # Initialisation des relations sociales bidirectionnelles (Graphe social canonique)
+    # Initialisation des relations sociales bidirectionnelles (Graphe social étendu à 20 agents)
     social_ties = [
         ("awa", "yao", 0.65),
         ("awa", "mariam", 0.70),
+        ("awa", "fatou", 0.75),        # Awa s'approvisionne en farine chez Fatou
         ("yao", "elise", 0.60),
         ("yao", "mariam", 0.65),
+        ("yao", "sokhna", 0.70),       # Yao coopère avec Sokhna pour les cargaisons
         ("kofi", "claire", 0.60),
         ("kofi", "samuel", 0.80),
         ("kofi", "awa", 0.60),
+        ("kofi", "victor", 0.40),      # Rivalité politique entre Kofi et Victor
+        ("victor", "antoine", 0.65),   # Victor sollicite l'appui du garde champêtre
+        ("victor", "mariam", 0.60),    # Victor promet un soutien financier aux marchands
         ("mariam", "ibrahim", 0.75),
         ("paul", "tom", 0.65),
+        ("paul", "bastien", 0.85),     # Paul est le mentor de Bastien
+        ("bastien", "fatou", 0.60),    # Voisins sur la rivière
         ("elise", "lea", 0.70),
         ("samuel", "nadia", 0.65),
         ("nadia", "awa", 0.60),
+        ("nadia", "mireille", 0.70),   # Nadia et l'herboriste Mireille collaborent
         ("claire", "lea", 0.65),
+        ("claire", "victor", 0.55),    # Claire interroge Victor pour ses articles
         ("ibrahim", "paul", 0.55),
+        ("ibrahim", "fatou", 0.70),    # Ibrahim livre ses grains au moulin de Fatou
+        ("lucas", "tom", 0.80),        # Camarades inséparables pour les jeux du soir
+        ("lucas", "mireille", 0.65),   # Voisins de la forêt
+        ("sokhna", "salimata", 0.75),  # Réseau marchand de Val-d'Or
+        ("salimata", "awa", 0.65),     # Échanges culinaires réguliers
     ]
     for u, v, w in social_ties:
         if u in agents and v in agents:

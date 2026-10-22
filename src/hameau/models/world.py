@@ -65,7 +65,7 @@ def build_default_village() -> WorldGraph:
     """Construit le village canonique de Hameau (10 lieux publics + 5 maisons)."""
     world = WorldGraph()
 
-    # 10 Lieux publics
+    # Lieux publics existants et étendus
     locs = [
         Location("marche", "Place du Marché", "commerce", 0.50, 0.45, default_routine="tenir son étal ou faire ses courses"),
         Location("boulangerie", "Boulangerie d'Awa", "artisanat", 0.34, 0.34, default_routine="pétrir et cuire le pain"),
@@ -77,6 +77,11 @@ def build_default_village() -> WorldGraph:
         Location("cafe", "Café de la Rivière", "social", 0.52, 0.68, default_routine="boire un verre et écouter les nouvelles"),
         Location("riviere", "Berges de la Rivière", "nature", 0.65, 0.78, default_routine="pêcher au calme ou se promener"),
         Location("ferme", "Ferme des Hauts", "agriculture", 0.18, 0.72, default_routine="soigner les bêtes et cultiver"),
+        # Nouveaux lieux d'extension
+        Location("village_voisin", "Village Voisin de Val-d'Or", "exterieur", 0.88, 0.18, default_routine="échanger avec les marchands extérieurs"),
+        Location("moulin_riviere", "Vieux Moulin de la Rivière", "artisanat", 0.78, 0.70, default_routine="moudre le grain et surveiller le bief"),
+        Location("place_fetes", "Esplanade des Festivités", "civique", 0.36, 0.20, default_routine="participer aux réunions et débats électoraux"),
+        Location("foret_loups", "Orée des Bois & Clairière", "nature", 0.15, 0.88, default_routine="ramasser du bois et guetter les sentiers"),
         # Nœuds de résidences
         Location("maison_nord", "Maisons du Quartier Nord", "residence", 0.58, 0.14, default_routine="se reposer chez soi"),
         Location("maison_ouest", "Maisons des Artisans", "residence", 0.18, 0.38, default_routine="se reposer chez soi"),
@@ -93,6 +98,8 @@ def build_default_village() -> WorldGraph:
         ("mairie", "marche", 1),
         ("mairie", "ecole", 1),
         ("mairie", "maison_nord", 1),
+        ("mairie", "place_fetes", 1),
+        ("place_fetes", "boulangerie", 1),
         ("marche", "boulangerie", 1),
         ("marche", "cafe", 1),
         ("marche", "bibliotheque", 1),
@@ -104,10 +111,15 @@ def build_default_village() -> WorldGraph:
         ("medical", "cafe", 1),
         ("medical", "maison_sud", 1),
         ("cafe", "riviere", 1),
+        ("riviere", "moulin_riviere", 1),
+        ("moulin_riviere", "bibliotheque", 2),
         ("ecole", "bibliotheque", 1),
         ("ecole", "maison_est", 1),
+        ("ecole", "village_voisin", 2),
         ("bibliotheque", "riviere", 2),
         ("ferme", "medical", 2),
+        ("ferme", "foret_loups", 2),
+        ("maison_sud", "foret_loups", 2),
     ]
 
     for u, v, ticks in edges:

@@ -285,7 +285,8 @@ class SimulationEngine:
                     )
 
     def _process_agent_decisions(self, day: int, tick: int, global_tick: int) -> None:
-        """Gère les agents qui ont terminé leur activité courante."""
+        """Gère les agents qui ont terminé leur activité courante avec inférence GPU vectorisée/parallèle."""
+        candidates = []
         for agent in self.agents.values():
             if not agent.is_available():
                 continue
@@ -328,6 +329,8 @@ class SimulationEngine:
                     options["aller_cafe"] = "Aller au café de la rivière pour faire une pause"
                 else:
                     options["aller_cafe"] = "Aller au café de la rivière"
+            if is_evening and curr_loc != "place_fetes":
+                options["aller_place_fetes"] = "Aller à la place des fêtes pour la veillée et les animations"
 
             # Présélection et scoring MemoryGate
             mem_candidates = [
@@ -365,9 +368,32 @@ class SimulationEngine:
             )
 
             d1_q = build_d1_action_picker(options)
-            res = self.decider.ask(state_text, {"D1": d1_q})
-            d1_ans = res["D1"]
+            candidates.append({
+                "agent": agent,
+                "options": options,
+                "d1_q": d1_q,
+                "state_text": state_text,
+                "curr_loc": curr_loc,
+                "workplace": workplace,
+                "home": home,
+            })
 
+        if not candidates:
+            return
+
+        # Évaluation en parallèle / par lot sur les workers GPU distants
+        batch_items = [(c["state_text"], {"D1": c["d1_q"]}) for c in candidates]
+        batch_results = self.decider.ask_batch(batch_items)
+
+        for c, res in zip(candidates, batch_results):
+            agent = c["agent"]
+            options = c["options"]
+            d1_q = c["d1_q"]
+            curr_loc = c["curr_loc"]
+            workplace = c["workplace"]
+            home = c["home"]
+
+            d1_ans = res["D1"]
             chosen_key = d1_ans["value"]
             conf = d1_ans["confidence"]
             th = ConfidenceThresholds(
@@ -387,12 +413,20 @@ class SimulationEngine:
             agent.state.action_end_tick = global_tick + duration
 
             if chosen_key.startswith("aller_") or chosen_key == "rentrer":
-                target_loc = (
-                    workplace if chosen_key == "aller_travail"
-                    else home if chosen_key == "rentrer"
-                    else "marche" if chosen_key == "aller_marche"
-                    else "cafe"
-                )
+                if chosen_key == "aller_travail":
+                    target_loc = workplace
+                elif chosen_key == "rentrer":
+                    target_loc = home
+                else:
+                    dest = chosen_key[len("aller_"):]
+                    if dest in self.world.locations:
+                        target_loc = dest
+                    elif dest == "marche":
+                        target_loc = "marche"
+                    elif dest == "cafe":
+                        target_loc = "cafe"
+                    else:
+                        target_loc = "marche"
                 travel_time = self.world.travel_time(curr_loc, target_loc)
                 agent.state.destination_id = target_loc
                 agent.state.travel_remaining_ticks = travel_time
@@ -722,15 +756,18 @@ class SimulationEngine:
                 )
 
     def _process_evening_reflections(self, day: int, tick: int, global_tick: int) -> None:
-        """Déclenche les réflexions du soir avec D6 et Bedrock (B2)."""
-        for agent in self.agents.values():
-            if not agent.memories:
-                continue
+        """Déclenche les réflexions du soir avec D6 et Bedrock (B2) en parallèle sur GPU."""
+        candidate_agents = [agent for agent in self.agents.values() if agent.memories]
+        if not candidate_agents:
+            return
 
-            d6_res = self.decider.ask(
-                f"{agent.persona.name} termine sa journée à {agent.persona.home_id}.",
-                {"D6": build_d6_reflect_gate()},
-            )
+        batch_items = [
+            (f"{agent.persona.name} termine sa journée à {agent.persona.home_id}.", {"D6": build_d6_reflect_gate()})
+            for agent in candidate_agents
+        ]
+        batch_results = self.decider.ask_batch(batch_items)
+
+        for agent, d6_res in zip(candidate_agents, batch_results):
             d6_ans = d6_res["D6"]
             th_d6 = ConfidenceThresholds(
                 green=self.thresholds_cfg.get("D6", {}).get("green", 0.45),

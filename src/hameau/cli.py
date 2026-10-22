@@ -65,6 +65,7 @@ def main():
     parser.add_argument("--days", type=int, default=None, help="Nombre de jours simulés")
     parser.add_argument("--ticks-per-day", type=int, default=None, help="Nombre de ticks par jour (défaut 192)")
     parser.add_argument("--mock-decider", action="store_true", help="Utiliser le mock déterministe au lieu du GPU local")
+    parser.add_argument("--decider-urls", type=str, default=None, help="URLs des workers GPU distants (séparées par virgules, ex: Google Colab). Lu depuis .env si omis.")
     parser.add_argument("--no-cassettes", action="store_true", help="Désactiver le cache des cassettes Bedrock")
     parser.add_argument("--output", type=str, default=None, help="Chemin du fichier de journalisation JSONL (ex: runs/real_gpu_run.jsonl)")
     parser.add_argument("--serve", action="store_true", help="Lancer un serveur web local pour le visualiseur")
@@ -84,6 +85,16 @@ def main():
             server.server_close()
         return
 
+    # Chargement éventuel de .env (URLs éphémères de Colab)
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        pass
+
+    # Détermination des URLs distantes (CLI > .env > None)
+    decider_urls_str = args.decider_urls or os.environ.get("DECIDER_URLS")
+
     # Lecture de la configuration
     config_path = Path(args.config)
     if not config_path.exists():
@@ -102,10 +113,17 @@ def main():
     use_mock = args.mock_decider
     use_cassettes = not args.no_cassettes
 
+    if use_mock:
+        decider_mode_str = "Mock déterministe (sans GPU)"
+    elif decider_urls_str:
+        decider_mode_str = f"Distribué GPU Colab ({decider_urls_str})"
+    else:
+        decider_mode_str = "GPU local (CUDA RTX 3050)"
+
     print(f"===========================================================")
     print(f"   HAMEAU — Démarrage de la Simulation")
     print(f"   Jours : {days} | Ticks/jour : {ticks_per_day} (1 tick = 5 min)")
-    print(f"   Decider 2B : {'Mock déterministe' if use_mock else 'GPU local (CUDA RTX 3050)'}")
+    print(f"   Decider 2B : {decider_mode_str}")
     print(f"   Bedrock : {cfg['bedrock']['model_id']} ({cfg['bedrock']['region']})")
     print(f"   Cassettes : {'Activées (0$ au rejeu)' if use_cassettes else 'Désactivées'}")
     print(f"===========================================================\n")
@@ -119,6 +137,7 @@ def main():
         device=decider_cfg.get("device", "cuda"),
         mock=use_mock,
         seed=cfg.get("seed", 42),
+        server_urls=decider_urls_str if not use_mock else None,
     )
 
     bedrock_cfg = cfg.get("bedrock", {})

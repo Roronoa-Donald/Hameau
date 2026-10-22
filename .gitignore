@@ -50,3 +50,8 @@ cassettes/*.json
 test-jour1.png
 Archive.zip
 
+# Environment & Ephemeral URLs
+.env
+.env.*
+
+
