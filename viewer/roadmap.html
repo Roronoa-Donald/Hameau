@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAMEAU — Guide de Visite & Roadmap Interactive</title>
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --bg-card: #131c2e;
+      --bg-card-hover: #1a263d;
+      --border-color: #243452;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-indigo: #6366f1;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 30px 20px 80px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* En-tête */
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* Actions rapides */
+    .quick-launch-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 45px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .quick-launch-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e0e7ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .code-box {
+      background: #060911;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95rem;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow-x: auto;
+    }
+
+    /* Grille de sections */
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid var(--accent-cyan);
+      padding-left: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .tag-green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .tag-amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .tag-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    ul.feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.92rem;
+    }
+
+    ul.feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+
+    ul.feature-list li strong {
+      color: #f8fafc;
+    }
+
+    .bullet {
+      color: var(--accent-cyan);
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    /* Simulation visuelle du village */
+    .mock-ui-frame {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mock-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111827;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      border: 1px solid #1f2937;
+    }
+
+    .mock-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .stat-val {
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .timeline-walkthrough {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 15px;
+    }
+
+    .timeline-step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .step-marker {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 18px;
+      flex-grow: 1;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .highlight-box {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 15px;
+      font-size: 0.92rem;
+      color: #a7f3d0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- En-tête -->
+    <header>
+      <div class="badge-pill">
+        <span>🏛️</span> Hackathon AWS Builder Center • Strands Decider 2B
+      </div>
+      <h1>HAMEAU — Guide de Visite du Visualiseur</h1>
+      <p class="subtitle">
+        Guide immersif pour lancer le visualiseur et explorer pas à pas ce que vous observez à l'écran : le village autonome de 20 habitants, la propagation de la rumeur, le scrutin municipal et les arbitrages IA en direct.
+      </p>
+    </header>
+
+    <!-- Bannière de lancement rapide -->
+    <div class="quick-launch-banner">
+      <div class="quick-launch-title">
+        <span>🚀</span> Comment lancer et ouvrir le visualiseur en 10 secondes
+      </div>
+      <p style="color: #cbd5e1; font-size: 0.95rem;">
+        Aucun GPU, aucun compte AWS et aucune clé API ne sont requis pour visualiser la simulation complète. Le run certifié de 3 jours (14 359 événements) est déjà pré-chargé et prêt à être exploré.
+      </p>
+      <div class="code-box">
+        <span>./scripts/run_viewer.sh</span>
+        <span style="color: var(--text-dim); font-size: 0.8rem;">Mac / Linux (détecte Python standard automatiquement)</span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">
+        Le visualiseur s'ouvre directement à l'adresse : <strong style="color: #38bdf8;">http://127.0.0.1:8000/index.html</strong>
+      </p>
+    </div>
+
+    <!-- Section 1 : Ce que vous voyez en haut de l'écran -->
+    <h2 class="section-title">1. Le Tableau de Bord Supérieur (Indicateurs & Contrôles)</h2>
+    
+    <div class="mock-ui-frame">
+      <div class="mock-topbar">
+        <div style="font-weight: 800; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+          <span>🏛️</span> HAMEAU
+        </div>
+        <div class="mock-stats">
+          <div class="stat-pill">
+            <span class="stat-label">Décisions Decider 2B</span>
+            <span class="stat-val" style="color: #34d399;">13 351 (p50: 124 ms)</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Appels Bedrock</span>
+            <span class="stat-val" style="color: #60a5fa;">655 réels (0 cassette)</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Ratio Économie</span>
+            <span class="stat-val" style="color: #f59e0b;">20.4 : 1</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Coût AWS Réel</span>
+            <span class="stat-val" style="color: #38bdf8;">0.0118 $</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Horloge Simulée</span>
+            <span class="stat-val" style="color: #e2e8f0;">Jour 3 — 17h00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>📊</span> Les Compteurs Télémétriques</span>
+          <span class="tag tag-blue">Temps Réel</span>
+        </div>
+        <p>Les indicateurs en haut au centre résument la performance de l'architecture hybride au fil de la lecture :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Décisions Decider 2B (Vert)</strong> : Compteur cumulé des arbitrages cognitifs rapides (D1 à D9). Atteint <strong>13 351 décisions</strong> sur les 3 jours.</li>
+          <li><span class="bullet">•</span> <strong>Appels Bedrock LLM (Bleu)</strong> : Nombre de répliques et textes riches écrits par Amazon Nova Micro (655 appels).</li>
+          <li><span class="bullet">•</span> <strong>Ratio d'Économie (Orange)</strong> : Démontre qu'il y a <strong>20,4 décisions rapides</strong> pour chaque appel LLM lourd (bien au-dessus de la cible 20:1).</li>
+          <li><span class="bullet">•</span> <strong>Coût AWS Réel (Cyan)</strong> : Montant réel facturé par AWS (moins de <strong>0,012 $</strong> pour les 3 jours complets).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>⏯️</span> Barre de Contrôle & Vitesse</span>
+          <span class="tag tag-purple">Navigation</span>
+        </div>
+        <p>Prenez le contrôle du flux temporel du village :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Bouton Lecture / Pause</strong> (ou touche <kbd>Espace</kbd>) : Lance ou fige la vie du village à tout moment.</li>
+          <li><span class="bullet">•</span> <strong>Accélérateur de Vitesse (1x, 2x, 5x, 15x)</strong> : Permet de regarder les habitants flâner en temps réel ou de voir défiler 3 jours en 60 secondes.</li>
+          <li><span class="bullet">•</span> <strong>Curseur Temporel (Timeline)</strong> : Faites glisser la barre pour sauter instantanément au matin du Jour 1, au soir du Jour 2 ou au dépouillement du Jour 3.</li>
+          <li><span class="bullet">•</span> <strong>Jalons Clés</strong> : Les petits repères sous la barre indiquent les injections (R1 Rumeur, R2 Démenti, R3 Marché, R4 Campagne électorale, D9 Élection).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 2 : La Carte Interactive 2D du Village -->
+    <h2 class="section-title">2. La Carte Interactive du Village (L'Espace Central)</h2>
+
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-header">
+        <span class="card-title"><span>🗺️</span> Les 10 Lieux & les 20 Habitants Animés</span>
+        <span class="tag tag-green">Canvas Interactif</span>
+      </div>
+      <p>
+        La grande zone centrale représente le plan topologique du Hameau relié par un réseau de sentiers pédestres.
+      </p>
+      <div class="grid-2" style="margin-top: 15px;">
+        <div>
+          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🏛️ Lieux de Vie & d'Activité</h4>
+          <ul class="feature-list">
+            <li><span class="bullet">•</span> <strong>Place du Marché</strong> : Cœur économique du village, lieu des débats et des étals.</li>
+            <li><span class="bullet">•</span> <strong>Café de la Rivière</strong> : Point de rencontre convivial où les rumeurs s'échangent.</li>
+            <li><span class="bullet">•</span> <strong>Mairie du Hameau</strong> : Siège du maire Kofi et lieu officiel du scrutin municipal.</li>
+            <li><span class="bullet">•</span> <strong>Boulangerie d'Awa</strong>, <strong>Forge</strong>, <strong>Bibliothèque</strong>, <strong>Place des Fêtes</strong>...</li>
+            <li><span class="bullet">•</span> <strong>Pont vers le village voisin (Val-d'Or)</strong> : Sujet d'alerte lors des crues (R5).</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🚶 Les Habitants en Mouvement</h4>
+          <ul class="feature-list">
+            <li><span class="bullet">•</span> <strong>Sprites 2D personnalisés</strong> : Chaque personnage possède sa tenue et son métier (boulangère, pêcheur, maire, notaire, etc.).</li>
+            <li><span class="bullet">•</span> <strong>Bulles de dialogue</strong> : Dès que deux villageois se croisent et que la décision <em>D4 (TalkGate)</em> est validée, une bulle apparaît avec leur échange réel rédigé par Amazon Bedrock.</li>
+            <li><span class="bullet">•</span> <strong>Halo de statut coloré</strong> :
+              <br><span style="color: #f43f5e; font-weight: 700;">● Rouge</span> = a entendu la rumeur de fermeture (R1)
+              <br><span style="color: #06b6d4; font-weight: 700;">● Cyan</span> = a reçu le démenti officiel du maire (R2)
+              <br><span style="color: #f59e0b; font-weight: 700;">● Jaune</span> = a paniqué et fait des stocks de vivres
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3 : Les 4 Onglets du Panneau Latéral Droit -->
+    <h2 class="section-title">3. Le Panneau d'Analyse Latéral (Les 4 Onglets Clés)</h2>
+
+    <div class="grid-2">
+      
+      <!-- Onglet 1 : Inspecteur d'Agent -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>🔍</span> Onglet 1 : Inspecteur d'Agent</span>
+          <span class="tag tag-blue">Profil & Psychologie</span>
+        </div>
+        <p>Sélectionnez n'importe quel villageois (soit en cliquant sur son sprite sur la carte, soit via la liste déroulante) :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Besoins dynamiques</strong> : Jauges d'Énergie, de Faim et de Sociabilité qui évoluent tick par tick.</li>
+          <li><span class="bullet">•</span> <strong>Flux de souvenirs récents</strong> : Liste horodatée de ce que l'agent a vu ou entendu, avec son indice d'importance ($D_2$) et de crédibilité ($D_8$).</li>
+          <li><span class="bullet">•</span> <strong>Journal des décisions</strong> : Toutes les décisions prises par Decider 2B pour cet habitant avec la <em>Zone de confiance</em> (Vert = haute confiance, Rouge = repli sécurisé).</li>
+        </ul>
+      </div>
+
+      <!-- Onglet 2 : Graphe de Rumeur & Élection -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>📈</span> Onglet 2 : Graphe de Rumeur & Élection</span>
+          <span class="tag tag-amber">Épidémiologie & Vote</span>
+        </div>
+        <p>Le cœur narratif et expérimental de la simulation :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Courbes Épidémiques</strong> : Tracé dynamique comparant la propagation de la fausse rumeur $R_1$, du démenti $R_2$ et de l'ouverture du marché $R_3$.</li>
+          <li><span class="bullet">•</span> <strong>Boîte du Scrutin Municipal (D9)</strong> : Affiche le duel électoral entre <strong>Kofi (maire sortant)</strong> et <strong>Victor (challenger)</strong>. À 17h00 le Jour 3, les urnes se dépouillent sous vos yeux (Kofi 4 voix, Victor 4 voix, 12 abstentions, Kofi reconduit).</li>
+          <li><span class="bullet">•</span> <strong>Cartes des Sauts de Transmission</strong> : Retrace chaque transmission de bouche-à-oreille (<em>"Yao a dit à Bastien..."</em>) avec le numéro de saut et la crédibilité accordée.</li>
+        </ul>
+      </div>
+
+      <!-- Onglet 3 : Diff MemoryGate -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>🧠</span> Onglet 3 : Diff MemoryGate</span>
+          <span class="tag tag-green">Architecture & Économie</span>
+        </div>
+        <p>Prouve visuellement l'efficacité du pattern <em>MemoryGate</em> face au problème de saturation de contexte :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Colonne de gauche (Brut sans filtrage)</strong> : Tout l'historique encombrant de souvenirs accumulés par l'habitant.</li>
+          <li><span class="bullet">•</span> <strong>Colonne de droite (Top 3 Retenu)</strong> : Les 3 seuls souvenirs pertinents sélectionnés par Decider 2B grâce au score composite ($D_3$).</li>
+          <li><span class="bullet">•</span> <strong>Badge de réduction</strong> : Affiche l'économie mesurée de tokens (<strong>-23 % à -78 %</strong>) et le temps de scoring instantané (~120 ms).</li>
+        </ul>
+      </div>
+
+      <!-- Onglet 4 : La Gazette du Hameau -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title"><span>📰</span> Onglet 4 : La Gazette du Hameau</span>
+          <span class="tag tag-purple">Presse Locale IA</span>
+        </div>
+        <p>Le journal satirique du village rédigé chaque soir à 22h00 par Amazon Nova Micro :</p>
+        <ul class="feature-list">
+          <li><span class="bullet">•</span> <strong>Jour 1</strong> : Raconte la panique naissante autour du marché et le lancement surprise de la campagne de Victor.</li>
+          <li><span class="bullet">•</span> <strong>Jour 2</strong> : Couvre le démenti solennel du maire et la veillée du Jeu du Loup.</li>
+          <li><span class="bullet">•</span> <strong>Jour 3</strong> : Édition spéciale titrée <em>« Le Grand Jour des Élections et le Marché en Fête ! »</em>, proclamant la réélection de Kofi et le succès éclatant du marché.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Section 4 : Le Scénario Pas à Pas (Ce qui se passe chronologiquement) -->
+    <h2 class="section-title">4. Déroulement Chronologique des 3 Jours</h2>
+
+    <div class="timeline-walkthrough">
+      
+      <div class="timeline-step">
+        <div class="step-marker">J1</div>
+        <div class="step-content">
+          <div class="step-title">Jour 1 (Jeudi) — L'Inquiétude & La Campagne Électorale</div>
+          <div class="step-desc">
+            • <strong>08h00 (Tick 24)</strong> : La rumeur $R_1$ est injectée chez Yao (<em>« La mairie va fermer le marché samedi »</em>). Yao s'inquiète, en parle autour de lui et commence à stocker des vivres.<br>
+            • <strong>09h20 (Tick 40)</strong> : Victor annonce sa candidature à la mairie ($R_4$) en promettant de réparer le pont et d'ouvrir de nouveaux débouchés.<br>
+            • <strong>20h00 (Tick 168)</strong> : Première veillée à la Place des Fêtes avec une partie de Jeu du Loup ($R_6$).
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">J2</div>
+        <div class="step-content">
+          <div class="step-title">Jour 2 (Vendredi) — Le Démenti Officiel & La Crue du Pont</div>
+          <div class="step-desc">
+            • <strong>10h00 (Tick 48)</strong> : Le maire Kofi publie son démenti solennel $R_2$ garantissant la tenue du marché. L'information commence à circuler pour apaiser les craintes.<br>
+            • <strong>11h00 (Tick 60)</strong> : Sokhna lance une alerte crue ($R_5$) : le pont vers le village voisin vacille, alimentant les débats de campagne entre Kofi et Victor.
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">J3</div>
+        <div class="step-content">
+          <div class="step-title">Jour 3 (Samedi) — Le Climax : Grand Marché & Vote Municipal</div>
+          <div class="step-desc">
+            • <strong>07h00 (Tick 12)</strong> : Le marché ouvre ses portes dans la liesse générale ($R_3$). La rumeur de fermeture est définitivement vaincue par les faits.<br>
+            • <strong>17h00 (Tick 132)</strong> : <strong>Le Scrutin Municipal ($D_9$)</strong> a lieu à la mairie. Chaque habitant vote en âme et conscience selon ses affinités et ses souvenirs filtrés par MemoryGate.<br>
+            • <strong>22h00</strong> : La Gazette du soir clôture la simulation avec le bilan complet des festivités et du mandat renouvelé du maire.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="highlight-box">
+      <strong>💡 Astuce pour la Démonstration Vidéo :</strong>
+      Positionnez la vitesse de lecture à <strong>5x</strong> au départ pour voir la vie du village s'éveiller, puis ralentissez à <strong>1x ou 2x</strong> autour de 17h00 le Jour 3 pour assister en direct au vote municipal dans l'onglet <em>Graphe de Rumeur</em> !
+    </div>
+
+    <!-- Pied de page -->
+    <footer>
+      HAMEAU • Développé pour le Hackathon AWS Builder Center • Modèles : Strands Decider 2B & Amazon Bedrock Nova Micro
+    </footer>
+
+  </div>
+
+</body>
+</html>
