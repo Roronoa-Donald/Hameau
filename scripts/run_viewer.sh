@@ -18,10 +18,14 @@ echo "=========================================================="
 echo "Répertoire : $REPO_ROOT"
 echo "Port       : $PORT"
 
-# Vérification de l'environnement virtuel / uv
-if ! command -v uv >/dev/null 2>&1; then
-    echo "[-] Erreur : 'uv' n'est pas installé ou n'est pas dans le PATH."
-    echo "    Installez uv ou activez votre environnement virtuel Python."
+# Vérification de l'environnement : utilisation de uv si présent, sinon python3 standard
+if command -v uv >/dev/null 2>&1 && uv run python -c "import hameau" >/dev/null 2>&1; then
+    LAUNCH_CMD=(uv run hameau --serve --port "$PORT")
+elif command -v python3 >/dev/null 2>&1; then
+    echo "[i] Mode léger universel (sans GPU ni uv requis) : serveur HTTP Python standard"
+    LAUNCH_CMD=(python3 -m http.server "$PORT" --bind "$HOST" --directory viewer)
+else
+    echo "[-] Erreur : Python 3 n'est pas installé sur ce système."
     exit 1
 fi
 
@@ -41,10 +45,12 @@ fi
     sleep 1.2
     if command -v xdg-open >/dev/null 2>&1; then
         xdg-open "$URL" >/dev/null 2>&1 || true
+    elif command -v open >/dev/null 2>&1; then
+        open "$URL" >/dev/null 2>&1 || true
     fi
 ) &
 
-echo "[+] Démarrage du serveur local sécurisé..."
+echo "[+] Démarrage du serveur visualiseur local..."
 echo "----------------------------------------------------------"
 echo "   Interface Principale : $URL"
 echo "   Planche-Contact 12H  : $CONTACT_SHEET_URL"
@@ -53,4 +59,4 @@ echo "Appuyez sur Ctrl+C pour arrêter le serveur."
 echo ""
 
 # Exécution du serveur
-exec uv run hameau --serve --port "$PORT"
+exec "${LAUNCH_CMD[@]}"
