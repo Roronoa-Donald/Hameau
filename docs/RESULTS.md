@@ -2,7 +2,7 @@
 
 > **Source de vérité unique** : [`results/summary.json`](../results/summary.json)  
 > **Fichier journal source** : [`runs/real_final_3j.jsonl`](../runs/real_final_3j.jsonl)  
-> **Généré le** : 2026-10-22T12:07:01.362584+00:00  
+> **Généré le** : 2026-10-22T12:09:29.223438+00:00  
 > **Backend Décisions** : `StrandsAgents/strands-decider-2B-hobson-v21` (local_gpu)  
 > **Backend Générations** : `amazon.nova-micro-v1:0` (live_network, 655 appels réels)  
 > **Matériel** : NVIDIA GeForce RTX 3050 6GB Laptop GPU (6144 Mo VRAM)
