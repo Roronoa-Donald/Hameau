@@ -1,0 +1,23 @@
+{
+  "timestamp_utc": "2026-10-22T09:27:54Z",
+  "experiment": "E0_decider_latency",
+  "git_commit": "ffc1f051f0c75dc1c79039ee33f6ecd8e4ec5ddc",
+  "git_dirty": true,
+  "hardware": {
+    "device_type": "cuda",
+    "device_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+    "total_vram_gb": 6.14
+  },
+  "environment": {
+    "python_version": "3.11.16",
+    "torch_version": "2.14.1+cu130",
+    "cuda_available": true,
+    "flash_linear_attention_installed": false,
+    "causal_conv1d_installed": false
+  },
+  "model": {
+    "checkpoint": "StrandsAgents/strands-decider-2B-hobson-v21",
+    "load_time_seconds": 4.72,
+    "vram_allocated_mb_post_load": 3835.2
+  }
+}

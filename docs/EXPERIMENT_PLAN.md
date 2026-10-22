@@ -32,6 +32,22 @@
   * Présence de `flash-linear-attention` : ABSENT (fallback PyTorch de référence).
 * **Condition d'échec** : VRAM > 5,5 Go (OOM), ou latence unitaire > 1 500 ms empêchant la faisabilité des runs longs locaux.
 
+### Résultats Observés E0 (22 octobre 2026) :
+* **Statut de validation** : SUCCÈS (Toutes les conditions respectées, aucun OOM, latences conformes).
+* **Matériel** : `local_rtx3050` (NVIDIA GeForce RTX 3050 6GB Laptop GPU, 6.14 GB total).
+* **Noyaux accélérés** : `flash-linear-attention` : **ABSENT**, `causal_conv1d` : **ABSENT**. Fallback PyTorch standard actif.
+* **Mémoire VRAM** : 3 835 MB alloués au chargement (~3.84 GB), pic réservé à 5 016 MB (5.02 GB sur 6.14 GB max).
+* **Latences mesurées (Chaud / p50)** :
+  * État 150 tokens : 1 Q = 184.7 ms (5.41 Q/s) | 4 Q = 408.3 ms (9.80 Q/s) | 8 Q = 651.2 ms (12.29 Q/s) | 16 Q = 1 166.1 ms (13.72 Q/s).
+  * État 300 tokens : 1 Q = 284.5 ms (3.51 Q/s) | 4 Q = 533.3 ms (7.50 Q/s) | 8 Q = 775.8 ms (10.31 Q/s) | 16 Q = 1 297.5 ms (12.33 Q/s).
+  * État 600 tokens : 1 Q = 493.7 ms (2.03 Q/s) | 4 Q = 712.7 ms (5.61 Q/s) | 8 Q = 961.7 ms (8.32 Q/s) | 16 Q = 1 485.5 ms (10.77 Q/s).
+* **Amortissement du batching** : Sur état 150 tokens, passer de 1 à 16 questions divise le coût par question par 2.53 (de 184.7 ms à 72.9 ms / question).
+* **Fichiers sources** : `results/decider_latency.csv`, `results/manifest_e0.json`.
+* **Conclusions pour la suite** :
+  1. Le GPU local RTX 3050 est autonome et ne nécessite pas de worker Colab externe instable.
+  2. Durée projetée par run complet 3 jours (12 agents) : ~8 à 10 minutes.
+  3. Faisabilité des graines : 3 graines de test complètes (1, 2, 3) pour E1, E2, E3 réalisables en moins de 2h30 cumulées, bien en-deçà du budget global de 14h.
+
 ---
 
 ## E1 — Run Réel de Référence (12 Habitants, 3 Jours)
