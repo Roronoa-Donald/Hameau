@@ -3,7 +3,7 @@
  * UI/UX Pro Max & Ponytail (Vanilla JS, 0 dépendance lourde)
  */
 
-// Définition canonique des 15 lieux du village
+// Définition canonique des 19 lieux du village (étendus)
 const VILLAGE_LOCATIONS = {
   marche: { id: "marche", name: "Place du Marché", category: "commerce", x: 0.50, y: 0.45, icon: "🧺" },
   boulangerie: { id: "boulangerie", name: "Boulangerie d'Awa", category: "artisanat", x: 0.34, y: 0.34, icon: "🥖" },
@@ -15,6 +15,10 @@ const VILLAGE_LOCATIONS = {
   cafe: { id: "cafe", name: "Café de la Rivière", category: "social", x: 0.52, y: 0.68, icon: "☕" },
   riviere: { id: "riviere", name: "Berges Rivière", category: "nature", x: 0.65, y: 0.78, icon: "🎣" },
   ferme: { id: "ferme", name: "Ferme des Hauts", category: "agriculture", x: 0.18, y: 0.72, icon: "🌾" },
+  village_voisin: { id: "village_voisin", name: "Village Voisin (Val-d'Or)", category: "exterieur", x: 0.88, y: 0.18, icon: "🏰" },
+  moulin_riviere: { id: "moulin_riviere", name: "Vieux Moulin", category: "artisanat", x: 0.78, y: 0.70, icon: "⚙️" },
+  place_fetes: { id: "place_fetes", name: "Place des Fêtes", category: "civique", x: 0.36, y: 0.20, icon: "🎪" },
+  foret_loups: { id: "foret_loups", name: "Forêt des Loups", category: "nature", x: 0.15, y: 0.88, icon: "🌲" },
   maison_nord: { id: "maison_nord", name: "Maisons Nord", category: "residence", x: 0.58, y: 0.14, icon: "🏡" },
   maison_ouest: { id: "maison_ouest", name: "Maisons Ouest", category: "residence", x: 0.18, y: 0.38, icon: "🏡" },
   maison_centre: { id: "maison_centre", name: "Maisons Centre", category: "residence", x: 0.38, y: 0.56, icon: "🏡" },
@@ -23,12 +27,14 @@ const VILLAGE_LOCATIONS = {
 };
 
 const VILLAGE_ROADS = [
-  ["mairie", "marche"], ["mairie", "ecole"], ["mairie", "maison_nord"],
+  ["mairie", "marche"], ["mairie", "ecole"], ["mairie", "maison_nord"], ["mairie", "place_fetes"],
+  ["place_fetes", "boulangerie"],
   ["marche", "boulangerie"], ["marche", "cafe"], ["marche", "bibliotheque"], ["marche", "maison_centre"],
   ["boulangerie", "atelier"], ["boulangerie", "maison_ouest"],
   ["atelier", "ferme"], ["atelier", "medical"], ["medical", "cafe"], ["medical", "maison_sud"],
-  ["cafe", "riviere"], ["ecole", "bibliotheque"], ["ecole", "maison_est"],
-  ["bibliotheque", "riviere"], ["ferme", "medical"]
+  ["cafe", "riviere"], ["riviere", "moulin_riviere"], ["moulin_riviere", "bibliotheque"],
+  ["ecole", "bibliotheque"], ["ecole", "maison_est"], ["ecole", "village_voisin"],
+  ["bibliotheque", "riviere"], ["ferme", "medical"], ["ferme", "foret_loups"], ["maison_sud", "foret_loups"]
 ];
 
 const AGENTS_META = {
@@ -44,16 +50,29 @@ const AGENTS_META = {
   lea: { name: "Léa", job: "Bibliothécaire", age: 31, avatar: "📖", home: "maison_est" },
   ibrahim: { name: "Ibrahim", job: "Agriculteur", age: 54, avatar: "🚜", home: "maison_ouest" },
   claire: { name: "Claire", job: "Rédactrice Gazette", age: 34, avatar: "📰", home: "maison_nord" },
+  victor: { name: "Victor", job: "Notaire & Candidat", age: 58, avatar: "📜", home: "maison_nord" },
+  fatou: { name: "Fatou", job: "Meunière du Moulin", age: 31, avatar: "🌾", home: "maison_sud" },
+  lucas: { name: "Lucas", job: "Bûcheron & Meneur", age: 19, avatar: "🪓", home: "maison_ouest" },
+  sokhna: { name: "Sokhna", job: "Marchande itinérante", age: 47, avatar: "🧕", home: "maison_est" },
+  antoine: { name: "Antoine", job: "Garde champêtre", age: 62, avatar: "💂", home: "maison_centre" },
+  mireille: { name: "Mireille", job: "Herboriste", age: 29, avatar: "🌿", home: "maison_ouest" },
+  bastien: { name: "Bastien", job: "Jeune Pêcheur", age: 24, avatar: "🛶", home: "maison_sud" },
+  salimata: { name: "Salimata", job: "Aubergiste", age: 38, avatar: "🍲", home: "maison_est" },
 };
 
-// Topologie des relations sociales du village (Section 4.3 & FR-14)
+// Topologie des relations sociales du village (Graphe social étendu à 20 agents)
 const SOCIAL_RELATIONSHIPS = [
-  { source: "awa", target: "yao", strength: 0.60, label: "Clients & livraisons" },
+  { source: "awa", target: "yao", strength: 0.65, label: "Clients & livraisons" },
   { source: "awa", target: "mariam", strength: 0.70, label: "Partenaires de marché" },
-  { source: "kofi", target: "claire", strength: 0.50, label: "Communication municipale" },
+  { source: "awa", target: "fatou", strength: 0.75, label: "Fourniture farine" },
+  { source: "kofi", target: "claire", strength: 0.60, label: "Communication municipale" },
   { source: "kofi", target: "samuel", strength: 0.80, label: "Conseil des aînés" },
+  { source: "kofi", target: "victor", strength: 0.40, label: "Rivalité politique" },
+  { source: "victor", target: "antoine", strength: 0.65, label: "Ordre public électoral" },
+  { source: "victor", target: "mariam", strength: 0.60, label: "Promesses marchandes" },
   { source: "mariam", target: "ibrahim", strength: 0.75, label: "Approvisionnement légumes" },
   { source: "paul", target: "tom", strength: 0.65, label: "Habitués du café" },
+  { source: "paul", target: "bastien", strength: 0.85, label: "Transmission de pêche" },
   { source: "elise", target: "yao", strength: 0.60, label: "Voisins d'enfance" },
   { source: "elise", target: "lea", strength: 0.70, label: "Échange de livres" },
   { source: "nadia", target: "samuel", strength: 0.60, label: "Entretien matériel" },
@@ -62,12 +81,19 @@ const SOCIAL_RELATIONSHIPS = [
   { source: "paul", target: "nadia", strength: 0.50, label: "Consultations de routine" },
   { source: "ibrahim", target: "samuel", strength: 0.65, label: "Réparation d'outils" },
   { source: "awa", target: "kofi", strength: 0.55, label: "Doléances du marché" },
+  { source: "yao", target: "sokhna", strength: 0.70, label: "Cargaisons fluviales" },
+  { source: "lucas", target: "mireille", strength: 0.75, label: "Exploration des bois" },
+  { source: "sokhna", target: "salimata", strength: 0.80, label: "Commerce inter-villages" },
+  { source: "lucas", target: "bastien", strength: 0.70, label: "Compagnons de veillée" },
+  { source: "fatou", target: "bastien", strength: 0.60, label: "Voisins de rivière" }
 ];
 
 const NETWORK_AGENT_ORDER = [
   "awa", "yao", "mariam", "ibrahim",
   "kofi", "claire", "elise", "lea",
-  "samuel", "nadia", "paul", "tom"
+  "samuel", "nadia", "paul", "tom",
+  "victor", "fatou", "lucas", "sokhna",
+  "antoine", "mireille", "bastien", "salimata"
 ];
 
 // État de l'application
@@ -301,11 +327,28 @@ class HameauViewer {
       }
     }
 
+    this.runAgentIds = this.computeRunRoster(this.events);
+
     this.maxTick = Math.max(576, maxT);
     this.slider.max = this.maxTick;
     document.getElementById("feed-status").textContent = `${this.events.length} événements chargés`;
     this.seekToTick(0);
     this.togglePlay(true);
+  }
+
+  computeRunRoster(events) {
+    // La population affichée vient du journal, jamais d'une constante.
+    const ids = new Set();
+    for (const ev of events) {
+      if (ev.agent_id && AGENTS_META[ev.agent_id]) ids.add(ev.agent_id);
+      const rcv = ev.payload && ev.payload.receiver;
+      if (rcv && AGENTS_META[rcv]) ids.add(rcv);
+    }
+    return ids.size > 0 ? ids : new Set(Object.keys(AGENTS_META));
+  }
+
+  populationSize() {
+    return (this.runAgentIds && this.runAgentIds.size) || Object.keys(AGENTS_META).length;
   }
 
   generateSyntheticRun() {
@@ -318,6 +361,14 @@ class HameauViewer {
     this.isPlaying = forcePlay !== null ? forcePlay : !this.isPlaying;
     this.playIcon.textContent = this.isPlaying ? "⏸" : "▶";
     this.btnPlay.classList.toggle("btn-primary", !this.isPlaying);
+  }
+
+  play() {
+    this.togglePlay(true);
+  }
+
+  pause() {
+    this.togglePlay(false);
   }
 
   seekToTick(targetTick) {
@@ -563,7 +614,6 @@ class HameauViewer {
       }
     });
   }
-  }
 
   addFeedItem(tick, tagClass, tagText, message) {
     const item = document.createElement("div");
@@ -750,13 +800,16 @@ class HameauViewer {
   updateRumorTab() {
     let infected = 0;
     let stocking = 0;
-    for (const a of Object.values(this.agentsState)) {
+    const roster = this.runAgentIds || new Set(Object.keys(this.agentsState));
+    for (const [id, a] of Object.entries(this.agentsState)) {
+      if (!roster.has(id)) continue;
       if (a.believedFacts["R1_fermeture_marche"]) infected++;
       if (a.didStock) stocking++;
     }
+    const n = this.populationSize();
 
-    document.getElementById("rumor-count").textContent = `${infected} / 12`;
-    document.getElementById("stocking-count").textContent = `${stocking} / 12`;
+    document.getElementById("rumor-count").textContent = `${infected} / ${n}`;
+    document.getElementById("stocking-count").textContent = `${stocking} / ${n}`;
 
     const hopsContainer = document.getElementById("rumor-hops-list");
     hopsContainer.textContent = "";
@@ -771,7 +824,7 @@ class HameauViewer {
       routeSpan.textContent = `${h.sender} ➔ ${h.receiver}`;
 
       const hopSpan = document.createElement("span");
-      hopSpan.textContent = `Saut #${h.hop_count}`;
+      hopSpan.textContent = `${(h.fact_id || "").split("_")[0]} · Saut #${h.hop_count}`;
 
       header.appendChild(routeSpan);
       header.appendChild(hopSpan);
@@ -810,8 +863,9 @@ class HameauViewer {
     ctx.font = "9px monospace";
     ctx.fillStyle = "#64748b";
 
-    for (let count of [0, 6, 12]) {
-      const y = padTop + plotH - (count / 12) * plotH;
+    const pop = this.populationSize();
+    for (let count of [0, Math.round(pop / 2), pop]) {
+      const y = padTop + plotH - (count / pop) * plotH;
       ctx.beginPath();
       ctx.moveTo(padLeft, y);
       ctx.lineTo(w - padRight, y);
@@ -861,7 +915,7 @@ class HameauViewer {
       ctx.lineWidth = 2;
       r1Points.forEach((pt, i) => {
         const x = padLeft + (pt.tick / totalTicks) * plotW;
-        const y = padTop + plotH - (pt.count / 12) * plotH;
+        const y = padTop + plotH - (pt.count / pop) * plotH;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -874,7 +928,7 @@ class HameauViewer {
       ctx.lineWidth = 2;
       r2Points.forEach((pt, i) => {
         const x = padLeft + (pt.tick / totalTicks) * plotW;
-        const y = padTop + plotH - (pt.count / 12) * plotH;
+        const y = padTop + plotH - (pt.count / pop) * plotH;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -887,7 +941,7 @@ class HameauViewer {
       ctx.lineWidth = 2;
       r3Points.forEach((pt, i) => {
         const x = padLeft + (pt.tick / totalTicks) * plotW;
-        const y = padTop + plotH - (pt.count / 12) * plotH;
+        const y = padTop + plotH - (pt.count / pop) * plotH;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -1447,7 +1501,7 @@ class HameauViewer {
     const isHovered = a.id === this.hoveredAgentId;
     const hasRumor = a.believedFacts && a.believedFacts["R1_fermeture_marche"] > 0;
     const hasDebunk = a.believedFacts && a.believedFacts["R2_dementi_maire"] > 0;
-    const didStock = a.didStock || (a.inventory && a.inventory["farine"] > 2);
+    const didStock = !!a.didStock;
     const isHesitating = a.confidenceZone === "red";
     const isTalking = a.isTalking;
 
