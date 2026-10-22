@@ -803,7 +803,11 @@ def main() -> None:
         json.dump(summary, f, indent=2, ensure_ascii=False)
 
     if args.sync_viewer:
-        for dst in [repo_root / "viewer" / "sample_run.jsonl", repo_root / "runs" / "real_gpu_run.jsonl"]:
+        for dst in [
+            repo_root / "viewer" / "sample_run.jsonl",
+            repo_root / "viewer" / "live_run.jsonl",
+            repo_root / "runs" / "real_gpu_run.jsonl",
+        ]:
             if log_path.resolve() != dst.resolve():
                 shutil.copy2(log_path, dst)
                 print(f"[build_numbers] Synchronisé -> {dst.relative_to(repo_root)}")

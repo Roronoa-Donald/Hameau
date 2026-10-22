@@ -1938,11 +1938,11 @@ class HameauViewer {
 function initHameau() {
   if (window.hameauViewer) return;
   window.hameauViewer = new HameauViewer();
-  // Chargement automatique : live_run.jsonl en priorité, puis sample_run.jsonl
-  fetch("live_run.jsonl")
+  // Chargement automatique : sample_run.jsonl (run certifié officiel), puis live_run.jsonl
+  fetch("sample_run.jsonl")
     .then((r) => {
       if (r.ok) return r.text();
-      return fetch("sample_run.jsonl").then((r2) => r2.text());
+      return fetch("live_run.jsonl").then((r2) => r2.text());
     })
     .then((txt) => window.hameauViewer.loadJSONLContent(txt))
     .catch(() => console.log("Prêt pour chargement JSONL"));
