@@ -1,20 +1,12 @@
 {
   "manifest": {
-    "generated_at_utc": "2026-10-22T12:07:01.362584+00:00",
+    "generated_at_utc": "2026-10-22T12:09:29.223438+00:00",
     "run_log_file": "runs/real_final_3j.jsonl",
     "run_log_sha256": "768c7b2490bf37e74ee2ef199c0938124a6adb74b150d6ef2b4e948b056ea902",
     "git": {
-      "commit": "cdc18f2f7e112510b89d93a35d76f18ff5ef0f3c",
-      "dirty": true,
-      "status_lines": [
-        "M docs/DEFINITIONS.md",
-        " M viewer/sample_run.jsonl",
-        "?? results/manifest.json",
-        "?? results/summary.json",
-        "?? scripts/build_numbers.py",
-        "?? scripts/check_claims.py",
-        "?? viewer/summary.json"
-      ]
+      "commit": "e34b1a0bf6fe9cf0fbafc7b4ea14a3deec7a530a",
+      "dirty": false,
+      "status_lines": []
     },
     "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
     "seed": 42,
