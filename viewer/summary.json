@@ -1,0 +1,912 @@
+{
+  "manifest": {
+    "generated_at_utc": "2026-10-22T12:07:01.362584+00:00",
+    "run_log_file": "runs/real_final_3j.jsonl",
+    "run_log_sha256": "768c7b2490bf37e74ee2ef199c0938124a6adb74b150d6ef2b4e948b056ea902",
+    "git": {
+      "commit": "cdc18f2f7e112510b89d93a35d76f18ff5ef0f3c",
+      "dirty": true,
+      "status_lines": [
+        "M docs/DEFINITIONS.md",
+        " M viewer/sample_run.jsonl",
+        "?? results/manifest.json",
+        "?? results/summary.json",
+        "?? scripts/build_numbers.py",
+        "?? scripts/check_claims.py",
+        "?? viewer/summary.json"
+      ]
+    },
+    "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
+    "seed": 42,
+    "started_at_utc": "2026-10-22T11:16:39.809263+00:00",
+    "finished_at_utc": "2026-10-22T11:49:25.185751+00:00",
+    "wall_clock_seconds": 1965.38,
+    "hardware": {
+      "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "vram_total_mb": 6144,
+      "flash_linear_attention": false
+    },
+    "decider": {
+      "model_id": "StrandsAgents/strands-decider-2B-hobson-v21",
+      "backend_type": "local_gpu",
+      "backends_seen": {
+        "StrandsAgents/strands-decider-2B-hobson-v21": 13351
+      }
+    },
+    "bedrock": {
+      "model_id": "amazon.nova-micro-v1:0",
+      "source": "live_network",
+      "live_network_calls": 655,
+      "cassette_calls": 0
+    },
+    "is_valid_real_run": true
+  },
+  "e0_latency_benchmark": {
+    "available": true,
+    "source_file": "/home/rd/hackaton-aws-2/results/decider_latency.csv",
+    "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+    "fla_present": false,
+    "max_warm_throughput_qps": 13.72,
+    "peak_vram_reserved_mb": 5016.4,
+    "rows": [
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 1,
+        "regime": "cold",
+        "latency_p50_ms": 646.42,
+        "latency_p95_ms": 646.42,
+        "latency_max_ms": 646.42,
+        "throughput_qps": 1.55,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 3942.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 1,
+        "regime": "warm",
+        "latency_p50_ms": 184.72,
+        "latency_p95_ms": 185.52,
+        "latency_max_ms": 185.65,
+        "throughput_qps": 5.41,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 3942.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 4,
+        "regime": "cold",
+        "latency_p50_ms": 440.1,
+        "latency_p95_ms": 440.1,
+        "latency_max_ms": 440.1,
+        "throughput_qps": 9.09,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4066.4,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 4,
+        "regime": "warm",
+        "latency_p50_ms": 408.33,
+        "latency_p95_ms": 408.94,
+        "latency_max_ms": 408.99,
+        "throughput_qps": 9.8,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4066.4,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 8,
+        "regime": "cold",
+        "latency_p50_ms": 649.59,
+        "latency_p95_ms": 649.59,
+        "latency_max_ms": 649.59,
+        "throughput_qps": 12.32,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4284.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 8,
+        "regime": "warm",
+        "latency_p50_ms": 651.16,
+        "latency_p95_ms": 653.79,
+        "latency_max_ms": 654.18,
+        "throughput_qps": 12.29,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4284.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 16,
+        "regime": "cold",
+        "latency_p50_ms": 1179.22,
+        "latency_p95_ms": 1179.22,
+        "latency_max_ms": 1179.22,
+        "throughput_qps": 13.57,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4733.3,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 150,
+        "num_questions": 16,
+        "regime": "warm",
+        "latency_p50_ms": 1166.12,
+        "latency_p95_ms": 1175.35,
+        "latency_max_ms": 1175.96,
+        "throughput_qps": 13.72,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 1,
+        "regime": "cold",
+        "latency_p50_ms": 285.55,
+        "latency_p95_ms": 285.55,
+        "latency_max_ms": 285.55,
+        "throughput_qps": 3.5,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 1,
+        "regime": "warm",
+        "latency_p50_ms": 284.52,
+        "latency_p95_ms": 286.83,
+        "latency_max_ms": 287.28,
+        "throughput_qps": 3.51,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 4,
+        "regime": "cold",
+        "latency_p50_ms": 532.7,
+        "latency_p95_ms": 532.7,
+        "latency_max_ms": 532.7,
+        "throughput_qps": 7.51,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 4,
+        "regime": "warm",
+        "latency_p50_ms": 533.32,
+        "latency_p95_ms": 534.27,
+        "latency_max_ms": 534.38,
+        "throughput_qps": 7.5,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 8,
+        "regime": "cold",
+        "latency_p50_ms": 779.05,
+        "latency_p95_ms": 779.05,
+        "latency_max_ms": 779.05,
+        "throughput_qps": 10.27,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 8,
+        "regime": "warm",
+        "latency_p50_ms": 775.78,
+        "latency_p95_ms": 778.5,
+        "latency_max_ms": 778.65,
+        "throughput_qps": 10.31,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4783.6,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 16,
+        "regime": "cold",
+        "latency_p50_ms": 1306.01,
+        "latency_p95_ms": 1306.01,
+        "latency_max_ms": 1306.01,
+        "throughput_qps": 12.25,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 300,
+        "num_questions": 16,
+        "regime": "warm",
+        "latency_p50_ms": 1297.54,
+        "latency_p95_ms": 1305.89,
+        "latency_max_ms": 1307.66,
+        "throughput_qps": 12.33,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 1,
+        "regime": "cold",
+        "latency_p50_ms": 495.45,
+        "latency_p95_ms": 495.45,
+        "latency_max_ms": 495.45,
+        "throughput_qps": 2.02,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 1,
+        "regime": "warm",
+        "latency_p50_ms": 493.7,
+        "latency_p95_ms": 495.18,
+        "latency_max_ms": 495.54,
+        "throughput_qps": 2.03,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 4,
+        "regime": "cold",
+        "latency_p50_ms": 709.84,
+        "latency_p95_ms": 709.84,
+        "latency_max_ms": 709.84,
+        "throughput_qps": 5.64,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 4,
+        "regime": "warm",
+        "latency_p50_ms": 712.74,
+        "latency_p95_ms": 714.89,
+        "latency_max_ms": 715.36,
+        "throughput_qps": 5.61,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 8,
+        "regime": "cold",
+        "latency_p50_ms": 959.88,
+        "latency_p95_ms": 959.88,
+        "latency_max_ms": 959.88,
+        "throughput_qps": 8.33,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 8,
+        "regime": "warm",
+        "latency_p50_ms": 961.66,
+        "latency_p95_ms": 966.84,
+        "latency_max_ms": 967.87,
+        "throughput_qps": 8.32,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 4802.5,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 16,
+        "regime": "cold",
+        "latency_p50_ms": 1485.61,
+        "latency_p95_ms": 1485.61,
+        "latency_max_ms": 1485.61,
+        "throughput_qps": 10.77,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 5016.4,
+        "fla_present": false
+      },
+      {
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+        "state_tokens": 600,
+        "num_questions": 16,
+        "regime": "warm",
+        "latency_p50_ms": 1485.5,
+        "latency_p95_ms": 1488.18,
+        "latency_max_ms": 1488.3,
+        "throughput_qps": 10.77,
+        "vram_alloc_mb": 3843.7,
+        "vram_reserved_mb": 5016.4,
+        "fla_present": false
+      }
+    ]
+  },
+  "run_metrics": {
+    "num_agents": 20,
+    "days": 3,
+    "total_ticks": 576,
+    "total_events": 14359,
+    "wall_clock_seconds": 1965.38,
+    "seconds_per_simulated_day": 655.13,
+    "decider": {
+      "total_questions": 13351,
+      "total_requests": 8122,
+      "questions_by_type": {
+        "D1": 2570,
+        "D2": 249,
+        "D3": 7986,
+        "D4": 1433,
+        "D5": 486,
+        "D6": 41,
+        "D7": 319,
+        "D8": 249,
+        "D9": 18
+      },
+      "question_latency_ms": {
+        "p50": 249.56,
+        "p95": 417.6,
+        "max": 4450.54,
+        "mean": 249.21
+      },
+      "request_latency_ms": {
+        "p50": 124.31,
+        "p95": 411.59,
+        "max": 4450.54,
+        "mean": 180.51
+      },
+      "zones": {
+        "green": 1761,
+        "orange": 9761,
+        "red": 1829,
+        "green_pct": 13.19,
+        "orange_pct": 73.11,
+        "red_pct": 13.7
+      },
+      "fallbacks_count": 1829,
+      "fallbacks_pct": 13.7,
+      "fallbacks_by_type": {
+        "D1": 850,
+        "D3": 1,
+        "D4": 935,
+        "D6": 31,
+        "D9": 12
+      }
+    },
+    "bedrock": {
+      "total_calls": 655,
+      "calls_by_type": {
+        "conversation_turn": 638,
+        "gazette": 3,
+        "reflection": 14
+      },
+      "live_network_calls": 655,
+      "cassette_calls": 0,
+      "input_tokens": 254664,
+      "output_tokens": 20968,
+      "total_tokens": 275632,
+      "logged_cost_usd": 0.011841,
+      "computed_network_cost_usd": 0.011849,
+      "pricing_usd_per_1m": {
+        "model": "amazon.nova-micro-v1:0",
+        "region": "us-east-1",
+        "input": 0.035,
+        "output": 0.14,
+        "source": "AWS Bedrock Pricing (us-east-1 On-Demand)"
+      },
+      "latency_ms": {
+        "p50": 755.08,
+        "p95": 1041.8,
+        "max": 2126.38,
+        "mean": 758.46
+      }
+    },
+    "ratios": {
+      "questions_per_llm_call": 20.38,
+      "requests_per_llm_call": 12.4
+    },
+    "memory_gate": {
+      "total_evaluations": 1893,
+      "evaluations_with_gt3_candidates": 1145,
+      "estimated_raw_tokens_total": 745167,
+      "estimated_gated_tokens_total": 573854,
+      "token_reduction_pct": 22.99
+    },
+    "rumors": {
+      "R1_fermeture_marche": {
+        "agents_reached": 3,
+        "population_size": 20,
+        "reach_pct": 15.0,
+        "transmissions_count": 88,
+        "max_hop": 2,
+        "tick_50pct": null
+      },
+      "R2_dementi_maire": {
+        "agents_reached": 2,
+        "population_size": 20,
+        "reach_pct": 10.0,
+        "transmissions_count": 1,
+        "max_hop": 1,
+        "tick_50pct": null
+      },
+      "R3_ouverture_marche": {
+        "agents_reached": 3,
+        "population_size": 20,
+        "reach_pct": 15.0,
+        "transmissions_count": 2,
+        "max_hop": 1,
+        "tick_50pct": null
+      },
+      "R4_election_municipale": {
+        "agents_reached": 6,
+        "population_size": 20,
+        "reach_pct": 30.0,
+        "transmissions_count": 103,
+        "max_hop": 3,
+        "tick_50pct": null
+      },
+      "R5_alerte_pont": {
+        "agents_reached": 4,
+        "population_size": 20,
+        "reach_pct": 20.0,
+        "transmissions_count": 3,
+        "max_hop": 1,
+        "tick_50pct": null
+      },
+      "R6_jeu_du_loup": {
+        "agents_reached": 9,
+        "population_size": 20,
+        "reach_pct": 45.0,
+        "transmissions_count": 73,
+        "max_hop": 3,
+        "tick_50pct": null
+      },
+      "R7_resultat_election": {
+        "agents_reached": 0,
+        "population_size": 20,
+        "reach_pct": 0.0,
+        "transmissions_count": 0,
+        "max_hop": 0,
+        "tick_50pct": null
+      }
+    },
+    "stocking_agents_peak_count": 1,
+    "stocking_agents_peak_ids": [
+      "yao"
+    ],
+    "election_d9": {
+      "tally": {
+        "kofi": 4,
+        "victor": 4,
+        "abstention": 12
+      },
+      "winner": "kofi",
+      "tie": true,
+      "tie_rule": "incumbent_keeps_office",
+      "incumbent": "kofi",
+      "voters_total": 20,
+      "ballots_cast": 8,
+      "turnout": 0.4,
+      "decider_voters": 18,
+      "fallback_abstentions": 6,
+      "global_tick": 516,
+      "votes_detail": [
+        {
+          "voter": "awa",
+          "vote": "kofi",
+          "confidence": 0.5588,
+          "zone": "green",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "yao",
+          "vote": "abstention",
+          "confidence": 0.18,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "elise",
+          "vote": "abstention",
+          "confidence": 0.2915,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "samuel",
+          "vote": "kofi",
+          "confidence": 0.6503,
+          "zone": "green",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "nadia",
+          "vote": "abstention",
+          "confidence": 0.2923,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "tom",
+          "vote": "abstention",
+          "confidence": 0.2969,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "mariam",
+          "vote": "victor",
+          "confidence": 0.3241,
+          "zone": "orange",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "paul",
+          "vote": "abstention",
+          "confidence": 0.2707,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "lea",
+          "vote": "abstention",
+          "confidence": 0.2791,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "ibrahim",
+          "vote": "abstention",
+          "confidence": 0.2959,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "claire",
+          "vote": "victor",
+          "confidence": 0.457,
+          "zone": "orange",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "fatou",
+          "vote": "abstention",
+          "confidence": 0.2087,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "lucas",
+          "vote": "abstention",
+          "confidence": 0.2268,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "sokhna",
+          "vote": "kofi",
+          "confidence": 0.301,
+          "zone": "orange",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "antoine",
+          "vote": "abstention",
+          "confidence": 0.2763,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "mireille",
+          "vote": "abstention",
+          "confidence": 0.1839,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "bastien",
+          "vote": "victor",
+          "confidence": 0.6777,
+          "zone": "green",
+          "fallback_used": false,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "salimata",
+          "vote": "abstention",
+          "confidence": 0.1902,
+          "zone": "red",
+          "fallback_used": true,
+          "decided_by": "decider",
+          "global_tick": 516
+        },
+        {
+          "voter": "kofi",
+          "vote": "kofi",
+          "confidence": null,
+          "zone": null,
+          "fallback_used": false,
+          "decided_by": "rule_candidate_self_vote",
+          "global_tick": 516
+        },
+        {
+          "voter": "victor",
+          "vote": "victor",
+          "confidence": null,
+          "zone": null,
+          "fallback_used": false,
+          "decided_by": "rule_candidate_self_vote",
+          "global_tick": 516
+        }
+      ]
+    },
+    "e5_calibration": {
+      "d8_objective_truth": {
+        "sample_size_n": 249,
+        "indicative_only": false,
+        "overall_accuracy": 0.349,
+        "ece": 0.113,
+        "bins": [
+          {
+            "range": "[0.0, 0.2)",
+            "count": 0,
+            "accuracy": null,
+            "avg_confidence": null
+          },
+          {
+            "range": "[0.2, 0.4)",
+            "count": 0,
+            "accuracy": null,
+            "avg_confidence": null
+          },
+          {
+            "range": "[0.4, 0.6)",
+            "count": 249,
+            "accuracy": 0.349,
+            "avg_confidence": 0.462
+          },
+          {
+            "range": "[0.6, 0.8)",
+            "count": 0,
+            "accuracy": null,
+            "avg_confidence": null
+          },
+          {
+            "range": "[0.8, 1.0]",
+            "count": 0,
+            "accuracy": null,
+            "avg_confidence": null
+          }
+        ]
+      },
+      "human_labeled_decisions": {
+        "D2": {
+          "measured": false,
+          "reason": "non mesuré (fichier absent)",
+          "labeled_count": 0
+        },
+        "D3": {
+          "measured": false,
+          "reason": "non mesuré (fichier absent)",
+          "labeled_count": 0
+        },
+        "D4": {
+          "measured": false,
+          "reason": "non mesuré (fichier absent)",
+          "labeled_count": 0
+        },
+        "D6": {
+          "measured": false,
+          "reason": "non mesuré (fichier absent)",
+          "labeled_count": 0
+        }
+      }
+    },
+    "e10_worst_decisions": [
+      {
+        "global_tick": 560,
+        "day": 3,
+        "tick": 176,
+        "agent_id": "fatou",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Antoine",
+        "chosen_option": false,
+        "confidence": 0.0004,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 64.89
+      },
+      {
+        "global_tick": 561,
+        "day": 3,
+        "tick": 177,
+        "agent_id": "fatou",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Antoine",
+        "chosen_option": false,
+        "confidence": 0.0004,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 65.71
+      },
+      {
+        "global_tick": 566,
+        "day": 3,
+        "tick": 182,
+        "agent_id": "fatou",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Antoine",
+        "chosen_option": false,
+        "confidence": 0.0004,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 64.24
+      },
+      {
+        "global_tick": 1,
+        "day": 1,
+        "tick": 1,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 109.39
+      },
+      {
+        "global_tick": 21,
+        "day": 1,
+        "tick": 21,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 63.83
+      },
+      {
+        "global_tick": 210,
+        "day": 2,
+        "tick": 18,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 64.73
+      },
+      {
+        "global_tick": 396,
+        "day": 3,
+        "tick": 12,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 63.83
+      },
+      {
+        "global_tick": 403,
+        "day": 3,
+        "tick": 19,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 63.57
+      },
+      {
+        "global_tick": 405,
+        "day": 3,
+        "tick": 21,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 64.15
+      },
+      {
+        "global_tick": 27,
+        "day": 1,
+        "tick": 27,
+        "agent_id": "mariam",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Yao",
+        "chosen_option": true,
+        "confidence": 0.0038,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 63.07
+      }
+    ]
+  }
+}

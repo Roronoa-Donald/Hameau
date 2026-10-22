@@ -4,14 +4,14 @@
 [![Python: 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tags](https://img.shields.io/badge/Hackathon-strands--decider--2b%20%7C%20context--memory-orange)](https://community.aws)
 
-**HAMEAU** is an autonomous multi-agent simulation of 12 villagers designed for the **Strands Decider Agent Hackathon** (AWS Builder Center).
+**HAMEAU** is an autonomous multi-agent simulation of 20 villagers designed for the **Strands Decider Agent Hackathon** (AWS Builder Center).
 
 It solves the foundational bottleneck of generative agent simulations (Stanford Smallville, AI Town): **the latency, cost, and context saturation caused by querying heavy Large Language Models for routine decisions.**
 
 HAMEAU introduces a decoupled, hierarchical decision architecture:
-- **Strands Decider 2B** (on local GPU / edge): Executes all high-frequency decisions (D1–D8) in a single forward pass without autoregressive decoding (~115 ms median latency).
-- **Amazon Bedrock (Amazon Nova Micro)**: Reserved exclusively for rare, rich text generation (dialogue, agent reflections, evening village Gazette).
-- **MemoryGate Reusable Pattern** (`patterns/memory_gate/`): A standardized Strands `HookProvider` that filters and scores memories before injecting them into the LLM context, saving **78% of prompt tokens** and eliminating context clutter.
+- **Strands Decider 2B** (`StrandsAgents/strands-decider-2B-hobson-v21` on local GPU RTX 3050): Executes all high-frequency decisions (D1–D9) without autoregressive decoding (p50 = 124.3 ms request latency, 249.6 ms question latency).
+- **Amazon Bedrock (Amazon Nova Micro)**: Reserved exclusively for rare, rich text generation (dialogue, agent reflections, evening village Gazette) with 100% direct live network calls.
+- **MemoryGate Reusable Pattern** (`patterns/memory_gate/`): A standardized Strands `HookProvider` that filters and scores memories before injecting them into the LLM context, saving **23.0% of prompt tokens** and eliminating context clutter.
 
 ---
 
@@ -22,7 +22,7 @@ HAMEAU introduces a decoupled, hierarchical decision architecture:
                        │          Agent Observation & State           │
                        └──────────────────────┬───────────────────────┘
                                               │
-                     High-Frequency Decisions │ (D1–D8: Choice / Score / Noul)
+                     High-Frequency Decisions │ (D1–D9: Choice / Score / Noul)
                                               ▼
                        ┌──────────────────────────────────────────────┐
                        │         Strands Decider 2B (Local GPU)       │
@@ -34,6 +34,7 @@ HAMEAU introduces a decoupled, hierarchical decision architecture:
                        │   - D6: ReflectGate (Noul / Yes-No)          │
                        │   - D7: ContinueGate (Noul / Yes-No)         │
                        │   - D8: CredibilityGate (Score 0..1)         │
+                       │   - D9: VoteChoice (Choice among candidates) │
                        └──────────────────────┬───────────────────────┘
                                               │
                       Rare Generative Triggers│ (Filtered Context + Gate Passed)
@@ -83,7 +84,22 @@ gate.register_hooks(registry)
 
 ## 3. Empirical Benchmark & Verification Results
 
-All figures below are directly generated and measured from verifiable benchmark logs in `results/`.
+All figures below are directly generated and measured from verifiable benchmark logs in `results/` ([`results/summary.json`](results/summary.json)).
+
+### Official 3-Day Global Simulation (E1 — 20 Agents, Real GPU + Live AWS Bedrock)
+
+| Metric | Measured Value | Definition / Source |
+| :--- | :--- | :--- |
+| **Decider Questions ($Q$)** | **13,351** | D1–D9 evaluated by Strands Decider 2B |
+| **Decider Requests ($R$)** | **8,122** | GPU inference calls after prefix-sharing |
+| **Amazon Bedrock Calls ($L$)** | **655** | 100% direct live network calls (0 cached) |
+| **Decider / LLM Ratio ($Q / L$)** | **20.38 : 1** | Target > 20:1 exceeded |
+| **Decider / LLM Request Ratio ($R / L$)** | **12.4 : 1** | GPU requests per generative LLM call |
+| **Decider Latency (p50 / p95)** | **124.3 ms / 411.6 ms** | Request latency on NVIDIA RTX 3050 |
+| **Bedrock Latency (p50 / p95)** | **755.1 ms / 1041.8 ms** | Amazon Nova Micro API (us-east-1) |
+| **MemoryGate Token Reduction** | **-23.0%** | Measured dynamically across 1,893 evaluations |
+| **AWS Total Cost** | **$0.01184 USD** | 275,632 tokens processed (< $0.02) |
+| **Municipal Election (D9)** | **Turnout 40.0%** | Kofi 4, Victor 4, Abstention 12 (incumbent re-elected) |
 
 ### Comparative Strategy Performance (`results/comparison.csv`)
 
@@ -91,13 +107,11 @@ All figures below are directly generated and measured from verifiable benchmark 
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Strategy A: Pure Heuristic** | 144 | 0 | 0 : 0 | 0.05 ms | $0.0000 | 0.250 |
 | **Strategy B: All-LLM (Nova Micro)** | 221 | 244 | 1.0 : 1 | 680.0 ms | $0.0410 | 0.820 |
-| **Strategy C: Hybrid Hameau (Ours)** | **221** | **23** | **9.6 : 1** | **115.0 ms** | **$0.0000\*** | **1.000** |
-| **Ablation: No MemoryGate** | 215 | 23 | 9.3 : 1 | 115.0 ms | $0.0000\* | 0.750 |
+| **Strategy C: Hybrid Hameau (Ours)** | **221** | **23** | **9.6 : 1** | **124.3 ms** | **$0.0039** | **1.000** |
+| **Ablation: No MemoryGate** | 215 | 23 | 9.3 : 1 | 124.3 ms | $0.0051 | 0.750 |
 
-*\* Replays are cached via Bedrock cassettes; live API runs cost <$0.003/day.*
-
-### Calibration Metrics (`results/calibration.csv`)
-Evaluated across ground-truth datasets in `eval/`:
+### Calibration Metrics (`results/calibration.csv` & E5 Ground Truth)
+- **E5 D8 Credibility Accuracy on Objective Facts**: **100.0%** across $N=87$ matched decisions (ECE = 0.5325).
 - **E1 Importance Scoring (D2)**: MAE = **0.2775**, Spearman rank correlation = **0.3109**.
 - **E2 Relevance Scoring (D3)**: MAE = **0.4420**, Binary Alignment Accuracy = **50.0%**.
 - **E3 Confidence Calibration (Noul)**: Brier Score = **0.2552**, Expected Calibration Error (ECE) = **0.0585** across 5 bins.
@@ -155,7 +169,7 @@ Open `http://127.0.0.1:8000/index.html` in your browser.
 Features included in the viewer:
 - **Canvas Tilemap**: Spatial village map with agent positions, speech bubbles, and location markers.
 - **Epidemic Diffusion Curve (C1)**: Dual Canvas curve showing R1 rumor infection vs R2 official debunking across simulation time.
-- **MemoryGate Prompt Diff (C2)**: Side-by-side prompt inspector showing un-gated (12 memories, ~1480 tokens) vs gated (3 memories, ~320 tokens) context with -78% token savings.
+- **MemoryGate Prompt Diff (C2)**: Side-by-side prompt inspector showing un-gated vs gated context with dynamic token reduction.
 - **Dynamic Savings Ticker (C3)**: Live counter of USD savings vs All-LLM architecture and cumulative latency saved.
 
 ### Run Calibration & Comparative Benchmark
@@ -175,7 +189,7 @@ uv run python bench/run_benchmark.py
 2. **Filesystem Sandbox**: The server handler only serves `viewer/` and simulation files in `runs/`; directory traversal (`../`) and sensitive files (`.git/`, `config.yaml`) are blocked (404).
 3. **DOM XSS Elimination**: All viewer rendering uses safe DOM construction (`createElement`, `textContent`) without `innerHTML`.
 4. **Content Security Policy (CSP)**: `default-src 'self'` enforced in `viewer/index.html`.
-5. **Entity Guardrails**: Bedrock prompts enforce a strict whitelist of 12 authorized village personas and enclose memories in `<memories>` XML tags.
+5. **Entity Guardrails**: Bedrock prompts enforce a strict whitelist of 20 authorized village personas and enclose memories in `<memories>` XML tags.
 
 ---
 

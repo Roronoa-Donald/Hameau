@@ -7,7 +7,7 @@ Ce document fixe les définitions strictes et univoques des termes et métriques
 ## 1. Décisions et Inférences Strands Decider 2B
 
 * **Question Decider ($Q$)** :
-  Une question élémentaire typée posée au modèle System One (Strands Decider 2B). Chaque question correspond à un gabarit formel parmi D1 à D8 :
+  Une question élémentaire typée posée au modèle System One (Strands Decider 2B). Chaque question correspond à un gabarit formel parmi D1 à D9 :
   * **D1 — ActionPicker** (`ChoiceQuestion`) : choix de l'action ou destination parmi un ensemble discret.
   * **D2 — ImportanceScorer** (`ScoreQuestion`) : évaluation de l'importance intrinsèque d'une observation sur une échelle discrète de 1 à 5.
   * **D3 — RelevanceScorer** (`ScoreQuestion`) : évaluation de la pertinence d'un souvenir candidat dans un contexte donné (échelle 1 à 4) au sein du composant MemoryGate.
@@ -16,6 +16,7 @@ Ce document fixe les définitions strictes et univoques des termes et métriques
   * **D6 — ReflectGate** (`NoulQuestion` / binaire) : décision de déclencher une introspection synthétique du soir.
   * **D7 — ContinueGate** (`NoulQuestion` / binaire) : décision de poursuivre ou clore un échange verbal.
   * **D8 — CredibilityGate** (`ScoreQuestion`) : évaluation de la crédibilité accordée à une information reçue (échelle 1 à 5).
+  * **D9 — VoteChoice** (`ChoiceQuestion`) : vote individuel lors du scrutin municipal du Jour 3 à 17h00 (`kofi`, `victor` ou `abstention`), conditionné par le top-3 des souvenirs sélectionnés par MemoryGate.
 
 * **Requête Decider ($R$)** :
   Un appel unique d'inférence (local ou via HTTP `/v1/systemone`). Une requête Decider comprend un état contextuel unique (`state`) et un dictionnaire d'une ou plusieurs questions Decider typées ($\ge 1$). Par exemple, l'évaluation de 4 souvenirs dans MemoryGate peut être groupée en 1 seule requête Decider portant 4 questions D3.

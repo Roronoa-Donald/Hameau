@@ -1,0 +1,42 @@
+{
+  "generated_at_utc": "2026-10-22T12:07:01.362584+00:00",
+  "run_log_file": "runs/real_final_3j.jsonl",
+  "run_log_sha256": "768c7b2490bf37e74ee2ef199c0938124a6adb74b150d6ef2b4e948b056ea902",
+  "git": {
+    "commit": "cdc18f2f7e112510b89d93a35d76f18ff5ef0f3c",
+    "dirty": true,
+    "status_lines": [
+      "M docs/DEFINITIONS.md",
+      " M viewer/sample_run.jsonl",
+      "?? results/manifest.json",
+      "?? results/summary.json",
+      "?? scripts/build_numbers.py",
+      "?? scripts/check_claims.py",
+      "?? viewer/summary.json"
+    ]
+  },
+  "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
+  "seed": 42,
+  "started_at_utc": "2026-10-22T11:16:39.809263+00:00",
+  "finished_at_utc": "2026-10-22T11:49:25.185751+00:00",
+  "wall_clock_seconds": 1965.38,
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+    "vram_total_mb": 6144,
+    "flash_linear_attention": false
+  },
+  "decider": {
+    "model_id": "StrandsAgents/strands-decider-2B-hobson-v21",
+    "backend_type": "local_gpu",
+    "backends_seen": {
+      "StrandsAgents/strands-decider-2B-hobson-v21": 13351
+    }
+  },
+  "bedrock": {
+    "model_id": "amazon.nova-micro-v1:0",
+    "source": "live_network",
+    "live_network_calls": 655,
+    "cassette_calls": 0
+  },
+  "is_valid_real_run": true
+}
