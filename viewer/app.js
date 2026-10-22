@@ -397,6 +397,8 @@ class HameauViewer {
     this.totalCost = 0.0;
     this.rumorHops = [];
     this.deciderLatencies = [];
+    this.electionVotes = {};
+    this.electionResult = null;
     this.feedList.textContent = "";
 
     for (let t = 0; t <= upToTick; t++) {
@@ -508,6 +510,34 @@ class HameauViewer {
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-rumor", "Rumeur", `${payload.sender} a transmis ${payload.fact_id} à ${payload.receiver}`);
       }
+    } else if (event_type === "election_vote") {
+      if (!this.electionVotes) this.electionVotes = {};
+      const voter = payload.voter || agent_id;
+      if (voter) {
+        this.electionVotes[voter] = payload;
+        if (this.agentsState[voter]) {
+          this.agentsState[voter].vote = payload;
+          const vLabel = AGENTS_META[payload.vote]?.name || payload.vote;
+          this.agentsState[voter].currentAction = `a voté (${vLabel})`;
+        }
+      }
+      if (isCurrentTick && voter) {
+        const voterName = AGENTS_META[voter]?.name || voter;
+        const choiceName = AGENTS_META[payload.vote]?.name || payload.vote;
+        this.addFeedItem(tick, "tag-decision", "Vote D9", `${voterName} dépose son bulletin : ${choiceName}`);
+      }
+    } else if (event_type === "election_result") {
+      this.electionResult = payload;
+      const wName = AGENTS_META[payload.winner]?.name || payload.winner;
+      const kCount = payload.tally?.kofi ?? 0;
+      const vCount = payload.tally?.victor ?? 0;
+      const aCount = payload.tally?.abstention ?? 0;
+      for (const ag of Object.values(this.agentsState)) {
+        ag.believedFacts["R7_resultat_election"] = 1.0;
+      }
+      if (isCurrentTick) {
+        this.addFeedItem(tick, "tag-rumor", "Scrutin", `🏆 ${wName} élu Maire (Kofi ${kCount}, Victor ${vCount}, Abst. ${aCount})`);
+      }
     } else if (event_type === "gazette") {
       this.bedrockCount++;
       if (payload.from_cassette) this.cassetteCount++;
@@ -540,7 +570,7 @@ class HameauViewer {
     const rec = typeof payload.recency_score === "number" ? payload.recency_score : 0.7;
     const comp = typeof payload.composite_score === "number" ? payload.composite_score : Math.round((0.4 * rel + 0.3 * imp + 0.3 * rec) * 100) / 100;
     const zone = payload.zone || "green";
-    const latency = payload.latency_ms || 115;
+    const latency = typeof payload.latency_ms === "number" ? payload.latency_ms : null;
 
     const entry = {
       id: memId,
@@ -680,9 +710,19 @@ class HameauViewer {
     if (this.counterSavings) {
       this.counterSavings.textContent = `Éco. vs Tout-LLM : ${savingsUsd.toFixed(4)} $`;
     }
+    const avgDecLat = this.deciderLatencies.length > 0
+      ? this.deciderLatencies.reduce((a, b) => a + b, 0) / this.deciderLatencies.length
+      : 0;
     if (this.counterLatencySaved) {
-      const latencySec = (this.deciderCount * (680 - 115)) / 1000;
+      const savedPerDecisionMs = Math.max(0, 680 - avgDecLat);
+      const latencySec = (this.deciderCount * savedPerDecisionMs) / 1000;
       this.counterLatencySaved.textContent = `${Math.round(latencySec)} s`;
+    }
+    const latSubEl = document.getElementById("counter-latency-sub");
+    if (latSubEl) {
+      latSubEl.textContent = this.deciderLatencies.length > 0
+        ? `-${Math.max(0, Math.round(680 - avgDecLat))} ms / décision`
+        : "Mesuré depuis journal";
     }
 
     this.updateInspector();
@@ -713,10 +753,24 @@ class HameauViewer {
     const r1 = a.believedFacts["R1_fermeture_marche"];
     const r2 = a.believedFacts["R2_dementi_maire"];
     const r3 = a.believedFacts["R3_ouverture_marche"];
+    const r4 = a.believedFacts["R4_election_municipale"];
     document.getElementById("r1-cred").textContent = r1 ? `Crédibilité : ${(r1 * 100).toFixed(0)}%` : "Non informé";
     document.getElementById("r2-cred").textContent = r2 ? `Officiel : ${(r2 * 100).toFixed(0)}%` : "Non informé";
     const r3El = document.getElementById("r3-cred");
     if (r3El) r3El.textContent = r3 ? `Ouvert : ${(r3 * 100).toFixed(0)}%` : "Non informé";
+    const r4El = document.getElementById("r4-cred");
+    if (r4El) r4El.textContent = r4 ? `Informé : ${(r4 * 100).toFixed(0)}%` : "Non informé";
+    const voteEl = document.getElementById("inspector-vote");
+    if (voteEl) {
+      const vObj = a.vote || (this.electionVotes && this.electionVotes[this.selectedAgentId]);
+      if (vObj) {
+        const vName = AGENTS_META[vObj.vote]?.name || vObj.vote;
+        const confTxt = typeof vObj.confidence === "number" ? ` (${(vObj.confidence * 100).toFixed(0)}%, ${vObj.zone})` : " (candidat)";
+        voteEl.textContent = `${vName}${confTxt}`;
+      } else {
+        voteEl.textContent = "En attente du scrutin (J3 17h)";
+      }
+    }
 
     // Décisions récentes
     const decList = document.getElementById("inspector-decisions-list");
@@ -800,16 +854,51 @@ class HameauViewer {
   updateRumorTab() {
     let infected = 0;
     let stocking = 0;
+    let r4Count = 0;
     const roster = this.runAgentIds || new Set(Object.keys(this.agentsState));
     for (const [id, a] of Object.entries(this.agentsState)) {
       if (!roster.has(id)) continue;
       if (a.believedFacts["R1_fermeture_marche"]) infected++;
+      if (a.believedFacts["R4_election_municipale"]) r4Count++;
       if (a.didStock) stocking++;
     }
     const n = this.populationSize();
 
     document.getElementById("rumor-count").textContent = `${infected} / ${n}`;
     document.getElementById("stocking-count").textContent = `${stocking} / ${n}`;
+
+    // Mise à jour du panneau Scrutin Municipal (D9)
+    const statusBadge = document.getElementById("election-status-badge");
+    const summaryLine = document.getElementById("election-summary-line");
+    const kofiEl = document.getElementById("election-kofi-count");
+    const victorEl = document.getElementById("election-victor-count");
+    const abstEl = document.getElementById("election-abst-count");
+    if (summaryLine && kofiEl && victorEl && abstEl) {
+      let kofiVotes = 0;
+      let victorVotes = 0;
+      let abstVotes = 0;
+      if (this.electionResult && this.electionResult.tally) {
+        kofiVotes = this.electionResult.tally.kofi || 0;
+        victorVotes = this.electionResult.tally.victor || 0;
+        abstVotes = this.electionResult.tally.abstention || 0;
+        const winnerName = AGENTS_META[this.electionResult.winner]?.name || this.electionResult.winner;
+        if (statusBadge) statusBadge.textContent = "Scrutin clos (J3 17h)";
+        summaryLine.textContent = `🏆 Maire élu : ${winnerName} (Participation : ${Math.round((this.electionResult.turnout || 0) * 100)}%)`;
+      } else {
+        for (const v of Object.values(this.electionVotes || {})) {
+          if (v.vote === "kofi") kofiVotes++;
+          else if (v.vote === "victor") victorVotes++;
+          else abstVotes++;
+        }
+        if (statusBadge) statusBadge.textContent = `Campagne R4 : ${r4Count}/${n}`;
+        summaryLine.textContent = r4Count > 0
+          ? `Campagne active (${r4Count}/${n} informés) — Vote J3 à 17h00`
+          : "En attente du lancement de campagne (J1 09h20)";
+      }
+      kofiEl.textContent = `${kofiVotes} voix`;
+      victorEl.textContent = `${victorVotes} voix`;
+      abstEl.textContent = `${abstVotes}`;
+    }
 
     const hopsContainer = document.getElementById("rumor-hops-list");
     hopsContainer.textContent = "";
@@ -971,6 +1060,10 @@ class HameauViewer {
     const agentMemories = this.scoredMemories[this.selectedAgentId] || [];
 
     // Si l'agent a des souvenirs scorés réels issus de la simulation
+    const fallbackLatency =
+      this.deciderLatencies && this.deciderLatencies.length > 0
+        ? this.deciderLatencies[this.deciderLatencies.length - 1]
+        : null;
     let candidates = [];
     if (agentMemories.length > 0) {
       candidates = agentMemories.map((m, idx) => ({
@@ -980,16 +1073,16 @@ class HameauViewer {
         rel: m.relevance,
         comp: m.composite,
         zone: m.zone || "green",
-        latency: m.latency || 115,
+        latency: m.latency ?? fallbackLatency,
       }));
     } else {
       // Contexte initial canonique de l'agent (avant ses premières interactions)
       const locName = VILLAGE_LOCATIONS[a.location]?.name || a.location;
       const meta = AGENTS_META[this.selectedAgentId];
       candidates = [
-        { id: "c1", text: `${a.name} est à ${locName} (${a.currentAction}).`, imp: 0.7, rel: 0.85, comp: 0.78, zone: "green", latency: 115 },
-        { id: "c2", text: `Résidence principale : ${VILLAGE_LOCATIONS[meta?.home]?.name || meta?.home}.`, imp: 0.5, rel: 0.60, comp: 0.55, zone: "orange", latency: 115 },
-        { id: "c3", text: "Le village s'éveille paisiblement au lever du soleil.", imp: 0.2, rel: 0.15, comp: 0.18, zone: "red", latency: 115 },
+        { id: "c1", text: `${a.name} est à ${locName} (${a.currentAction}).`, imp: 0.7, rel: 0.85, comp: 0.78, zone: "green", latency: fallbackLatency },
+        { id: "c2", text: `Résidence principale : ${VILLAGE_LOCATIONS[meta?.home]?.name || meta?.home}.`, imp: 0.5, rel: 0.60, comp: 0.55, zone: "orange", latency: fallbackLatency },
+        { id: "c3", text: "Le village s'éveille paisiblement au lever du soleil.", imp: 0.2, rel: 0.15, comp: 0.18, zone: "red", latency: fallbackLatency },
       ];
     }
 
@@ -1039,8 +1132,8 @@ class HameauViewer {
     }
     const latEl = document.getElementById("diff-decider-latency");
     if (latEl) {
-      const p50 = candidates[0]?.latency ? candidates[0].latency.toFixed(0) : "115";
-      latEl.textContent = `${p50} ms`;
+      latEl.textContent =
+        candidates[0]?.latency != null ? `${candidates[0].latency.toFixed(0)} ms` : "-- ms";
     }
   }
 

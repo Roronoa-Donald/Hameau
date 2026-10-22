@@ -8,6 +8,7 @@ from hameau.decisions import (
     build_d2_importance_scorer,
     build_d3_relevance_scorer,
     build_d4_talk_gate,
+    build_d9_vote_choice,
 )
 
 
@@ -34,6 +35,11 @@ def test_decider_mock_client():
         "D2": build_d2_importance_scorer("La mairie envisage de fermer le marché samedi."),
         "D3": build_d3_relevance_scorer("Yao se souvient que le marché est vital pour son travail."),
         "D4": build_d4_talk_gate("Awa"),
+        "D9": build_d9_vote_choice({
+            "kofi": "Voter pour Kofi (maire sortant)",
+            "victor": "Voter pour Victor (candidat de l'opposition)",
+            "abstention": "S'abstenir ou voter blanc",
+        }),
     }
 
     results = client.ask(state, questions)
@@ -54,5 +60,9 @@ def test_decider_mock_client():
     assert results["D4"]["type"] == "noul"
     assert isinstance(results["D4"]["value"], bool)
 
-    assert client.total_decisions == 4
+    assert "D9" in results
+    assert results["D9"]["type"] == "choice"
+    assert results["D9"]["value"] in ["kofi", "victor", "abstention"]
+
+    assert client.total_decisions == 5
     assert client.total_tokens > 0

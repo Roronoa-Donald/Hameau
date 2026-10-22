@@ -48,7 +48,7 @@
       <div class="metric-card metric-latency-saved">
         <div class="metric-label">Latence Évitée</div>
         <div class="metric-value font-mono" id="counter-latency-saved">0 s</div>
-        <div class="metric-sub font-mono" id="counter-latency-sub">~565 ms / décision</div>
+        <div class="metric-sub font-mono" id="counter-latency-sub">Mesuré depuis journal</div>
       </div>
     </div>
 
@@ -87,8 +87,8 @@
             <span>J1 06h (Départ)</span>
             <span>J1 08h (R1 Rumeur)</span>
             <span>J2 10h (R2 Démenti)</span>
-            <span>J3 07h (R3 Grand Marché)</span>
-            <span>J3 22h (Résolution Finale)</span>
+            <span>J3 07h (R3 Marché)</span>
+            <span>J3 17h (D9 Élection)</span>
           </div>
         </div>
 
@@ -97,7 +97,7 @@
             <span>Charger JSONL</span>
             <input type="file" id="file-input" accept=".jsonl">
           </label>
-          <button id="btn-load-sample" class="btn btn-outline" title="Rejeu du benchmark 3 jours (12 098 événements)">Benchmark 3J</button>
+          <button id="btn-load-sample" class="btn btn-outline" title="Rejeu de la simulation 3 jours">Benchmark 3J</button>
           <button id="btn-load-live" class="btn btn-outline" style="border-color: #10b981; color: #10b981;" title="Charger le run réel GPU & Bedrock">⚡ Run GPU/AWS</button>
         </div>
       </div>
@@ -194,11 +194,13 @@
 
           <!-- Croyances et Rumeurs -->
           <div class="inspector-beliefs">
-            <h4>Croyances & Rumeurs</h4>
+            <h4>Croyances, Rumeurs & Scrutin</h4>
             <div id="inspector-beliefs-list" class="beliefs-list">
               <div class="belief-pill">R1 (Fermeture marché) : <span id="r1-cred">Non informé</span></div>
               <div class="belief-pill">R2 (Démenti officiel) : <span id="r2-cred">Non informé</span></div>
               <div class="belief-pill">R3 (Marché ouvert) : <span id="r3-cred">Non informé</span></div>
+              <div class="belief-pill">R4 (Campagne mairie) : <span id="r4-cred">Non informé</span></div>
+              <div class="belief-pill">Vote municipal (D9) : <span id="inspector-vote">En attente du scrutin (J3 17h)</span></div>
             </div>
           </div>
 
@@ -220,15 +222,15 @@
         </div>
       </div>
 
-      <!-- Onglet 2 : Graphe de propagation de la rumeur -->
+      <!-- Onglet 2 : Graphe de propagation de la rumeur & Scrutin Municipal -->
       <div class="tab-content" id="tab-rumor-graph">
         <div class="rumor-stats">
           <div class="stat-box">
-            <span class="stat-num" id="rumor-count">0 / 12</span>
-            <span class="stat-text">Habitants atteints</span>
+            <span class="stat-num" id="rumor-count">0 / --</span>
+            <span class="stat-text">Habitants atteints (R1)</span>
           </div>
           <div class="stat-box">
-            <span class="stat-num" id="stocking-count">0 / 12</span>
+            <span class="stat-num" id="stocking-count">0 / --</span>
             <span class="stat-text">Ont fait des stocks</span>
           </div>
         </div>
@@ -243,6 +245,30 @@
             </div>
           </div>
           <canvas id="rumor-curve-canvas" width="390" height="120"></canvas>
+        </div>
+
+        <div class="rumor-chart-card" id="election-panel-card" style="margin-top: 10px; padding: 10px 12px;">
+          <div class="chart-header" style="margin-bottom: 6px;">
+            <span class="chart-title">🗳️ Scrutin Municipal (D9 : Kofi vs Victor)</span>
+            <span id="election-status-badge" style="font-size: 0.72rem; color: var(--text-muted);">J3 17h00</span>
+          </div>
+          <div id="election-summary-line" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">
+            Campagne en cours — Scrutin au Jour 3 à 17h00
+          </div>
+          <div id="election-bars" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.74rem;">
+            <div style="display: flex; justify-content: space-between;">
+              <span>Kofi (Maire sortant)</span>
+              <strong id="election-kofi-count">0 voix</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Victor (Notaire &amp; Candidat)</span>
+              <strong id="election-victor-count">0 voix</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+              <span>Abstentions (ou repli zone rouge)</span>
+              <span id="election-abst-count">0</span>
+            </div>
+          </div>
         </div>
 
         <div class="rumor-timeline" id="rumor-hops-list">
@@ -260,15 +286,15 @@
         <div class="diff-metrics-row">
           <div class="diff-metric-pill">
             <span class="label">Tokens Économisés</span>
-            <span class="val green" id="diff-tokens-saved">-78 %</span>
+            <span class="val green" id="diff-tokens-saved">-- %</span>
           </div>
           <div class="diff-metric-pill">
             <span class="label">Bruit Éliminé</span>
-            <span class="val green" id="diff-noise-removed">9 / 12 souvenirs</span>
+            <span class="val green" id="diff-noise-removed">-- / -- souvenirs</span>
           </div>
           <div class="diff-metric-pill">
             <span class="label">Latence Decider</span>
-            <span class="val font-mono" id="diff-decider-latency">115 ms</span>
+            <span class="val font-mono" id="diff-decider-latency">-- ms</span>
           </div>
         </div>
 
@@ -276,7 +302,7 @@
           <div class="diff-box without-gate">
             <div class="diff-box-header">
               <span class="box-title">❌ Sans MemoryGate (Brut)</span>
-              <span class="badge badge-danger" id="tokens-raw-badge">~1 480 tokens</span>
+              <span class="badge badge-danger" id="tokens-raw-badge">-- tokens</span>
             </div>
             <div class="diff-box-body" id="diff-raw-content">
               <!-- Rempli dynamiquement -->
@@ -286,7 +312,7 @@
           <div class="diff-box with-gate">
             <div class="diff-box-header">
               <span class="box-title">✅ Avec MemoryGate (Scoré)</span>
-              <span class="badge badge-success" id="tokens-gated-badge">~320 tokens</span>
+              <span class="badge badge-success" id="tokens-gated-badge">-- tokens</span>
             </div>
             <div class="diff-box-body" id="diff-gated-content">
               <!-- Rempli dynamiquement -->

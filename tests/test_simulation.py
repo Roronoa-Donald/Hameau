@@ -56,3 +56,55 @@ def test_simulation_short_run(tmp_path):
 
     # Vérification que l'injection R1 a bien eu lieu
     assert any("R1_fermeture_marche" in line for line in lines)
+
+
+def test_simulation_election_d9(tmp_path):
+    import json
+
+    with open("config.yaml", "r") as f:
+        cfg = yaml.safe_load(f)
+
+    cfg["logging"]["runs_dir"] = str(tmp_path)
+    cfg["logging"]["log_filename"] = "test_election.jsonl"
+
+    world = build_default_village()
+    agents = build_canonical_agents()
+    decider = DeciderClient(mock=True, seed=42)
+    bedrock = BedrockClient(
+        model_id=cfg["bedrock"]["model_id"],
+        region_name=cfg["bedrock"]["region"],
+        cassettes_dir="cassettes",
+        use_cassettes=True,
+    )
+    mg = MemoryGate(decider_client=decider, top_k=3)
+    scenario = ScenarioManager()
+
+    engine = SimulationEngine(
+        world=world,
+        agents=agents,
+        decider=decider,
+        bedrock=bedrock,
+        memory_gate=mg,
+        scenario=scenario,
+        config=cfg,
+    )
+
+    engine._process_election(day=3, tick=132, global_tick=516)
+
+    with open(tmp_path / "test_election.jsonl", "r", encoding="utf-8") as f:
+        events = [json.loads(line) for line in f if line.strip()]
+
+    d9_decisions = [
+        e for e in events
+        if e["event_type"] == "decision" and e["payload"].get("decision_type") == "D9"
+    ]
+    votes = [e for e in events if e["event_type"] == "election_vote"]
+    results = [e for e in events if e["event_type"] == "election_result"]
+
+    assert len(d9_decisions) == 18
+    assert len(votes) == 20
+    assert len(results) == 1
+    tally = results[0]["payload"]["tally"]
+    assert tally["kofi"] + tally["victor"] + tally["abstention"] == 20
+    assert all("R7_resultat_election" in a.persona.believed_facts for a in agents.values())
+

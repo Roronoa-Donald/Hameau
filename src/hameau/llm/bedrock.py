@@ -146,8 +146,8 @@ class BedrockClient:
         self.total_output_tokens += out_tokens
         self.total_cost_usd += cost
 
-        # Sauvegarde en cassette
-        if self.use_cassettes:
+        # Sauvegarde en cassette (même si la lecture du cache est désactivée, pour permettre le rejeu ultérieur)
+        if self.cassettes_dir:
             record = {
                 "text": content_text,
                 "input_tokens": inp_tokens,

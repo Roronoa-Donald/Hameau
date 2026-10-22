@@ -8,8 +8,14 @@ simulation:
   start_hour: 6
   end_hour: 22
   days: 3
-  num_agents: 12           # 12 agents fondateurs pour le scénario MVP de référence
+  num_agents: 20           # 20 villageois canoniques (avec Victor, Fatou, Lucas, Sokhna, Antoine, Mireille, Bastien, Salimata)
   time_step_minutes: 5
+
+scenario:
+  election:
+    day: 3
+    tick: 132              # J3 à 17h00 : scrutin municipal
+    candidates: ["kofi", "victor"]
 
 decider:
   checkpoint: "StrandsAgents/strands-decider-2B-hobson-v21"
@@ -28,6 +34,7 @@ decider:
     D6: { green: 0.45, orange: 0.25 }
     D7: { green: 0.40, orange: 0.25 }
     D8: { green: 0.40, orange: 0.25 }
+    D9: { green: 0.50, orange: 0.30 }
 
 bedrock:
   model_id: "amazon.nova-micro-v1:0"

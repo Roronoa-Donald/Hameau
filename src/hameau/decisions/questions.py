@@ -96,3 +96,14 @@ def build_d8_credibility_gate(claim_text: str, source_name: str) -> ScoreQuestio
             "4: Certain, officiel et digne de pleine confiance",
         ],
     )
+
+
+def build_d9_vote_choice(options_dict: Dict[str, str]) -> ChoiceQuestion:
+    """D9 — VoteChoice : Choix du bulletin au scrutin municipal (candidats ou abstention)."""
+    return ChoiceQuestion(
+        instructions=(
+            "D'après ce que cette personne sait, vit et pense de chaque candidat, "
+            "quel bulletin va-t-elle déposer dans l'urne aujourd'hui ?"
+        ),
+        criteria=options_dict,
+    )

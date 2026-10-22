@@ -21,6 +21,7 @@ from hameau.decisions import (
     build_d6_reflect_gate,
     build_d7_continue_gate,
     build_d8_credibility_gate,
+    build_d9_vote_choice,
 )
 from patterns.memory_gate import MemoryGate, MemoryCandidate
 from hameau.llm import (
@@ -71,6 +72,13 @@ class SimulationEngine:
         # Résumé quotidien pour la Gazette
         self.daily_events_summary: List[str] = []
         self.agent_last_conversation_tick: Dict[str, int] = {}
+
+        # Scrutin municipal (D9) : J3 à 17h00 par défaut (tick 132)
+        election_cfg = config.get("scenario", {}).get("election", {})
+        self.election_day: int = int(election_cfg.get("day", 3))
+        self.election_tick: int = int(election_cfg.get("tick", 132))
+        self.election_candidates: List[str] = list(election_cfg.get("candidates", ["kofi", "victor"]))
+        self.election_result: Optional[Dict[str, Any]] = None
 
     def log(self, event: LogEvent) -> None:
         """Enregistre un événement dans la mémoire et dans le fichier JSONL."""
@@ -155,6 +163,12 @@ class SimulationEngine:
         if self.log_filepath.exists():
             self.log_filepath.unlink()
 
+        decider_backend = (
+            "mock"
+            if self.decider.mock
+            else ("remote_gpu" if self.decider.server_urls else "local_gpu")
+        )
+        bedrock_source = "cassette_enabled" if self.bedrock.use_cassettes else "live_network"
         self.log(
             LogEvent(
                 tick=0,
@@ -166,7 +180,9 @@ class SimulationEngine:
                     "days": days,
                     "seed": self.seed,
                     "decider_checkpoint": self.decider.checkpoint,
+                    "decider_backend": decider_backend,
                     "bedrock_model": self.bedrock.model_id,
+                    "bedrock_source": bedrock_source,
                 },
             )
         )
@@ -209,6 +225,10 @@ class SimulationEngine:
 
                 # 4. Rencontres et conversations (D4, D5, B1, D7, D8, D2)
                 self._process_encounters(day, tick, global_tick)
+
+                # 4b. Scrutin municipal (D9), une seule fois
+                if day == self.election_day and tick == self.election_tick:
+                    self._process_election(day, tick, global_tick)
 
                 # 5. Réflexions du soir à 21h30 (tick 186)
                 if tick == 186:
@@ -605,6 +625,10 @@ class SimulationEngine:
                             "utterance": utterance,
                             "topic": topic,
                             "location": loc_id,
+                            "model_id": self.bedrock.model_id,
+                            "input_tokens": gen_res.get("input_tokens", 0),
+                            "output_tokens": gen_res.get("output_tokens", 0),
+                            "latency_ms": gen_res.get("latency_ms", 0.0),
                             "cost_usd": gen_res["cost_usd"],
                             "from_cassette": gen_res["from_cassette"],
                             "global_tick": global_tick,
@@ -832,11 +856,142 @@ class SimulationEngine:
                     event_type="reflection",
                     payload={
                         "reflection": reflection_text,
+                        "model_id": self.bedrock.model_id,
+                        "input_tokens": gen_res.get("input_tokens", 0),
+                        "output_tokens": gen_res.get("output_tokens", 0),
+                        "latency_ms": gen_res.get("latency_ms", 0.0),
                         "cost_usd": gen_res["cost_usd"],
                         "from_cassette": gen_res["from_cassette"],
                     },
                 )
             )
+
+    def _process_election(self, day: int, tick: int, global_tick: int) -> None:
+        """Scrutin municipal : chaque électeur choisit son bulletin via Decider (D9)."""
+        candidates = [c for c in self.election_candidates if c in self.agents]
+        if len(candidates) < 2:
+            self.log(LogEvent(tick=tick, day=day, event_type="system", payload={
+                "message": "Scrutin municipal annulé : moins de deux candidats présents",
+                "candidates_present": candidates,
+            }))
+            return
+
+        def cand_label(cid: str) -> str:
+            p = self.agents[cid].persona
+            return f"{p.name} ({p.job})"
+
+        options = {cid: f"Voter pour {cand_label(cid)}" for cid in candidates}
+        options["abstention"] = "S'abstenir et ne pas voter"
+        d9_q = build_d9_vote_choice(options)
+        th = ConfidenceThresholds(
+            green=self.thresholds_cfg.get("D9", {}).get("green", 0.50),
+            orange=self.thresholds_cfg.get("D9", {}).get("orange", 0.30),
+        )
+        election_entities = ["election", "mairie", "pont", "marche", "village_voisin"] + [
+            self.agents[c].persona.name for c in candidates
+        ]
+
+        votes: Dict[str, str] = {}
+        voters = []
+        for agent in self.agents.values():
+            aid = agent.persona.id
+            if aid in candidates:
+                continue
+            cands = [
+                MemoryCandidate(m.id, m.text, m.tick, m.importance, m.entities, m.fact_id, m.source_agent, m.hop_count)
+                for m in agent.memories
+            ]
+            top_mems = self.memory_gate.score_and_rank(
+                self.memory_gate.preselect(cands, global_tick, election_entities + [aid]),
+                global_tick,
+                "Jour du scrutin municipal : choisir le prochain maire du Hameau.",
+                on_decision=self._make_on_d3_decision(day, tick, global_tick, aid),
+            )
+            ties = "; ".join(
+                f"lien avec {self.agents[c].persona.name} : {agent.persona.relationships.get(c, 0.0):.2f}"
+                for c in candidates
+            )
+            state_text = (
+                f"Jour du scrutin pour la mairie du Hameau. {agent.persona.name}, {agent.persona.job}. "
+                f"Candidats : {', '.join(cand_label(c) for c in candidates)}. "
+                f"Relations ({ties}). "
+                f"Souvenirs clés : {'; '.join(sm.candidate.text for sm in top_mems) if top_mems else 'aucun'}."
+            )
+            voters.append((agent, state_text, [sm.candidate.id for sm in top_mems]))
+
+        batch_results = self.decider.ask_batch([(st, {"D9": d9_q}) for _, st, _ in voters])
+
+        for (agent, state_text, mem_ids), res in zip(voters, batch_results):
+            aid = agent.persona.id
+            ans = res["D9"]
+            zone = classify_zone(ans["confidence"], th)
+            vote = ans["value"]
+            fallback = False
+            if zone == "red" or vote not in options:
+                vote = "abstention"  # repli : un électeur qui hésite trop ne vote pas
+                fallback = True
+            votes[aid] = vote
+            self._log_decision(
+                day=day, tick=tick, global_tick=global_tick, agent_id=aid,
+                decision_type="D9", question_text=d9_q.instructions, answer_dict=ans,
+                options_or_criteria=options, zone=zone, fallback_used=fallback,
+                effective_choice=vote,
+                extra_payload={"memory_ids_used": mem_ids, "state_text": state_text},
+            )
+            self.log(LogEvent(tick=tick, day=day, agent_id=aid, event_type="election_vote", payload={
+                "voter": aid, "vote": vote, "confidence": ans["confidence"], "zone": zone,
+                "fallback_used": fallback, "decided_by": "decider", "global_tick": global_tick,
+            }))
+
+        for cid in candidates:  # règle explicite : un candidat vote pour lui-même
+            votes[cid] = cid
+            self.log(LogEvent(tick=tick, day=day, agent_id=cid, event_type="election_vote", payload={
+                "voter": cid, "vote": cid, "confidence": None, "zone": None,
+                "fallback_used": False, "decided_by": "rule_candidate_self_vote", "global_tick": global_tick,
+            }))
+
+        tally = {k: 0 for k in options}
+        for v in votes.values():
+            tally[v] += 1
+        best = max(tally[c] for c in candidates)
+        leaders = [c for c in candidates if tally[c] == best]
+        incumbent = candidates[0]
+        winner = incumbent if incumbent in leaders else leaders[0]  # égalité : le sortant reste
+        cast = sum(tally[c] for c in candidates)
+        self.election_result = {
+            "tally": tally,
+            "winner": winner,
+            "tie": len(leaders) > 1,
+            "tie_rule": "incumbent_keeps_office",
+            "incumbent": incumbent,
+            "voters_total": len(votes),
+            "ballots_cast": cast,
+            "turnout": round(cast / max(1, len(votes)), 3),
+            "decider_voters": len(voters),
+            "fallback_abstentions": sum(
+                1 for e in self.log_events[-len(votes):]
+                if e.event_type == "election_vote" and e.payload.get("fallback_used")
+            ),
+            "global_tick": global_tick,
+        }
+        self.log(LogEvent(tick=tick, day=day, event_type="election_result", payload=dict(self.election_result)))
+
+        w = self.agents[winner].persona.name
+        scores = ", ".join(f"{self.agents[c].persona.name} {tally[c]}" for c in candidates)
+        result_text = (
+            f"Résultat du scrutin municipal : {w} est élu maire du Hameau "
+            f"({scores}, {tally['abstention']} abstention(s) sur {len(votes)} électeurs)."
+        )
+        for agent in self.agents.values():
+            agent.add_memory(MemoryRecord(
+                id=f"mem_r7_{agent.persona.id}", agent_id=agent.persona.id, tick=global_tick,
+                type="observation", text=result_text, entities=election_entities,
+                fact_id="R7_resultat_election", source_agent="mairie", hop_count=0,
+                importance=0.95, confidence=1.0, decision_author="scenario",
+                last_accessed_tick=global_tick,
+            ))
+            agent.set_believed_fact("R7_resultat_election", 1.0)
+        self.daily_events_summary.append(f"Événement clé : {result_text}")
 
     def _generate_evening_gazette(self, day: int, tick: int) -> None:
         """Génère la Gazette du soir (B4) avec Amazon Nova Micro."""
@@ -855,6 +1010,10 @@ class SimulationEngine:
                 payload={
                     "day": day,
                     "gazette_text": gazette_text,
+                    "model_id": self.bedrock.model_id,
+                    "input_tokens": gen_res.get("input_tokens", 0),
+                    "output_tokens": gen_res.get("output_tokens", 0),
+                    "latency_ms": gen_res.get("latency_ms", 0.0),
                     "cost_usd": gen_res["cost_usd"],
                     "from_cassette": gen_res["from_cassette"],
                 },

@@ -11,6 +11,7 @@ from .questions import (
     build_d6_reflect_gate,
     build_d7_continue_gate,
     build_d8_credibility_gate,
+    build_d9_vote_choice,
 )
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "build_d6_reflect_gate",
     "build_d7_continue_gate",
     "build_d8_credibility_gate",
+    "build_d9_vote_choice",
 ]
