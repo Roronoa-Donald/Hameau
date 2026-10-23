@@ -3,6 +3,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python: 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tags](https://img.shields.io/badge/Hackathon-strands--decider--2b%20%7C%20context--memory-orange)](https://community.aws)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Demo%20Video-red?logo=youtube)](https://www.youtube.com/watch?v=B5IoBVvre28)
 
 > **Official Submission for the Strands Decider Agent Hackathon (AWS Builder Center)**  
 > **Mandatory Tags:** `#strands-decider-2b` & `#context-memory`  
@@ -13,7 +14,7 @@
 | **1. Working Agent** | 20 autonomous agents over 72h on RTX 3050 GPU + Bedrock Nova Micro | [Verified Summary](results/summary.json) |
 | **2. Builder Center Article** | Published on AWS Builder Center with `#strands-decider-2b` & `#context-memory` | [AWS Builder Center](https://builder.aws.com) |
 | **3. Reusable Pattern** | Drop-in `MemoryGate` hook for context/memory scoring (`#context-memory`) | [Pattern & Code](patterns/memory_gate/PATTERN.md) |
-| **4. Video Demo (< 3 min)** | Official demonstration video under 3 minutes showing Decider 2B & Bedrock | [Watch Demo Video](https://youtu.be) |
+| **4. Video Demo (< 3 min)** | Official demonstration video under 3 minutes showing Decider 2B & Bedrock | [Watch Demo on YouTube](https://www.youtube.com/watch?v=B5IoBVvre28) |
 | **5. Interactive Replay** | Browser visualizer replaying all 576 ticks without needing a GPU | [Run `./start.sh`](start.sh) |
 
 ---
