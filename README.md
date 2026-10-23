@@ -8,12 +8,12 @@
 > **Mandatory Tags:** `#strands-decider-2b` & `#context-memory`  
 > **License:** Apache 2.0 (OSI Approved)
 
-| Hackathon Requirement | Deliverable / File Link | Status |
+| Hackathon Requirement | Deliverable / Verification | Source Link |
 | :--- | :--- | :--- |
 | **1. Working Agent** | 20 autonomous agents over 72h on RTX 3050 GPU + Bedrock Nova Micro | [Verified Summary](results/summary.json) |
-| **2. Builder Center Article** | Comprehensive written article ready for publication | [Read Article](docs/BUILDER_CENTER_ARTICLE.md) |
+| **2. Builder Center Article** | Published on AWS Builder Center with `#strands-decider-2b` & `#context-memory` | [AWS Builder Center](https://builder.aws.com) |
 | **3. Reusable Pattern** | Drop-in `MemoryGate` hook for context/memory scoring (`#context-memory`) | [Pattern & Code](patterns/memory_gate/PATTERN.md) |
-| **4. Video Demo (< 3 min)** | Official demonstration storyboard & synchronized script (2m58s) | [Video Guide](docs/VIDEO_DEMO.md) |
+| **4. Video Demo (< 3 min)** | Official demonstration video under 3 minutes showing Decider 2B & Bedrock | [Watch Demo Video](https://youtu.be) |
 | **5. Interactive Replay** | Browser visualizer replaying all 576 ticks without needing a GPU | [Run `./start.sh`](start.sh) |
 
 ---

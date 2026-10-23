@@ -56,4 +56,15 @@ test-jour1.png
 .env.*
 !.env.example
 
+# Internal working drafts & notes (submission prep & local scratch)
+.taskstate/
+docs/BUILDER_CENTER_ARTICLE.md
+docs/VIDEO_DEMO.md
+docs/superpowers/
+docs/WORKLOG.md
+docs/BACKLOG.md
+docs/rapport_*.md
+docs/SPECIFICATIONS_INITIALES_FR.md
+docs/visuals/SKILLS_*.md
+
 
