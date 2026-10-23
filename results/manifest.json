@@ -1,17 +1,21 @@
 {
-  "generated_at_utc": "2026-10-22T12:09:29.223438+00:00",
-  "run_log_file": "runs/real_final_3j.jsonl",
-  "run_log_sha256": "768c7b2490bf37e74ee2ef199c0938124a6adb74b150d6ef2b4e948b056ea902",
+  "generated_at_utc": "2026-10-23T02:44:14.627918+00:00",
+  "run_log_file": "runs/run_real_3j.jsonl",
+  "run_log_sha256": "48721794d6c023cfda83a1c3878b2ec60842a767b7bb0d48d37d08c72bc9721e",
   "git": {
-    "commit": "e34b1a0bf6fe9cf0fbafc7b4ea14a3deec7a530a",
-    "dirty": false,
-    "status_lines": []
+    "commit": "937db882ccead57666614c0d9089d2d55a9bf124",
+    "dirty": true,
+    "status_lines": [
+      "M scripts/run_simulation_real.sh",
+      " M viewer/app.js",
+      " M viewer/sample_run.jsonl"
+    ]
   },
   "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
   "seed": 42,
-  "started_at_utc": "2026-10-22T11:16:39.809263+00:00",
-  "finished_at_utc": "2026-10-22T11:49:25.185751+00:00",
-  "wall_clock_seconds": 1965.38,
+  "started_at_utc": "2026-10-22T22:06:52.119446+00:00",
+  "finished_at_utc": "2026-10-23T02:43:48.101859+00:00",
+  "wall_clock_seconds": 16615.98,
   "hardware": {
     "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
     "vram_total_mb": 6144,
@@ -21,13 +25,13 @@
     "model_id": "StrandsAgents/strands-decider-2B-hobson-v21",
     "backend_type": "local_gpu",
     "backends_seen": {
-      "StrandsAgents/strands-decider-2B-hobson-v21": 13351
+      "StrandsAgents/strands-decider-2B-hobson-v21": 13467
     }
   },
   "bedrock": {
     "model_id": "amazon.nova-micro-v1:0",
     "source": "live_network",
-    "live_network_calls": 655,
+    "live_network_calls": 659,
     "cassette_calls": 0
   },
   "is_valid_real_run": true

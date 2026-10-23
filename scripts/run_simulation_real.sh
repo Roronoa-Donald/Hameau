@@ -32,21 +32,30 @@ if command -v aws >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "[+] Lancement de la simulation..."
+echo "[+] Lancement de la simulation en mode réel (GPU local + Bedrock en direct)..."
 START_TIME=$(date +%s)
-uv run hameau --days "$DAYS" --output "$OUTPUT_FILE"
+uv run hameau --days "$DAYS" --no-cassettes --output "$OUTPUT_FILE"
 END_TIME=$(date +%s)
 
 DURATION=$((END_TIME - START_TIME))
 
-# Copie vers viewer/live_run.jsonl pour rejeu immédiat dans le visualiseur
+echo "[+] Synchronisation du visualiseur (live_run et sample_run)..."
 cp "$OUTPUT_FILE" viewer/live_run.jsonl
+cp "$OUTPUT_FILE" viewer/sample_run.jsonl
+
+echo "[+] Mise à jour des métriques officielles et de la documentation..."
+uv run python scripts/build_numbers.py --run-log "$OUTPUT_FILE" --sync-viewer --generate-docs
+
+echo "[+] Régénération des archives de distribution (.zip)..."
+uv run python scripts/package_dist.py
 
 echo ""
 echo "=========================================================="
 echo "   Simulation réelle achevée en ${DURATION}s !"
 echo "   Fichier généré : $OUTPUT_FILE"
-echo "   Mis à jour     : viewer/live_run.jsonl"
+echo "   Mis à jour     : viewer/live_run.jsonl & viewer/sample_run.jsonl"
+echo "   Métriques      : results/summary.json & viewer/summary.json"
+echo "   Archives .zip  : hameau-visualiseur-3j.zip (actualisé)"
 echo "=========================================================="
 echo "Pour visualiser le résultat avec les personnages 2D animés :"
 echo "   ./scripts/run_viewer.sh"

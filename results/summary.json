@@ -1,18 +1,22 @@
 {
   "manifest": {
-    "generated_at_utc": "2026-10-22T12:09:29.223438+00:00",
-    "run_log_file": "runs/real_final_3j.jsonl",
-    "run_log_sha256": "768c7b2490bf37e74ee2ef199c0938124a6adb74b150d6ef2b4e948b056ea902",
+    "generated_at_utc": "2026-10-23T02:44:14.627918+00:00",
+    "run_log_file": "runs/run_real_3j.jsonl",
+    "run_log_sha256": "48721794d6c023cfda83a1c3878b2ec60842a767b7bb0d48d37d08c72bc9721e",
     "git": {
-      "commit": "e34b1a0bf6fe9cf0fbafc7b4ea14a3deec7a530a",
-      "dirty": false,
-      "status_lines": []
+      "commit": "937db882ccead57666614c0d9089d2d55a9bf124",
+      "dirty": true,
+      "status_lines": [
+        "M scripts/run_simulation_real.sh",
+        " M viewer/app.js",
+        " M viewer/sample_run.jsonl"
+      ]
     },
     "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
     "seed": 42,
-    "started_at_utc": "2026-10-22T11:16:39.809263+00:00",
-    "finished_at_utc": "2026-10-22T11:49:25.185751+00:00",
-    "wall_clock_seconds": 1965.38,
+    "started_at_utc": "2026-10-22T22:06:52.119446+00:00",
+    "finished_at_utc": "2026-10-23T02:43:48.101859+00:00",
+    "wall_clock_seconds": 16615.98,
     "hardware": {
       "gpu_name": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "vram_total_mb": 6144,
@@ -22,13 +26,13 @@
       "model_id": "StrandsAgents/strands-decider-2B-hobson-v21",
       "backend_type": "local_gpu",
       "backends_seen": {
-        "StrandsAgents/strands-decider-2B-hobson-v21": 13351
+        "StrandsAgents/strands-decider-2B-hobson-v21": 13467
       }
     },
     "bedrock": {
       "model_id": "amazon.nova-micro-v1:0",
       "source": "live_network",
-      "live_network_calls": 655,
+      "live_network_calls": 659,
       "cassette_calls": 0
     },
     "is_valid_real_run": true
@@ -359,67 +363,67 @@
     "num_agents": 20,
     "days": 3,
     "total_ticks": 576,
-    "total_events": 14359,
-    "wall_clock_seconds": 1965.38,
-    "seconds_per_simulated_day": 655.13,
+    "total_events": 14484,
+    "wall_clock_seconds": 16615.98,
+    "seconds_per_simulated_day": 5538.66,
     "decider": {
-      "total_questions": 13351,
-      "total_requests": 8122,
+      "total_questions": 13467,
+      "total_requests": 8206,
       "questions_by_type": {
-        "D1": 2570,
-        "D2": 249,
-        "D3": 7986,
-        "D4": 1433,
-        "D5": 486,
+        "D1": 2588,
+        "D2": 255,
+        "D3": 8046,
+        "D4": 1432,
+        "D5": 511,
         "D6": 41,
-        "D7": 319,
-        "D8": 249,
+        "D7": 321,
+        "D8": 255,
         "D9": 18
       },
       "question_latency_ms": {
-        "p50": 249.56,
-        "p95": 417.6,
-        "max": 4450.54,
-        "mean": 249.21
+        "p50": 2606.09,
+        "p95": 4530.08,
+        "max": 11261.38,
+        "mean": 2704.28
       },
       "request_latency_ms": {
-        "p50": 124.31,
-        "p95": 411.59,
-        "max": 4450.54,
-        "mean": 180.51
+        "p50": 1403.57,
+        "p95": 4348.15,
+        "max": 11261.38,
+        "mean": 1957.99
       },
       "zones": {
-        "green": 1761,
-        "orange": 9761,
-        "red": 1829,
-        "green_pct": 13.19,
-        "orange_pct": 73.11,
-        "red_pct": 13.7
+        "green": 1777,
+        "orange": 9847,
+        "red": 1843,
+        "green_pct": 13.2,
+        "orange_pct": 73.12,
+        "red_pct": 13.69
       },
-      "fallbacks_count": 1829,
-      "fallbacks_pct": 13.7,
+      "fallbacks_count": 1843,
+      "fallbacks_pct": 13.69,
       "fallbacks_by_type": {
-        "D1": 850,
+        "D1": 854,
         "D3": 1,
-        "D4": 935,
+        "D4": 946,
         "D6": 31,
-        "D9": 12
+        "D9": 11
       }
     },
     "bedrock": {
-      "total_calls": 655,
+      "total_calls": 659,
       "calls_by_type": {
-        "conversation_turn": 638,
+        "conversation_turn": 642,
         "gazette": 3,
         "reflection": 14
       },
-      "live_network_calls": 655,
+      "live_network_calls": 659,
       "cassette_calls": 0,
-      "input_tokens": 254664,
-      "output_tokens": 20968,
-      "total_tokens": 275632,
-      "logged_cost_usd": 0.011841,
-      "computed_network_cost_usd": 0.011849,
+      "input_tokens": 257802,
+      "output_tokens": 20859,
+      "total_tokens": 278661,
+      "logged_cost_usd": 0.011939,
+      "computed_network_cost_usd": 0.011943,
       "pricing_usd_per_1m": {
         "model": "amazon.nova-micro-v1:0",
         "region": "us-east-1",
@@ -428,29 +432,29 @@
         "source": "AWS Bedrock Pricing (us-east-1 On-Demand)"
       },
       "latency_ms": {
-        "p50": 755.08,
-        "p95": 1041.8,
-        "max": 2126.38,
-        "mean": 758.46
+        "p50": 746.02,
+        "p95": 1224.4,
+        "max": 3812.4,
+        "mean": 822.09
       }
     },
     "ratios": {
-      "questions_per_llm_call": 20.38,
-      "requests_per_llm_call": 12.4
+      "questions_per_llm_call": 20.44,
+      "requests_per_llm_call": 12.45
     },
     "memory_gate": {
-      "total_evaluations": 1893,
-      "evaluations_with_gt3_candidates": 1145,
-      "estimated_raw_tokens_total": 745167,
-      "estimated_gated_tokens_total": 573854,
-      "token_reduction_pct": 22.99
+      "total_evaluations": 1917,
+      "evaluations_with_gt3_candidates": 1155,
+      "estimated_raw_tokens_total": 753965,
+      "estimated_gated_tokens_total": 580162,
+      "token_reduction_pct": 23.05
     },
     "rumors": {
       "R1_fermeture_marche": {
         "agents_reached": 3,
         "population_size": 20,
         "reach_pct": 15.0,
-        "transmissions_count": 88,
+        "transmissions_count": 89,
         "max_hop": 2,
         "tick_50pct": null
       },
@@ -474,7 +478,7 @@
         "agents_reached": 6,
         "population_size": 20,
         "reach_pct": 30.0,
-        "transmissions_count": 103,
+        "transmissions_count": 95,
         "max_hop": 3,
         "tick_50pct": null
       },
@@ -490,7 +494,7 @@
         "agents_reached": 9,
         "population_size": 20,
         "reach_pct": 45.0,
-        "transmissions_count": 73,
+        "transmissions_count": 86,
         "max_hop": 3,
         "tick_50pct": null
       },
@@ -509,19 +513,19 @@
     ],
     "election_d9": {
       "tally": {
-        "kofi": 4,
+        "kofi": 5,
         "victor": 4,
-        "abstention": 12
+        "abstention": 11
       },
       "winner": "kofi",
-      "tie": true,
+      "tie": false,
       "tie_rule": "incumbent_keeps_office",
       "incumbent": "kofi",
       "voters_total": 20,
-      "ballots_cast": 8,
-      "turnout": 0.4,
+      "ballots_cast": 9,
+      "turnout": 0.45,
       "decider_voters": 18,
-      "fallback_abstentions": 6,
+      "fallback_abstentions": 5,
       "global_tick": 516,
       "votes_detail": [
         {
@@ -625,17 +629,17 @@
         },
         {
           "voter": "fatou",
-          "vote": "abstention",
-          "confidence": 0.2087,
-          "zone": "red",
-          "fallback_used": true,
+          "vote": "victor",
+          "confidence": 0.689,
+          "zone": "green",
+          "fallback_used": false,
           "decided_by": "decider",
           "global_tick": 516
         },
         {
           "voter": "lucas",
           "vote": "abstention",
-          "confidence": 0.2268,
+          "confidence": 0.2385,
           "zone": "red",
           "fallback_used": true,
           "decided_by": "decider",
@@ -670,9 +674,9 @@
         },
         {
           "voter": "bastien",
-          "vote": "victor",
-          "confidence": 0.6777,
-          "zone": "green",
+          "vote": "kofi",
+          "confidence": 0.3565,
+          "zone": "orange",
           "fallback_used": false,
           "decided_by": "decider",
           "global_tick": 516
@@ -708,10 +712,10 @@
     },
     "e5_calibration": {
       "d8_objective_truth": {
-        "sample_size_n": 249,
+        "sample_size_n": 255,
         "indicative_only": false,
-        "overall_accuracy": 0.349,
-        "ece": 0.113,
+        "overall_accuracy": 0.345,
+        "ece": 0.1181,
         "bins": [
           {
             "range": "[0.0, 0.2)",
@@ -727,9 +731,9 @@
           },
           {
             "range": "[0.4, 0.6)",
-            "count": 249,
-            "accuracy": 0.349,
-            "avg_confidence": 0.462
+            "count": 255,
+            "accuracy": 0.345,
+            "avg_confidence": 0.463
           },
           {
             "range": "[0.6, 0.8)",
@@ -770,45 +774,6 @@
     },
     "e10_worst_decisions": [
       {
-        "global_tick": 560,
-        "day": 3,
-        "tick": 176,
-        "agent_id": "fatou",
-        "decision_type": "D4",
-        "question": "Engager la conversation avec Antoine",
-        "chosen_option": false,
-        "confidence": 0.0004,
-        "zone": "red",
-        "fallback_used": true,
-        "latency_ms": 64.89
-      },
-      {
-        "global_tick": 561,
-        "day": 3,
-        "tick": 177,
-        "agent_id": "fatou",
-        "decision_type": "D4",
-        "question": "Engager la conversation avec Antoine",
-        "chosen_option": false,
-        "confidence": 0.0004,
-        "zone": "red",
-        "fallback_used": true,
-        "latency_ms": 65.71
-      },
-      {
-        "global_tick": 566,
-        "day": 3,
-        "tick": 182,
-        "agent_id": "fatou",
-        "decision_type": "D4",
-        "question": "Engager la conversation avec Antoine",
-        "chosen_option": false,
-        "confidence": 0.0004,
-        "zone": "red",
-        "fallback_used": true,
-        "latency_ms": 64.24
-      },
-      {
         "global_tick": 1,
         "day": 1,
         "tick": 1,
@@ -819,7 +784,7 @@
         "confidence": 0.003,
         "zone": "red",
         "fallback_used": true,
-        "latency_ms": 109.39
+        "latency_ms": 835.31
       },
       {
         "global_tick": 21,
@@ -832,37 +797,11 @@
         "confidence": 0.003,
         "zone": "red",
         "fallback_used": true,
-        "latency_ms": 63.83
+        "latency_ms": 618.58
       },
       {
-        "global_tick": 210,
+        "global_tick": 211,
         "day": 2,
-        "tick": 18,
-        "agent_id": "ibrahim",
-        "decision_type": "D4",
-        "question": "Engager la conversation avec Lucas",
-        "chosen_option": false,
-        "confidence": 0.003,
-        "zone": "red",
-        "fallback_used": true,
-        "latency_ms": 64.73
-      },
-      {
-        "global_tick": 396,
-        "day": 3,
-        "tick": 12,
-        "agent_id": "ibrahim",
-        "decision_type": "D4",
-        "question": "Engager la conversation avec Lucas",
-        "chosen_option": false,
-        "confidence": 0.003,
-        "zone": "red",
-        "fallback_used": true,
-        "latency_ms": 63.83
-      },
-      {
-        "global_tick": 403,
-        "day": 3,
         "tick": 19,
         "agent_id": "ibrahim",
         "decision_type": "D4",
@@ -871,12 +810,12 @@
         "confidence": 0.003,
         "zone": "red",
         "fallback_used": true,
-        "latency_ms": 63.57
+        "latency_ms": 612.66
       },
       {
-        "global_tick": 405,
+        "global_tick": 397,
         "day": 3,
-        "tick": 21,
+        "tick": 13,
         "agent_id": "ibrahim",
         "decision_type": "D4",
         "question": "Engager la conversation avec Lucas",
@@ -884,7 +823,20 @@
         "confidence": 0.003,
         "zone": "red",
         "fallback_used": true,
-        "latency_ms": 64.15
+        "latency_ms": 625.7
+      },
+      {
+        "global_tick": 407,
+        "day": 3,
+        "tick": 23,
+        "agent_id": "ibrahim",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Lucas",
+        "chosen_option": false,
+        "confidence": 0.003,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 630.94
       },
       {
         "global_tick": 27,
@@ -897,7 +849,59 @@
         "confidence": 0.0038,
         "zone": "red",
         "fallback_used": true,
-        "latency_ms": 63.07
+        "latency_ms": 614.28
+      },
+      {
+        "global_tick": 69,
+        "day": 1,
+        "tick": 69,
+        "agent_id": "mariam",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Yao",
+        "chosen_option": true,
+        "confidence": 0.0038,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 715.14
+      },
+      {
+        "global_tick": 75,
+        "day": 1,
+        "tick": 75,
+        "agent_id": "mariam",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Yao",
+        "chosen_option": true,
+        "confidence": 0.0038,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 657.66
+      },
+      {
+        "global_tick": 93,
+        "day": 1,
+        "tick": 93,
+        "agent_id": "mariam",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Yao",
+        "chosen_option": true,
+        "confidence": 0.0038,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 886.45
+      },
+      {
+        "global_tick": 99,
+        "day": 1,
+        "tick": 99,
+        "agent_id": "mariam",
+        "decision_type": "D4",
+        "question": "Engager la conversation avec Yao",
+        "chosen_option": true,
+        "confidence": 0.0038,
+        "zone": "red",
+        "fallback_used": true,
+        "latency_ms": 633.82
       }
     ]
   }

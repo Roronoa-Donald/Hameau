@@ -862,7 +862,7 @@ class HameauViewer {
       if (a.believedFacts["R4_election_municipale"]) r4Count++;
       if (a.didStock) stocking++;
     }
-    const n = this.populationSize();
+    const n = Math.max(roster.size, this.populationSize(), infected, stocking);
 
     document.getElementById("rumor-count").textContent = `${infected} / ${n}`;
     document.getElementById("stocking-count").textContent = `${stocking} / ${n}`;
