@@ -4,14 +4,26 @@
 [![Python: 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Tags](https://img.shields.io/badge/Hackathon-strands--decider--2b%20%7C%20context--memory-orange)](https://community.aws)
 
-**HAMEAU** is an autonomous multi-agent simulation of 20 villagers designed for the **Strands Decider Agent Hackathon** (AWS Builder Center).
+> **Official Submission for the Strands Decider Agent Hackathon (AWS Builder Center)**  
+> **Mandatory Tags:** `#strands-decider-2b` & `#context-memory`  
+> **License:** Apache 2.0 (OSI Approved)
 
-It solves the foundational bottleneck of generative agent simulations (Stanford Smallville, AI Town): **the latency, cost, and context saturation caused by querying heavy Large Language Models for routine decisions.**
+| Hackathon Requirement | Deliverable / File Link | Status |
+| :--- | :--- | :--- |
+| **1. Working Agent** | 20 autonomous agents over 72h on RTX 3050 GPU + Bedrock Nova Micro | [Verified Summary](results/summary.json) |
+| **2. Builder Center Article** | Comprehensive written article ready for publication | [Read Article](docs/BUILDER_CENTER_ARTICLE.md) |
+| **3. Reusable Pattern** | Drop-in `MemoryGate` hook for context/memory scoring (`#context-memory`) | [Pattern & Code](patterns/memory_gate/PATTERN.md) |
+| **4. Video Demo (< 3 min)** | Official demonstration storyboard & synchronized script (2m58s) | [Video Guide](docs/VIDEO_DEMO.md) |
+| **5. Interactive Replay** | Browser visualizer replaying all 576 ticks without needing a GPU | [Run `./start.sh`](start.sh) |
+
+---
+
+**HAMEAU** solves the foundational bottleneck of generative agent simulations (Stanford Smallville, AI Town): **the latency, cost, and context saturation caused by querying heavy Large Language Models for routine decisions.**
 
 HAMEAU introduces a decoupled, hierarchical decision architecture:
-- **Strands Decider 2B** (`StrandsAgents/strands-decider-2B-hobson-v21` on local GPU RTX 3050): Executes all high-frequency decisions (D1–D9) without autoregressive decoding (p50 = 124.3 ms request latency, 249.6 ms question latency).
-- **Amazon Bedrock (Amazon Nova Micro)**: Reserved exclusively for rare, rich text generation (dialogue, agent reflections, evening village Gazette) with 100% direct live network calls.
-- **MemoryGate Reusable Pattern** (`patterns/memory_gate/`): A standardized Strands `HookProvider` that filters and scores memories before injecting them into the LLM context, saving **23.0% of prompt tokens** and eliminating context clutter.
+- **Strands Decider 2B** (`StrandsAgents/strands-decider-2B-hobson-v21` on local GPU RTX 3050): Executes all 13,467 high-frequency decisions (D1–D9) without autoregressive decoding (p50 = 1,403.57 ms under live multi-agent load).
+- **Amazon Bedrock (Amazon Nova Micro)**: Reserved exclusively for rare, rich text generation (dialogue, agent reflections, evening village Gazette) with 100% direct live network calls (659 calls, total spend: **$0.01194 USD**).
+- **MemoryGate Reusable Pattern** (`patterns/memory_gate/`): A standardized Strands `HookProvider` that filters and scores memories before injecting them into the LLM context, saving **23.05% of prompt tokens** and eliminating context clutter.
 
 ---
 
@@ -90,16 +102,18 @@ All figures below are directly generated and measured from verifiable benchmark 
 
 | Metric | Measured Value | Definition / Source |
 | :--- | :--- | :--- |
-| **Decider Questions ($Q$)** | **13,351** | D1–D9 evaluated by Strands Decider 2B |
-| **Decider Requests ($R$)** | **8,122** | GPU inference calls after prefix-sharing |
-| **Amazon Bedrock Calls ($L$)** | **655** | 100% direct live network calls (0 cached) |
-| **Decider / LLM Ratio ($Q / L$)** | **20.38 : 1** | Target > 20:1 exceeded |
-| **Decider / LLM Request Ratio ($R / L$)** | **12.4 : 1** | GPU requests per generative LLM call |
-| **Decider Latency (p50 / p95)** | **124.3 ms / 411.6 ms** | Request latency on NVIDIA RTX 3050 |
-| **Bedrock Latency (p50 / p95)** | **755.1 ms / 1041.8 ms** | Amazon Nova Micro API (us-east-1) |
-| **MemoryGate Token Reduction** | **-23.0%** | Measured dynamically across 1,893 evaluations |
-| **AWS Total Cost** | **$0.01184 USD** | 275,632 tokens processed (< $0.02) |
-| **Municipal Election (D9)** | **Turnout 40.0%** | Kofi 4, Victor 4, Abstention 12 (incumbent re-elected) |
+| **Population** | **20 villagers** | Canonical population across 72 hours |
+| **Duration** | **3 days (576 ticks)** | 5 min/tick (192 ticks/day) |
+| **Decider Questions ($Q$)** | **13,467** | D1–D9 evaluated by Strands Decider 2B |
+| **Decider Requests ($R$)** | **8,206** | GPU inference calls after prefix-sharing |
+| **Amazon Bedrock Calls ($L$)** | **659** | 100% direct live network calls (0 cached) |
+| **Decider / LLM Ratio ($Q / L$)** | **20.44 : 1** | Target > 20:1 exceeded |
+| **Decider / LLM Request Ratio ($R / L$)** | **12.45 : 1** | GPU requests per generative LLM call |
+| **Decider Latency (p50 / p95)** | **1403.57 ms / 4348.15 ms** | Request latency on NVIDIA RTX 3050 Laptop GPU |
+| **Bedrock Latency (p50 / p95)** | **746.02 ms / 1224.40 ms** | Amazon Nova Micro API (us-east-1) |
+| **MemoryGate Token Reduction** | **-23.05 %** | 580,162 gated vs 753,965 raw tokens |
+| **AWS Total Cost** | **$0.01194 USD** | 278,661 tokens processed ($0.035 in / $0.140 out per 1M) |
+| **Municipal Election (D9)** | **Turnout 45.0 %** | 20 voters, 9 ballots cast: Kofi 5, Victor 4, Abstentions 11 |
 
 ### Comparative Strategy Performance (`results/comparison.csv`)
 

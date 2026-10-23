@@ -54,5 +54,6 @@ test-jour1.png
 # Environment & Ephemeral URLs
 .env
 .env.*
+!.env.example
 
 
