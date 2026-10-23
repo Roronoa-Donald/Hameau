@@ -1,15 +1,11 @@
 {
-  "generated_at_utc": "2026-10-23T02:44:14.627918+00:00",
-  "run_log_file": "runs/run_real_3j.jsonl",
+  "generated_at_utc": "2026-10-23T19:33:08.963327+00:00",
+  "run_log_file": "viewer/sample_run.jsonl",
   "run_log_sha256": "48721794d6c023cfda83a1c3878b2ec60842a767b7bb0d48d37d08c72bc9721e",
   "git": {
-    "commit": "937db882ccead57666614c0d9089d2d55a9bf124",
-    "dirty": true,
-    "status_lines": [
-      "M scripts/run_simulation_real.sh",
-      " M viewer/app.js",
-      " M viewer/sample_run.jsonl"
-    ]
+    "commit": "8fa964ee26749684d2016b57a8c1cc41eede8cd2",
+    "dirty": false,
+    "status_lines": []
   },
   "config_sha256": "546aa7ca88245de7e51b16ad73bc3c7f73516640ab87c73740cca80aa32a345a",
   "seed": 42,

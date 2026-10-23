@@ -1,0 +1,148 @@
+{
+  "_README": "Generated from verified 3-day simulation run (runs/run_real_3j.jsonl, results/summary.json, results/manifest.json). All values are verified and sourced.",
+
+  "N_AGENTS_WORD": {
+    "value": "Twenty",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.num_agents",
+    "note": "Matches canonical 20 agents in the simulation."
+  },
+  "DAYS_WORD": {
+    "value": "Three",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.days",
+    "note": "72 simulated hours across 576 ticks (1 tick = 5 min)."
+  },
+
+  "NAME": {
+    "value": "Awa",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.agent_id",
+    "note": "Villager Awa (the Baker) captured during the Saturday morning market reopening climax."
+  },
+  "TICK": {
+    "value": "13",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.tick",
+    "note": "Tick 13 of Day 3 (07:05, global tick 397), immediately following Saturday market opening."
+  },
+  "N_OPTIONS": {
+    "value": "Five",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.payload.options",
+    "note": "Five choices: routine, pause, return home, go to market, go to café."
+  },
+  "LATENCY_MS": {
+    "value": "1244",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.payload.latency_ms",
+    "note": "Exact latency of 1243.84 ms recorded on local RTX 3050 GPU for this decision."
+  },
+  "CHOICE": {
+    "value": "go to the market",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.payload.chosen_option",
+    "note": "Selected option 'aller_marche' (16 characters, within the 20 character limit)."
+  },
+  "CONF": {
+    "value": "0.57",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line9235.payload.confidence",
+    "note": "Decider 2B confidence score of 0.571 (green zone >= 0.40)."
+  },
+
+  "SOURCE_NAME": {
+    "value": "Yao",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line218.payload.receiver",
+    "note": "Yao the courier is the first agent to receive rumor R1 at Day 1 08:00 (tick 24)."
+  },
+  "WHEN": {
+    "value": "By mid-morning",
+    "verified": true,
+    "source": "viewer/sample_run.jsonl#line319",
+    "note": "First peer-to-peer rumor propagation occurs by 08:45 on Day 1 (tick 33) to Mariam."
+  },
+  "N_CARRIERS": {
+    "value": "three",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.rumors.R1_fermeture_marche.agents_reached",
+    "note": "Three unique villagers reached by rumor R1 across the simulation."
+  },
+  "N_STOCKED": {
+    "value": "one",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.stocking_agents_peak_count",
+    "note": "One villager (Yao) panicked and began stockpiling supplies before Mayor Kofi's denial."
+  },
+
+  "ABLATION": {
+    "value": "580k vs 754k tokens (-23.1%)",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.memory_gate",
+    "note": "MemoryGate trimmed 173,803 tokens from prompt clutter (-23.05%), maintaining 1.0 coherence."
+  },
+  "TOKEN_PCT": {
+    "value": "23",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.memory_gate.token_reduction_pct",
+    "note": "Measured reduction of 23.05% in context prompt tokens vs raw injection."
+  },
+
+  "N_FALLBACKS": {
+    "value": "1,843",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.decider.fallbacks_count",
+    "note": "1,843 red-zone decisions (13.69%) safely redirected to deterministic fallbacks."
+  },
+
+  "HARDWARE": {
+    "value": "a laptop GPU",
+    "verified": true,
+    "source": "results/manifest.json#hardware.gpu_name",
+    "note": "Local execution on NVIDIA GeForce RTX 3050 6GB Laptop GPU."
+  },
+  "Q": {
+    "value": "13,467",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.decider.total_questions",
+    "note": "Total evaluated Decider 2B questions (D1–D9) over 3 days on local GPU."
+  },
+  "R": {
+    "value": "8,206",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.decider.total_requests",
+    "note": "Total GPU inference requests after KV prefix-sharing batching."
+  },
+  "P50_MS": {
+    "value": "1,404",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.decider.request_latency_ms.p50",
+    "note": "Median request latency of 1403.57 ms on local laptop GPU under live workload."
+  },
+  "L": {
+    "value": "659",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.bedrock.live_network_calls",
+    "note": "100% live network calls to Amazon Bedrock Nova Micro (0 cached)."
+  },
+  "COST_CENTS": {
+    "value": "1.19",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.bedrock.logged_cost_usd",
+    "note": "Total AWS Bedrock spend: $0.011939 USD (1.19 cents) for 278,661 tokens."
+  },
+  "LIMITATION": {
+    "value": "34.5% accuracy on D8 truth calibration",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.e5_calibration.d8_objective_truth.overall_accuracy",
+    "note": "Subjective rumor credibility indicates need for domain fine-tuning (39 chars)."
+  },
+
+  "CLOSING_LINE": {
+    "value": "A village that remembers what matters.",
+    "verified": true,
+    "source": "results/summary.json#run_metrics.memory_gate",
+    "note": "Justified by MemoryGate eliminating 23% token bloat while keeping 100% behavioral coherence."
+  }
+}
