@@ -23,7 +23,7 @@ def build_viewer_zip(output_name: str = "hameau-visualiseur-3j.zip") -> Path:
                 rel = p.relative_to(REPO_ROOT)
                 z.write(p, str(rel))
     mb = out_path.stat().st_size / (1024 * 1024)
-    print(f"[OK] {output_name} généré : {mb:.2f} Mo")
+    print(f"[OK] {output_name} generated: {mb:.2f} MB")
     return out_path
 
 
@@ -42,7 +42,7 @@ def build_full_dist_zip(output_name: str = "hameau-complet-sans-venv.zip") -> Pa
                 rel = p.relative_to(REPO_ROOT)
                 z.write(p, str(rel))
     mb = out_path.stat().st_size / (1024 * 1024)
-    print(f"[OK] {output_name} généré : {mb:.2f} Mo")
+    print(f"[OK] {output_name} generated: {mb:.2f} MB")
     return out_path
 
 

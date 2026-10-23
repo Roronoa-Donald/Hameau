@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HAMEAU — Planche-Contact des 12 Habitants 2D (Phase P1 Validation)</title>
+  <title>HAMEAU — 2D Citizens Contact Sheet (Validation)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -298,25 +298,25 @@
 <body>
 
   <header>
-    <div class="badge-p1">Porte de Validation Visuelle (Phase P1)</div>
-    <h1>Planche-Contact des 12 Habitants du Hameau</h1>
+    <div class="badge-p1">Visual Validation Gate (Phase P1)</div>
+    <h1>Contact Sheet of the 12 Village Citizens</h1>
     <p class="subtitle">
-      Rendu procédural Canvas 2D haute définition : proportions humaines réalistes (~7 têtes), volumes sculptés par l'éclairage zénithal à 45°, anatomie articulée, palettes textiles identifiables et postures reflétant les croyances et comportements de la simulation.
+      Procedural high-definition 2D Canvas rendering: realistic human proportions (~7 heads), zenithal lighting at 45°, articulated anatomy, identifiable textile palettes, and postures reflecting beliefs and behaviors from the simulation.
     </p>
   </header>
 
-  <!-- Barre de commande des états de simulation -->
+  <!-- Interactive Simulation State Bar -->
   <section class="controls-bar">
     <div class="filter-group">
-      <span class="filter-label">État de simulation :</span>
-      <button class="btn-state active" data-state="idle">🌿 Repos (Idle)</button>
-      <button class="btn-state" data-state="walk">🚶 Marche (Walk)</button>
-      <button class="btn-state" data-state="talk">💬 Parole (Talk)</button>
-      <button class="btn-state" data-state="rumor">⚡ Rumeur R1 (Inquiet)</button>
-      <button class="btn-state" data-state="debunk">🕊️ Démenti R2 (Apaisé)</button>
-      <button class="btn-state" data-state="stock">🧺 Stockage (Panier)</button>
-      <button class="btn-state" data-state="hesitate">❓ Doute (Zone Rouge)</button>
-      <button class="btn-state" data-state="night">🌙 Nuit (Sommeil)</button>
+      <span class="filter-label">Simulation state:</span>
+      <button class="btn-state active" data-state="idle">🌿 Idle</button>
+      <button class="btn-state" data-state="walk">🚶 Walk</button>
+      <button class="btn-state" data-state="talk">💬 Talk</button>
+      <button class="btn-state" data-state="rumor">⚡ Rumor R1 (Concerned)</button>
+      <button class="btn-state" data-state="debunk">🕊️ Denial R2 (Relieved)</button>
+      <button class="btn-state" data-state="stock">🧺 Stockpiling (Basket)</button>
+      <button class="btn-state" data-state="hesitate">❓ Doubt (Red Zone)</button>
+      <button class="btn-state" data-state="night">🌙 Night (Sleep)</button>
     </div>
 
     <div class="filter-group">
@@ -324,18 +324,18 @@
     </div>
   </section>
 
-  <!-- Grille des 12 Habitants -->
+  <!-- Grid of 12 Citizens -->
   <main class="characters-grid" id="characters-grid"></main>
 
-  <!-- Section Galerie des Bustes (Inspecteur d'Agent & Gazette) -->
+  <!-- Bust Gallery Section (Agent Inspector & Gazette) -->
   <section class="bust-section">
-    <h2>Portraits en Buste — Inspecteur d'Agent & Gazette</h2>
-    <p>Rendu expressif haute fidélité utilisé pour le panneau d'inspection, le réseau social de confiance et la Une de La Gazette du Hameau.</p>
+    <h2>Bust Portraits — Agent Inspector & The Gazette</h2>
+    <p>High-fidelity expressive rendering used for the inspection panel, trust social graph, and The Village Gazette front page.</p>
     <div class="busts-row" id="busts-container"></div>
   </section>
 
   <footer>
-    <p>HAMEAU 2D Character Renderer &bull; Design System Impeccable &bull; Apache-2.0 &bull; 0 dépendance externe</p>
+    <p>HAMEAU 2D Character Renderer &bull; Impeccable Design System &bull; Apache-2.0 &bull; Zero external dependencies</p>
   </footer>
 
   <script src="../character_renderer.js"></script>
@@ -373,7 +373,7 @@
             <h2>${charDef.name}</h2>
             <div class="char-role">${charDef.role}</div>
           </div>
-          <div class="char-age-badge">${charDef.age} ans</div>
+          <div class="char-age-badge">${charDef.age} yrs old</div>
         </div>
         <div class="canvas-preview-row">
           <div class="preview-col">
@@ -390,20 +390,20 @@
           </div>
         </div>
         <div class="char-details">
-          <div><strong>Silhouette :</strong> ${charDef.build} &bull; ${charDef.gender === "f" ? "Femme" : "Homme"}</div>
-          <div><strong>Accessoire :</strong> ${charDef.accessory.replace(/_/g, " ")}</div>
+          <div><strong>Build:</strong> ${charDef.build} &bull; ${charDef.gender === "f" ? "Female" : "Male"}</div>
+          <div><strong>Accessory:</strong> ${charDef.accessory.replace(/_/g, " ")}</div>
           <div class="color-swatches">
-            <div class="color-swatch" style="background:${charDef.skin.base};" title="Peau base"></div>
-            <div class="color-swatch" style="background:${charDef.palette.primary};" title="Vêtement primaire"></div>
-            <div class="color-swatch" style="background:${charDef.palette.secondary};" title="Vêtement secondaire"></div>
-            <div class="color-swatch" style="background:${charDef.hair.color};" title="Chevelure"></div>
+            <div class="color-swatch" style="background:${charDef.skin.base};" title="Base skin"></div>
+            <div class="color-swatch" style="background:${charDef.palette.primary};" title="Primary garment"></div>
+            <div class="color-swatch" style="background:${charDef.palette.secondary};" title="Secondary garment"></div>
+            <div class="color-swatch" style="background:${charDef.hair.color};" title="Hair"></div>
           </div>
         </div>
       `;
 
       grid.appendChild(card);
 
-      // Collecte des canvas pour boucle de rendu
+      // Collect canvases for rendering loop
       const c1 = card.querySelector('canvas[data-scale="0.8"]');
       const c2 = card.querySelector('canvas[data-scale="1.25"]');
       const c4 = card.querySelector('canvas[data-scale="1.8"]');
@@ -411,7 +411,7 @@
       canvases2x.push({ canvas: c2, ctx: c2.getContext("2d"), charDef, scale: 1.25, x: 48, y: 108 });
       canvases4x.push({ canvas: c4, ctx: c4.getContext("2d"), charDef, scale: 1.8, x: 65, y: 146 });
 
-      // 2. Carte Portrait en Buste
+      // 2. Bust Portrait Card
       const bustCard = document.createElement("div");
       bustCard.className = "bust-card";
       bustCard.innerHTML = `
@@ -425,7 +425,7 @@
       bustCanvases.push({ canvas: bc, ctx: bc.getContext("2d"), charDef, x: 60, y: 68, scale: 1.6 });
     });
 
-    // Boucle d'animation à 60 FPS
+    // Animation loop at 60 FPS
     function renderFrame() {
       if (!isPaused) {
         currentAnimState.tick++;
@@ -439,7 +439,7 @@
 
       bustCanvases.forEach(({ canvas, ctx, charDef, x, y, scale }) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Fond cercle subtil pour le buste
+        // Subtle cameo circle for bust
         ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
         ctx.beginPath();
         ctx.arc(60, 60, 56, 0, Math.PI * 2);
@@ -455,7 +455,7 @@
 
     renderFrame();
 
-    // Gestion des boutons d'état
+    // Simulation state buttons
     document.querySelectorAll(".btn-state[data-state]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-state[data-state]").forEach(b => b.classList.remove("active"));
@@ -475,11 +475,11 @@
       });
     });
 
-    // Bouton pause/reprise
+    // Pause / resume button
     const btnPause = document.getElementById("btn-toggle-anim");
     btnPause.addEventListener("click", () => {
       isPaused = !isPaused;
-      btnPause.textContent = isPaused ? "▶ Reprendre Animation" : "⏸ Pause Animation";
+      btnPause.textContent = isPaused ? "▶ Resume Animation" : "⏸ Pause Animation";
       btnPause.classList.toggle("active", isPaused);
     });
   </script>

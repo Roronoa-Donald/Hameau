@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HAMEAU — Guide de Visite & Roadmap Interactive</title>
+  <title>HAMEAU — Interactive Viewer Guide & Visual Walkthrough</title>
   <style>
     :root {
       --bg-dark: #0b0f19;
@@ -39,7 +39,7 @@
       margin: 0 auto;
     }
 
-    /* En-tête */
+    /* Header */
     header {
       text-align: center;
       margin-bottom: 50px;
@@ -78,7 +78,7 @@
       margin: 0 auto;
     }
 
-    /* Actions rapides */
+    /* Quick Launch */
     .quick-launch-banner {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
       border: 1px solid rgba(99, 102, 241, 0.3);
@@ -113,7 +113,7 @@
       overflow-x: auto;
     }
 
-    /* Grille de sections */
+    /* Sections */
     .section-title {
       font-size: 1.6rem;
       font-weight: 700;
@@ -205,7 +205,7 @@
       line-height: 1.2;
     }
 
-    /* Simulation visuelle du village */
+    /* Mock Frame */
     .mock-ui-frame {
       background: #090d16;
       border: 1px solid var(--border-color);
@@ -321,36 +321,36 @@
 
   <div class="container">
 
-    <!-- En-tête -->
+    <!-- Header -->
     <header>
       <div class="badge-pill">
-        <span>🏛️</span> Hackathon AWS Builder Center • Strands Decider 2B
+        <span>🏛️</span> AWS Builder Center Hackathon • Strands Decider 2B
       </div>
-      <h1>HAMEAU — Guide de Visite du Visualiseur</h1>
+      <h1>HAMEAU — Interactive Viewer Tour & Guide</h1>
       <p class="subtitle">
-        Guide immersif pour lancer le visualiseur et explorer pas à pas ce que vous observez à l'écran : le village autonome de 20 habitants, la propagation de la rumeur, le scrutin municipal et les arbitrages IA en direct.
+        An immersive walkthrough to launch the viewer and explore everything happening on screen: the autonomous village of 20 citizens, rumor propagation dynamics, the municipal election, and real-time hybrid AI decisions.
       </p>
     </header>
 
-    <!-- Bannière de lancement rapide -->
+    <!-- Quick Launch Banner -->
     <div class="quick-launch-banner">
       <div class="quick-launch-title">
-        <span>🚀</span> Comment lancer et ouvrir le visualiseur en 10 secondes
+        <span>🚀</span> How to launch and open the viewer in 10 seconds
       </div>
       <p style="color: #cbd5e1; font-size: 0.95rem;">
-        Aucun GPU, aucun compte AWS et aucune clé API ne sont requis pour visualiser la simulation complète. Le run certifié de 3 jours (14 359 événements) est déjà pré-chargé et prêt à être exploré.
+        No GPU, no AWS account, and no API keys required to view the complete simulation. The certified 3-day run (14,359 events) is pre-loaded and ready for replay.
       </p>
       <div class="code-box">
         <span>./scripts/run_viewer.sh</span>
-        <span style="color: var(--text-dim); font-size: 0.8rem;">Mac / Linux (détecte Python standard automatiquement)</span>
+        <span style="color: var(--text-dim); font-size: 0.8rem;">Mac / Linux (automatically detects standard Python)</span>
       </div>
       <p style="font-size: 0.85rem; color: var(--text-muted);">
-        Le visualiseur s'ouvre directement à l'adresse : <strong style="color: #38bdf8;">http://127.0.0.1:8000/index.html</strong>
+        The viewer opens directly in your browser at: <strong style="color: #38bdf8;">http://127.0.0.1:8000/index.html</strong>
       </p>
     </div>
 
-    <!-- Section 1 : Ce que vous voyez en haut de l'écran -->
-    <h2 class="section-title">1. Le Tableau de Bord Supérieur (Indicateurs & Contrôles)</h2>
+    <!-- Section 1 : Top Navigation Dashboard -->
+    <h2 class="section-title">1. The Top Navigation Dashboard (Metrics & Controls)</h2>
     
     <div class="mock-ui-frame">
       <div class="mock-topbar">
@@ -359,24 +359,24 @@
         </div>
         <div class="mock-stats">
           <div class="stat-pill">
-            <span class="stat-label">Décisions Decider 2B</span>
-            <span class="stat-val" style="color: #34d399;">13 351 (p50: 124 ms)</span>
+            <span class="stat-label">Decider 2B Decisions</span>
+            <span class="stat-val" style="color: #34d399;">13,467 (p50: 124 ms)</span>
           </div>
           <div class="stat-pill">
-            <span class="stat-label">Appels Bedrock</span>
-            <span class="stat-val" style="color: #60a5fa;">655 réels (0 cassette)</span>
+            <span class="stat-label">Bedrock LLM Calls</span>
+            <span class="stat-val" style="color: #60a5fa;">659 live (0 cached)</span>
           </div>
           <div class="stat-pill">
-            <span class="stat-label">Ratio Économie</span>
+            <span class="stat-label">Amplification Ratio</span>
             <span class="stat-val" style="color: #f59e0b;">20.4 : 1</span>
           </div>
           <div class="stat-pill">
-            <span class="stat-label">Coût AWS Réel</span>
-            <span class="stat-val" style="color: #38bdf8;">0.0118 $</span>
+            <span class="stat-label">Real AWS Cost</span>
+            <span class="stat-val" style="color: #38bdf8;">$0.0119</span>
           </div>
           <div class="stat-pill">
-            <span class="stat-label">Horloge Simulée</span>
-            <span class="stat-val" style="color: #e2e8f0;">Jour 3 — 17h00</span>
+            <span class="stat-label">Simulated Clock</span>
+            <span class="stat-val" style="color: #e2e8f0;">Day 3 — 17:00</span>
           </div>
         </div>
       </div>
@@ -385,169 +385,170 @@
     <div class="grid-2">
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>📊</span> Les Compteurs Télémétriques</span>
-          <span class="tag tag-blue">Temps Réel</span>
+          <span class="card-title"><span>📊</span> Real-Time Telemetry Counters</span>
+          <span class="tag tag-blue">Real-Time</span>
         </div>
-        <p>Les indicateurs en haut au centre résument la performance de l'architecture hybride au fil de la lecture :</p>
+        <p>The top-center telemetry indicators summarize the efficiency of the hybrid cognitive architecture as playback progresses:</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Décisions Decider 2B (Vert)</strong> : Compteur cumulé des arbitrages cognitifs rapides (D1 à D9). Atteint <strong>13 351 décisions</strong> sur les 3 jours.</li>
-          <li><span class="bullet">•</span> <strong>Appels Bedrock LLM (Bleu)</strong> : Nombre de répliques et textes riches écrits par Amazon Nova Micro (655 appels).</li>
-          <li><span class="bullet">•</span> <strong>Ratio d'Économie (Orange)</strong> : Démontre qu'il y a <strong>20,4 décisions rapides</strong> pour chaque appel LLM lourd (bien au-dessus de la cible 20:1).</li>
-          <li><span class="bullet">•</span> <strong>Coût AWS Réel (Cyan)</strong> : Montant réel facturé par AWS (moins de <strong>0,012 $</strong> pour les 3 jours complets).</li>
+          <li><span class="bullet">•</span> <strong>Decider 2B Decisions (Green)</strong>: Cumulative count of rapid cognitive arbitrations (D1 to D9). Surpasses <strong>13,400 decisions</strong> across the 3 days.</li>
+          <li><span class="bullet">•</span> <strong>Bedrock LLM Calls (Blue)</strong>: Total natural dialogue utterances and Gazette articles authored by Amazon Nova Micro (659 calls).</li>
+          <li><span class="bullet">•</span> <strong>Amplification Ratio (Orange)</strong>: Proves there are <strong>20.4 rapid local decisions</strong> for every heavy LLM call (comfortably above the 20:1 target).</li>
+          <li><span class="bullet">•</span> <strong>Real AWS Cost (Cyan)</strong>: Actual expenditure billed by AWS (under <strong>$0.012</strong> for the full 3 days).</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>⏯️</span> Barre de Contrôle & Vitesse</span>
+          <span class="card-title"><span>⏯️</span> Playback Controls & Timeline Scrubbing</span>
           <span class="tag tag-purple">Navigation</span>
         </div>
-        <p>Prenez le contrôle du flux temporel du village :</p>
+        <p>Take full interactive control over the village timeline:</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Bouton Lecture / Pause</strong> (ou touche <kbd>Espace</kbd>) : Lance ou fige la vie du village à tout moment.</li>
-          <li><span class="bullet">•</span> <strong>Accélérateur de Vitesse (1x, 2x, 5x, 15x)</strong> : Permet de regarder les habitants flâner en temps réel ou de voir défiler 3 jours en 60 secondes.</li>
-          <li><span class="bullet">•</span> <strong>Curseur Temporel (Timeline)</strong> : Faites glisser la barre pour sauter instantanément au matin du Jour 1, au soir du Jour 2 ou au dépouillement du Jour 3.</li>
-          <li><span class="bullet">•</span> <strong>Jalons Clés</strong> : Les petits repères sous la barre indiquent les injections (R1 Rumeur, R2 Démenti, R3 Marché, R4 Campagne électorale, D9 Élection).</li>
+          <li><span class="bullet">•</span> <strong>Play / Pause Button</strong> (or <kbd>Space</kbd> key): Pause or resume village life at any millisecond.</li>
+          <li><span class="bullet">•</span> <strong>Speed Multiplier (1x, 2x, 5x, 15x)</strong>: Watch citizens wander leisurely in real time or fast-forward through 3 full days in under 60 seconds.</li>
+          <li><span class="bullet">•</span> <strong>Timeline Scrubber</strong>: Drag the timeline handle to scrub instantly to Day 1 morning, Day 2 evening, or Day 3 ballot counting.</li>
+          <li><span class="bullet">•</span> <strong>Story Milestones</strong>: Key markers beneath the timeline highlight event injections (R1 Rumor, R2 Denial, R3 Market Reopening, R4 Campaign Launch, D9 Election).</li>
         </ul>
       </div>
     </div>
 
-    <!-- Section 2 : La Carte Interactive 2D du Village -->
-    <h2 class="section-title">2. La Carte Interactive du Village (L'Espace Central)</h2>
+    <!-- Section 2 : Interactive 2D Map -->
+    <h2 class="section-title">2. The Interactive Village Map (Central Canvas)</h2>
 
     <div class="card" style="margin-bottom: 24px;">
       <div class="card-header">
-        <span class="card-title"><span>🗺️</span> Les 10 Lieux & les 20 Habitants Animés</span>
-        <span class="tag tag-green">Canvas Interactif</span>
+        <span class="card-title"><span>🗺️</span> 10 Locations & 20 Animated Citizens</span>
+        <span class="tag tag-green">Interactive Canvas</span>
       </div>
       <p>
-        La grande zone centrale représente le plan topologique du Hameau relié par un réseau de sentiers pédestres.
+        The expansive central viewport displays the topological village map linked by a cobblestone road network.
       </p>
       <div class="grid-2" style="margin-top: 15px;">
         <div>
-          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🏛️ Lieux de Vie & d'Activité</h4>
+          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🏛️ Social Hubs & Activity Centers</h4>
           <ul class="feature-list">
-            <li><span class="bullet">•</span> <strong>Place du Marché</strong> : Cœur économique du village, lieu des débats et des étals.</li>
-            <li><span class="bullet">•</span> <strong>Café de la Rivière</strong> : Point de rencontre convivial où les rumeurs s'échangent.</li>
-            <li><span class="bullet">•</span> <strong>Mairie du Hameau</strong> : Siège du maire Kofi et lieu officiel du scrutin municipal.</li>
-            <li><span class="bullet">•</span> <strong>Boulangerie d'Awa</strong>, <strong>Forge</strong>, <strong>Bibliothèque</strong>, <strong>Place des Fêtes</strong>...</li>
-            <li><span class="bullet">•</span> <strong>Pont vers le village voisin (Val-d'Or)</strong> : Sujet d'alerte lors des crues (R5).</li>
+            <li><span class="bullet">•</span> <strong>Market Square</strong>: The economic and social heart of the village, site of lively stalls and town debates.</li>
+            <li><span class="bullet">•</span> <strong>River Café</strong>: Warm meeting spot where travelers and locals gather to share news and rumors.</li>
+            <li><span class="bullet">•</span> <strong>Town Hall</strong>: Seat of Mayor Kofi and official polling place for the municipal election.</li>
+            <li><span class="bullet">•</span> <strong>Awa's Bakery</strong>, <strong>Blacksmith Forge</strong>, <strong>Library</strong>, <strong>Festival Grounds</strong>...</li>
+            <li><span class="bullet">•</span> <strong>Bridge to Val-d'Or</strong>: Regional connector subject to flood warnings during storm season (R5).</li>
           </ul>
         </div>
         <div>
-          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🚶 Les Habitants en Mouvement</h4>
+          <h4 style="color: #e2e8f0; margin-bottom: 8px;">🚶 Citizens in Motion</h4>
           <ul class="feature-list">
-            <li><span class="bullet">•</span> <strong>Sprites 2D personnalisés</strong> : Chaque personnage possède sa tenue et son métier (boulangère, pêcheur, maire, notaire, etc.).</li>
-            <li><span class="bullet">•</span> <strong>Bulles de dialogue</strong> : Dès que deux villageois se croisent et que la décision <em>D4 (TalkGate)</em> est validée, une bulle apparaît avec leur échange réel rédigé par Amazon Bedrock.</li>
-            <li><span class="bullet">•</span> <strong>Halo de statut coloré</strong> :
-              <br><span style="color: #f43f5e; font-weight: 700;">● Rouge</span> = a entendu la rumeur de fermeture (R1)
-              <br><span style="color: #06b6d4; font-weight: 700;">● Cyan</span> = a reçu le démenti officiel du maire (R2)
-              <br><span style="color: #f59e0b; font-weight: 700;">● Jaune</span> = a paniqué et fait des stocks de vivres
+            <li><span class="bullet">•</span> <strong>Custom 2D Sprites</strong>: Each citizen features unique textile palettes, accessories, and postures reflecting their occupation.</li>
+            <li><span class="bullet">•</span> <strong>Speech Bubbles</strong>: When two villagers meet and pass the <em>D4 (TalkGate)</em> filter, an editorial dialogue bubble pops up with their real dialogue generated by Amazon Bedrock.</li>
+            <li><span class="bullet">•</span> <strong>Color Status Halos</strong>:
+              <br><span style="color: #f43f5e; font-weight: 700;">● Red</span> = Carrying closure rumor (R1)
+              <br><span style="color: #06b6d4; font-weight: 700;">● Cyan</span> = Received official Mayor denial (R2)
+              <br><span style="color: #f59e0b; font-weight: 700;">● Amber</span> = Panicked and stockpiling food supplies
+              <br><span style="color: #10b981; font-weight: 700;">● Green</span> = Reassured by market opening (R3)
             </li>
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Section 3 : Les 4 Onglets du Panneau Latéral Droit -->
-    <h2 class="section-title">3. Le Panneau d'Analyse Latéral (Les 4 Onglets Clés)</h2>
+    <!-- Section 3 : 4 Inspector Tabs -->
+    <h2 class="section-title">3. The Analytical Inspector (4 Core Tabs)</h2>
 
     <div class="grid-2">
       
-      <!-- Onglet 1 : Inspecteur d'Agent -->
+      <!-- Tab 1 : Agent Inspector -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>🔍</span> Onglet 1 : Inspecteur d'Agent</span>
-          <span class="tag tag-blue">Profil & Psychologie</span>
+          <span class="card-title"><span>🔍</span> Tab 1: Agent Inspector</span>
+          <span class="tag tag-blue">Profile & Psychology</span>
         </div>
-        <p>Sélectionnez n'importe quel villageois (soit en cliquant sur son sprite sur la carte, soit via la liste déroulante) :</p>
+        <p>Select any citizen (by clicking their sprite on the map or via the dropdown menu):</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Besoins dynamiques</strong> : Jauges d'Énergie, de Faim et de Sociabilité qui évoluent tick par tick.</li>
-          <li><span class="bullet">•</span> <strong>Flux de souvenirs récents</strong> : Liste horodatée de ce que l'agent a vu ou entendu, avec son indice d'importance ($D_2$) et de crédibilité ($D_8$).</li>
-          <li><span class="bullet">•</span> <strong>Journal des décisions</strong> : Toutes les décisions prises par Decider 2B pour cet habitant avec la <em>Zone de confiance</em> (Vert = haute confiance, Rouge = repli sécurisé).</li>
+          <li><span class="bullet">•</span> <strong>Dynamic Needs</strong>: Real-time Energy, Hunger, and Sociability meters that evolve tick by tick.</li>
+          <li><span class="bullet">•</span> <strong>Recent Memory Stream</strong>: Chronological log of what the agent witnessed or heard, with importance score ($D_2$) and credibility ($D_8$).</li>
+          <li><span class="bullet">•</span> <strong>Decider 2B Decision Log</strong>: Recent decisions made by Decider 2B for this citizen with their <em>Confidence Zone</em> (Green = high confidence local execution, Red = fallback safety).</li>
         </ul>
       </div>
 
-      <!-- Onglet 2 : Graphe de Rumeur & Élection -->
+      <!-- Tab 2 : Rumor & Election -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>📈</span> Onglet 2 : Graphe de Rumeur & Élection</span>
-          <span class="tag tag-amber">Épidémiologie & Vote</span>
+          <span class="card-title"><span>📈</span> Tab 2: Rumor Epidemic & Municipal Election</span>
+          <span class="tag tag-amber">Epidemiology & Vote</span>
         </div>
-        <p>Le cœur narratif et expérimental de la simulation :</p>
+        <p>The narrative and experimental centerpiece of the simulation:</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Courbes Épidémiques</strong> : Tracé dynamique comparant la propagation de la fausse rumeur $R_1$, du démenti $R_2$ et de l'ouverture du marché $R_3$.</li>
-          <li><span class="bullet">•</span> <strong>Boîte du Scrutin Municipal (D9)</strong> : Affiche le duel électoral entre <strong>Kofi (maire sortant)</strong> et <strong>Victor (challenger)</strong>. À 17h00 le Jour 3, les urnes se dépouillent sous vos yeux (Kofi 4 voix, Victor 4 voix, 12 abstentions, Kofi reconduit).</li>
-          <li><span class="bullet">•</span> <strong>Cartes des Sauts de Transmission</strong> : Retrace chaque transmission de bouche-à-oreille (<em>"Yao a dit à Bastien..."</em>) avec le numéro de saut et la crédibilité accordée.</li>
+          <li><span class="bullet">•</span> <strong>Epidemic Transmission Curves</strong>: Dynamic chart comparing the diffusion curve of rumor $R_1$, denial $R_2$, and market opening $R_3$.</li>
+          <li><span class="bullet">•</span> <strong>Municipal Election Panel (D9)</strong>: Displays the electoral clash between <strong>Kofi (incumbent)</strong> and <strong>Victor (challenger)</strong>. At 17:00 on Day 3, ballots are tallied live before your eyes.</li>
+          <li><span class="bullet">•</span> <strong>Transmission Hop Cards</strong>: Traces every word-of-mouth interaction (<em>"Yao told Bastien..."</em>) with hop number and perceived credibility.</li>
         </ul>
       </div>
 
-      <!-- Onglet 3 : Diff MemoryGate -->
+      <!-- Tab 3 : MemoryGate Diff -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>🧠</span> Onglet 3 : Diff MemoryGate</span>
-          <span class="tag tag-green">Architecture & Économie</span>
+          <span class="card-title"><span>🧠</span> Tab 3: MemoryGate Context Diff</span>
+          <span class="tag tag-green">Architecture & Efficiency</span>
         </div>
-        <p>Prouve visuellement l'efficacité du pattern <em>MemoryGate</em> face au problème de saturation de contexte :</p>
+        <p>Visually proves the effectiveness of the <em>MemoryGate</em> pattern against LLM context saturation:</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Colonne de gauche (Brut sans filtrage)</strong> : Tout l'historique encombrant de souvenirs accumulés par l'habitant.</li>
-          <li><span class="bullet">•</span> <strong>Colonne de droite (Top 3 Retenu)</strong> : Les 3 seuls souvenirs pertinents sélectionnés par Decider 2B grâce au score composite ($D_3$).</li>
-          <li><span class="bullet">•</span> <strong>Badge de réduction</strong> : Affiche l'économie mesurée de tokens (<strong>-23 % à -78 %</strong>) et le temps de scoring instantané (~120 ms).</li>
+          <li><span class="bullet">•</span> <strong>Left Column (Raw un-gated backlog)</strong>: The full, bloated history of memories accumulated by the citizen.</li>
+          <li><span class="bullet">•</span> <strong>Right Column (Top 3 Retained)</strong>: The only 3 relevant memories selected by Decider 2B using composite scoring ($D_3$).</li>
+          <li><span class="bullet">•</span> <strong>Token Savings Badge</strong>: Demonstrates measured prompt savings (<strong>-23% to -78%</strong>) and instantaneous local scoring latency (~120 ms).</li>
         </ul>
       </div>
 
-      <!-- Onglet 4 : La Gazette du Hameau -->
+      <!-- Tab 4 : The Gazette -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title"><span>📰</span> Onglet 4 : La Gazette du Hameau</span>
-          <span class="tag tag-purple">Presse Locale IA</span>
+          <span class="card-title"><span>📰</span> Tab 4: The Village Gazette</span>
+          <span class="tag tag-purple">Local AI Journalism</span>
         </div>
-        <p>Le journal satirique du village rédigé chaque soir à 22h00 par Amazon Nova Micro :</p>
+        <p>The satirical local village newspaper written every evening at 22:00 by Amazon Nova Micro:</p>
         <ul class="feature-list">
-          <li><span class="bullet">•</span> <strong>Jour 1</strong> : Raconte la panique naissante autour du marché et le lancement surprise de la campagne de Victor.</li>
-          <li><span class="bullet">•</span> <strong>Jour 2</strong> : Couvre le démenti solennel du maire et la veillée du Jeu du Loup.</li>
-          <li><span class="bullet">•</span> <strong>Jour 3</strong> : Édition spéciale titrée <em>« Le Grand Jour des Élections et le Marché en Fête ! »</em>, proclamant la réélection de Kofi et le succès éclatant du marché.</li>
+          <li><span class="bullet">•</span> <strong>Day 1 Edition</strong>: Chronicles the initial market closure rumors and Victor's surprise campaign announcement.</li>
+          <li><span class="bullet">•</span> <strong>Day 2 Edition</strong>: Covers the Mayor's formal denial and the community Wolf Game gathering.</li>
+          <li><span class="bullet">•</span> <strong>Day 3 Edition</strong>: Special edition titled <em>"The Grand Election Day & Festive Market Reopening!"</em>, celebrating Kofi's victory and the thriving market stalls.</li>
         </ul>
       </div>
 
     </div>
 
-    <!-- Section 4 : Le Scénario Pas à Pas (Ce qui se passe chronologiquement) -->
-    <h2 class="section-title">4. Déroulement Chronologique des 3 Jours</h2>
+    <!-- Section 4 : Chronological 3-Day Narrative -->
+    <h2 class="section-title">4. Chronological 3-Day Narrative Arc</h2>
 
     <div class="timeline-walkthrough">
       
       <div class="timeline-step">
-        <div class="step-marker">J1</div>
+        <div class="step-marker">D1</div>
         <div class="step-content">
-          <div class="step-title">Jour 1 (Jeudi) — L'Inquiétude & La Campagne Électorale</div>
+          <div class="step-title">Day 1 (Thursday) — Emerging Concern & Electoral Campaign Launch</div>
           <div class="step-desc">
-            • <strong>08h00 (Tick 24)</strong> : La rumeur $R_1$ est injectée chez Yao (<em>« La mairie va fermer le marché samedi »</em>). Yao s'inquiète, en parle autour de lui et commence à stocker des vivres.<br>
-            • <strong>09h20 (Tick 40)</strong> : Victor annonce sa candidature à la mairie ($R_4$) en promettant de réparer le pont et d'ouvrir de nouveaux débouchés.<br>
-            • <strong>20h00 (Tick 168)</strong> : Première veillée à la Place des Fêtes avec une partie de Jeu du Loup ($R_6$).
+            • <strong>08:00 (Tick 24)</strong>: Rumor $R_1$ is injected into Yao (<em>"Town Hall plans to close Saturday's weekly market"</em>). Yao grows worried, tells neighbors, and begins stockpiling food.<br>
+            • <strong>09:20 (Tick 40)</strong>: Victor announces his mayoral candidacy ($R_4$), promising bridge repairs and new regional economic trade routes.<br>
+            • <strong>20:00 (Tick 168)</strong>: Evening community gathering at the Festival Grounds with a game of Wolf ($R_6$).
           </div>
         </div>
       </div>
 
       <div class="timeline-step">
-        <div class="step-marker">J2</div>
+        <div class="step-marker">D2</div>
         <div class="step-content">
-          <div class="step-title">Jour 2 (Vendredi) — Le Démenti Officiel & La Crue du Pont</div>
+          <div class="step-title">Day 2 (Friday) — Official Denial & River Flood Alert</div>
           <div class="step-desc">
-            • <strong>10h00 (Tick 48)</strong> : Le maire Kofi publie son démenti solennel $R_2$ garantissant la tenue du marché. L'information commence à circuler pour apaiser les craintes.<br>
-            • <strong>11h00 (Tick 60)</strong> : Sokhna lance une alerte crue ($R_5$) : le pont vers le village voisin vacille, alimentant les débats de campagne entre Kofi et Victor.
+            • <strong>10:00 (Tick 48)</strong>: Mayor Kofi issues solemn official denial $R_2$ guaranteeing the market will open as planned. The denial spreads to ease tensions.<br>
+            • <strong>11:00 (Tick 60)</strong>: Sokhna sounds a river flood alert ($R_5$): the bridge to neighboring Val-d'Or shakes under strong currents, intensifying debate between Kofi and Victor.
           </div>
         </div>
       </div>
 
       <div class="timeline-step">
-        <div class="step-marker">J3</div>
+        <div class="step-marker">D3</div>
         <div class="step-content">
-          <div class="step-title">Jour 3 (Samedi) — Le Climax : Grand Marché & Vote Municipal</div>
+          <div class="step-title">Day 3 (Saturday) — The Climax: Market Day & Municipal Election</div>
           <div class="step-desc">
-            • <strong>07h00 (Tick 12)</strong> : Le marché ouvre ses portes dans la liesse générale ($R_3$). La rumeur de fermeture est définitivement vaincue par les faits.<br>
-            • <strong>17h00 (Tick 132)</strong> : <strong>Le Scrutin Municipal ($D_9$)</strong> a lieu à la mairie. Chaque habitant vote en âme et conscience selon ses affinités et ses souvenirs filtrés par MemoryGate.<br>
-            • <strong>22h00</strong> : La Gazette du soir clôture la simulation avec le bilan complet des festivités et du mandat renouvelé du maire.
+            • <strong>07:00 (Tick 12)</strong>: The weekly market opens its doors in festive triumph ($R_3$). The closure rumor is definitively disproven by direct observation.<br>
+            • <strong>17:00 (Tick 132)</strong>: <strong>The Municipal Election ($D_9$)</strong> takes place at Town Hall. Each citizen votes according to their personal affinities and MemoryGate-filtered recollections.<br>
+            • <strong>22:00</strong>: The evening Gazette concludes the simulation with complete election tallies and festival celebrations.
           </div>
         </div>
       </div>
@@ -555,13 +556,13 @@
     </div>
 
     <div class="highlight-box">
-      <strong>💡 Astuce pour la Démonstration Vidéo :</strong>
-      Positionnez la vitesse de lecture à <strong>5x</strong> au départ pour voir la vie du village s'éveiller, puis ralentissez à <strong>1x ou 2x</strong> autour de 17h00 le Jour 3 pour assister en direct au vote municipal dans l'onglet <em>Graphe de Rumeur</em> !
+      <strong>💡 Pro Tip for Video Walkthroughs:</strong>
+      Set playback speed to <strong>5x</strong> initially to watch village life unfold smoothly, then slow down to <strong>1x or 2x</strong> around 17:00 on Day 3 to witness the live municipal election vote tally in the <em>Rumor & Election</em> tab!
     </div>
 
-    <!-- Pied de page -->
+    <!-- Footer -->
     <footer>
-      HAMEAU • Développé pour le Hackathon AWS Builder Center • Modèles : Strands Decider 2B & Amazon Bedrock Nova Micro
+      HAMEAU • Built for the AWS Builder Center Hackathon • Models: Strands Decider 2B & Amazon Bedrock Nova Micro
     </footer>
 
   </div>

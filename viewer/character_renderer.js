@@ -7,12 +7,12 @@
  * Licence : Apache-2.0
  */
 
-// Définitions canoniques des 12 habitants du Hameau
+/// Canonical definitions for all 20 Hameau citizens
 const HAMEAU_CHARACTERS = {
   awa: {
     id: "awa",
     name: "Awa",
-    role: "Boulangère",
+    role: "Baker",
     age: 42,
     gender: "f",
     build: "robust",
@@ -20,9 +20,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#1c1917", style: "turban_white" },
     eyes: { color: "#2d1b12" },
     palette: {
-      primary: "#d97706",      // Robe moutarde
+      primary: "#d97706",      // Mustard dress
       primaryShadow: "#92400e",
-      secondary: "#f5efe6",    // Tablier écru lin
+      secondary: "#f5efe6",    // Linen apron
       secondaryShadow: "#dcd2c4",
       trousers: "#78350f",
       trim: "#1c1917"
@@ -32,7 +32,7 @@ const HAMEAU_CHARACTERS = {
   kofi: {
     id: "kofi",
     name: "Kofi",
-    role: "Maire du Hameau",
+    role: "Village Mayor",
     age: 51,
     gender: "m",
     build: "commanding",
@@ -40,12 +40,12 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#2d2a29", style: "short_greying", beard: "short_neat" },
     eyes: { color: "#261911" },
     palette: {
-      primary: "#1e293b",      // Costume bleu marine
+      primary: "#1e293b",      // Navy blue suit
       primaryShadow: "#0f172a",
-      secondary: "#f8fafc",    // Chemise blanche
+      secondary: "#f8fafc",    // White shirt
       secondaryShadow: "#cbd5e1",
       trousers: "#1e293b",
-      sash: "#881337",         // Écharpe municipale bordeaux
+      sash: "#881337",         // Mayoral sash
       trim: "#475569"
     },
     accessory: "mayoral_sash"
@@ -53,7 +53,7 @@ const HAMEAU_CHARACTERS = {
   yao: {
     id: "yao",
     name: "Yao",
-    role: "Livreur du marché",
+    role: "Market Courier",
     age: 28,
     gender: "m",
     build: "athletic",
@@ -61,9 +61,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#1c1917", style: "newsboy_cap" },
     eyes: { color: "#362216" },
     palette: {
-      primary: "#2d4a6e",      // Veste indigo
+      primary: "#2d4a6e",      // Indigo jacket
       primaryShadow: "#1b2f4a",
-      secondary: "#f1f5f9",    // T-shirt chiné
+      secondary: "#f1f5f9",    // Heather t-shirt
       secondaryShadow: "#cbd5e1",
       trousers: "#475569",
       cap: "#1e3a5f",
@@ -74,7 +74,7 @@ const HAMEAU_CHARACTERS = {
   elise: {
     id: "elise",
     name: "Élise",
-    role: "Institutrice",
+    role: "School Teacher",
     age: 36,
     gender: "f",
     build: "slender",
@@ -82,9 +82,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#543310", style: "bun_pencil" },
     eyes: { color: "#22543d" },
     palette: {
-      primary: "#1e3a2f",      // Jupe vert forêt
+      primary: "#1e3a2f",      // Forest green skirt
       primaryShadow: "#11221c",
-      secondary: "#881337",    // Châle bordeaux
+      secondary: "#881337",    // Burgundy shawl
       secondaryShadow: "#4c0519",
       blouse: "#fdf8f0",
       trousers: "#1e3a2f",
@@ -95,7 +95,7 @@ const HAMEAU_CHARACTERS = {
   samuel: {
     id: "samuel",
     name: "Samuel",
-    role: "Forgeron",
+    role: "Blacksmith",
     age: 48,
     gender: "m",
     build: "stocky",
@@ -103,9 +103,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#262626", style: "tied_back", beard: "heavy_beard" },
     eyes: { color: "#291b12" },
     palette: {
-      primary: "#78350f",      // Tablier cuir lourd
+      primary: "#78350f",      // Leather apron
       primaryShadow: "#451a03",
-      secondary: "#334155",    // Chemise de travail
+      secondary: "#334155",    // Work shirt
       secondaryShadow: "#1e293b",
       trousers: "#1c1917",
       trim: "#d97706"
@@ -115,7 +115,7 @@ const HAMEAU_CHARACTERS = {
   nadia: {
     id: "nadia",
     name: "Nadia",
-    role: "Médecin",
+    role: "Doctor / Physician",
     age: 39,
     gender: "f",
     build: "slender",
@@ -123,9 +123,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#0f172a", style: "sharp_bob" },
     eyes: { color: "#1e293b" },
     palette: {
-      primary: "#f8fafc",      // Blouse médicale immaculée
+      primary: "#f8fafc",      // Medical lab coat
       primaryShadow: "#cbd5e1",
-      secondary: "#0284c7",    // Col stéthoscope bleu ciel
+      secondary: "#0284c7",    // Stethoscope collar
       secondaryShadow: "#0369a1",
       trousers: "#334155",
       trim: "#64748b"
@@ -135,7 +135,7 @@ const HAMEAU_CHARACTERS = {
   tom: {
     id: "tom",
     name: "Tom",
-    role: "Apprenti café",
+    role: "Café Apprentice",
     age: 21,
     gender: "m",
     build: "lanky",
@@ -143,9 +143,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#451a03", style: "tousled_bangs" },
     eyes: { color: "#1f2937" },
     palette: {
-      primary: "#c2410c",      // Sweat rouille à capuche
+      primary: "#c2410c",      // Rust hoodie
       primaryShadow: "#7c2d12",
-      secondary: "#3b82f6",    // Jean bleu
+      secondary: "#3b82f6",    // Blue jeans
       secondaryShadow: "#1d4ed8",
       trousers: "#1e3a5f",
       trim: "#0f172a"
@@ -155,7 +155,7 @@ const HAMEAU_CHARACTERS = {
   mariam: {
     id: "mariam",
     name: "Mariam",
-    role: "Marchande légumes",
+    role: "Vegetable Merchant",
     age: 45,
     gender: "f",
     build: "generous",
@@ -163,9 +163,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#18181b", style: "turban_green" },
     eyes: { color: "#2d1b12" },
     palette: {
-      primary: "#b45309",      // Tunique terre de sienne
+      primary: "#b45309",      // Sienna tunic
       primaryShadow: "#78350f",
-      secondary: "#4d7c0f",    // Grand tablier vert maraîcher
+      secondary: "#4d7c0f",    // Green apron
       secondaryShadow: "#365314",
       trousers: "#3b2314",
       trim: "#f59e0b"
@@ -175,7 +175,7 @@ const HAMEAU_CHARACTERS = {
   paul: {
     id: "paul",
     name: "Paul",
-    role: "Pêcheur retraité",
+    role: "Retired Fisherman",
     age: 68,
     gender: "m",
     build: "stooped",
@@ -183,9 +183,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#e2e8f0", style: "white_curly", beard: "white_bushy" },
     eyes: { color: "#0369a1" },
     palette: {
-      primary: "#eab308",      // Ciré jaune patiné
+      primary: "#eab308",      // Yellow raincoat
       primaryShadow: "#a16207",
-      secondary: "#f1f5f9",    // Gilet en laine
+      secondary: "#f1f5f9",    // Wool sweater
       secondaryShadow: "#94a3b8",
       trousers: "#451a03",
       cap: "#1e293b",
@@ -196,7 +196,7 @@ const HAMEAU_CHARACTERS = {
   lea: {
     id: "lea",
     name: "Léa",
-    role: "Bibliothécaire",
+    role: "Librarian",
     age: 31,
     gender: "f",
     build: "slender",
@@ -204,9 +204,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#b91c1c", style: "long_wavy_red" },
     eyes: { color: "#15803d" },
     palette: {
-      primary: "#4d7c0f",      // Cardigan vert sauge
+      primary: "#4d7c0f",      // Sage green cardigan
       primaryShadow: "#365314",
-      secondary: "#fffbeb",    // Robe crème
+      secondary: "#fffbeb",    // Cream dress
       secondaryShadow: "#fef3c7",
       trousers: "#14532d",
       trim: "#b45309"
@@ -216,7 +216,7 @@ const HAMEAU_CHARACTERS = {
   ibrahim: {
     id: "ibrahim",
     name: "Ibrahim",
-    role: "Agriculteur",
+    role: "Farmer",
     age: 54,
     gender: "m",
     build: "tall_lean",
@@ -224,9 +224,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#27272a", style: "straw_hat", beard: "salt_pepper_stache" },
     eyes: { color: "#18181b" },
     palette: {
-      primary: "#0369a1",      // Salopette bleu fermier
+      primary: "#0369a1",      // Blue overalls
       primaryShadow: "#075985",
-      secondary: "#991b1b",    // Chemise carreaux
+      secondary: "#991b1b",    // Plaid shirt
       secondaryShadow: "#7f1d1d",
       trousers: "#0369a1",
       hat: "#eab308",
@@ -237,7 +237,7 @@ const HAMEAU_CHARACTERS = {
   claire: {
     id: "claire",
     name: "Claire",
-    role: "Rédactrice Gazette",
+    role: "Gazette Editor",
     age: 34,
     gender: "f",
     build: "dynamic",
@@ -245,9 +245,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#18181b", style: "high_ponytail" },
     eyes: { color: "#1e3a5f" },
     palette: {
-      primary: "#0f766e",      // Veste velours vert émeraude
+      primary: "#0f766e",      // Velvet jacket
       primaryShadow: "#115e59",
-      secondary: "#f8fafc",    // Chemisier blanc
+      secondary: "#f8fafc",    // White blouse
       secondaryShadow: "#e2e8f0",
       trousers: "#0f172a",
       bag: "#78350f",
@@ -258,7 +258,7 @@ const HAMEAU_CHARACTERS = {
   victor: {
     id: "victor",
     name: "Victor",
-    role: "Notaire & Candidat",
+    role: "Notary & Candidate",
     age: 58,
     gender: "m",
     build: "commanding",
@@ -266,19 +266,19 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#52525b", style: "short_greying", beard: "clean_shaven" },
     eyes: { color: "#1e293b" },
     palette: {
-      primary: "#334155",      // Redingote grise d'homme de loi
+      primary: "#334155",      // Grey coat
       primaryShadow: "#1e293b",
-      secondary: "#f8fafc",    // Plastron blanc
+      secondary: "#f8fafc",    // White shirt
       secondaryShadow: "#cbd5e1",
       trousers: "#1e293b",
-      trim: "#d97706"          // Boutons dorés
+      trim: "#d97706"          // Gold buttons
     },
     accessory: "glasses_book"
   },
   fatou: {
     id: "fatou",
     name: "Fatou",
-    role: "Meunière du Moulin",
+    role: "Mill Operator",
     age: 31,
     gender: "f",
     build: "robust",
@@ -286,9 +286,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#1c1917", style: "turban_white" },
     eyes: { color: "#2d1b12" },
     palette: {
-      primary: "#0284c7",      // Robe bleu rivière
+      primary: "#0284c7",      // River blue dress
       primaryShadow: "#0369a1",
-      secondary: "#f5efe6",    // Tablier fariné
+      secondary: "#f5efe6",    // Floured apron
       secondaryShadow: "#dcd2c4",
       trousers: "#0f172a",
       trim: "#ca8a04"
@@ -298,7 +298,7 @@ const HAMEAU_CHARACTERS = {
   lucas: {
     id: "lucas",
     name: "Lucas",
-    role: "Bûcheron & Meneur de jeu",
+    role: "Lumberjack & Leader",
     age: 19,
     gender: "m",
     build: "athletic",
@@ -306,9 +306,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#78350f", style: "tousled_bangs" },
     eyes: { color: "#1f2937" },
     palette: {
-      primary: "#991b1b",      // Chemise à carreaux bûcheron rouge
+      primary: "#991b1b",      // Red plaid flannel
       primaryShadow: "#7f1d1d",
-      secondary: "#475569",    // Pantalon de travail renforcé
+      secondary: "#475569",    // Work pants
       secondaryShadow: "#334155",
       trousers: "#334155",
       trim: "#78350f"
@@ -318,7 +318,7 @@ const HAMEAU_CHARACTERS = {
   sokhna: {
     id: "sokhna",
     name: "Sokhna",
-    role: "Marchande itinérante",
+    role: "Traveling Merchant",
     age: 47,
     gender: "f",
     build: "generous",
@@ -326,9 +326,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#1c1917", style: "turban_green" },
     eyes: { color: "#261911" },
     palette: {
-      primary: "#d97706",      // Tissu wax doré
+      primary: "#d97706",      // Wax cloth dress
       primaryShadow: "#b45309",
-      secondary: "#4338ca",    // Étole indigo voyageur
+      secondary: "#4338ca",    // Indigo traveler shawl
       secondaryShadow: "#3730a3",
       trousers: "#312e81",
       trim: "#fbbf24"
@@ -338,7 +338,7 @@ const HAMEAU_CHARACTERS = {
   antoine: {
     id: "antoine",
     name: "Antoine",
-    role: "Garde champêtre",
+    role: "Constable",
     age: 62,
     gender: "m",
     build: "tall_lean",
@@ -346,9 +346,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#a1a1aa", style: "newsboy_cap", beard: "salt_pepper_stache" },
     eyes: { color: "#1e3a5f" },
     palette: {
-      primary: "#166534",      // Vareuse vert forêt officiel
+      primary: "#166534",      // Official green jacket
       primaryShadow: "#14532d",
-      secondary: "#fef08a",    // Cuivreries et galons jaunes
+      secondary: "#fef08a",    // Brass badges
       secondaryShadow: "#ca8a04",
       trousers: "#1e293b",
       cap: "#14532d",
@@ -359,7 +359,7 @@ const HAMEAU_CHARACTERS = {
   mireille: {
     id: "mireille",
     name: "Mireille",
-    role: "Herboriste",
+    role: "Herbalist",
     age: 29,
     gender: "f",
     build: "slender",
@@ -367,9 +367,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#451a03", style: "long_wavy_red" },
     eyes: { color: "#15803d" },
     palette: {
-      primary: "#7e22ce",      // Robe violet bruyère
+      primary: "#7e22ce",      // Heather purple dress
       primaryShadow: "#6b21a8",
-      secondary: "#84cc16",    // Ceinture plantes séchées
+      secondary: "#84cc16",    // Dried herbs belt
       secondaryShadow: "#65a30d",
       trousers: "#3f3f46",
       trim: "#a855f7"
@@ -379,7 +379,7 @@ const HAMEAU_CHARACTERS = {
   bastien: {
     id: "bastien",
     name: "Bastien",
-    role: "Jeune Pêcheur",
+    role: "Young Fisherman",
     age: 24,
     gender: "m",
     build: "lanky",
@@ -387,9 +387,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#27272a", style: "tousled_bangs" },
     eyes: { color: "#0284c7" },
     palette: {
-      primary: "#0284c7",      // Marinière rayée et gilet bleu
+      primary: "#0284c7",      // Sailor shirt & blue vest
       primaryShadow: "#0369a1",
-      secondary: "#f8fafc",    // Rayures blanches
+      secondary: "#f8fafc",    // White stripes
       secondaryShadow: "#cbd5e1",
       trousers: "#334155",
       trim: "#0ea5e9"
@@ -399,7 +399,7 @@ const HAMEAU_CHARACTERS = {
   salimata: {
     id: "salimata",
     name: "Salimata",
-    role: "Aubergiste de Val-d'Or",
+    role: "Innkeeper",
     age: 38,
     gender: "f",
     build: "generous",
@@ -407,9 +407,9 @@ const HAMEAU_CHARACTERS = {
     hair: { color: "#0f172a", style: "turban_white" },
     eyes: { color: "#291b12" },
     palette: {
-      primary: "#be123c",      // Tablier pourpre auberge
+      primary: "#be123c",      // Crimson innkeeper apron
       primaryShadow: "#9f1239",
-      secondary: "#fef3c7",    // Chemisier lin vanille
+      secondary: "#fef3c7",    // Vanilla blouse
       secondaryShadow: "#fde68a",
       trousers: "#4c0519",
       trim: "#f59e0b"

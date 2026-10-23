@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
-  <title>HAMEAU — Visualiseur de Simulation Multi-Agents</title>
+  <title>HAMEAU — Multi-Agent Simulation Visualizer</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,57 +23,57 @@
       </div>
     </div>
 
-    <!-- Compteurs en direct (FR-25, Section 4.2) -->
+    <!-- Live Metric Counters -->
     <div class="live-metrics" id="live-metrics">
       <div class="metric-card metric-decider">
-        <div class="metric-label">Décisions Decider 2B</div>
+        <div class="metric-label">Decider 2B Decisions</div>
         <div class="metric-value" id="counter-decider">0</div>
-        <div class="metric-sub" id="counter-decider-latency">Mesuré depuis journal</div>
+        <div class="metric-sub" id="counter-decider-latency">Measured from log</div>
       </div>
       <div class="metric-divider">:</div>
       <div class="metric-card metric-bedrock">
-        <div class="metric-label">Appels Bedrock LLM</div>
+        <div class="metric-label">Bedrock LLM Calls</div>
         <div class="metric-value" id="counter-bedrock">0</div>
-        <div class="metric-sub" id="counter-cassettes">0 en cassette</div>
+        <div class="metric-sub" id="counter-cassettes">0 cached</div>
       </div>
       <div class="metric-badge">
-        <span class="badge-title">Ratio d'Économie</span>
+        <span class="badge-title">Amplification Ratio</span>
         <span class="badge-value" id="ratio-value">-- : 1</span>
       </div>
       <div class="metric-card metric-cost">
-        <div class="metric-label">Coût AWS Réel</div>
-        <div class="metric-value font-mono" id="counter-cost">0,0000 $</div>
-        <div class="metric-sub" id="counter-savings">Éco. vs Tout-LLM : 0,0000 $</div>
+        <div class="metric-label">Real AWS Cost</div>
+        <div class="metric-value font-mono" id="counter-cost">$0.0000</div>
+        <div class="metric-sub" id="counter-savings">Saved vs All-LLM: $0.0000</div>
       </div>
       <div class="metric-card metric-latency-saved">
-        <div class="metric-label">Latence Évitée</div>
+        <div class="metric-label">Latency Saved</div>
         <div class="metric-value font-mono" id="counter-latency-saved">0 s</div>
-        <div class="metric-sub font-mono" id="counter-latency-sub">Mesuré depuis journal</div>
+        <div class="metric-sub font-mono" id="counter-latency-sub">Measured from log</div>
       </div>
     </div>
 
-    <!-- Horloge & Contrôles rapides -->
+    <!-- Clock & Fast Controls -->
     <div class="clock-display">
-      <div class="clock-day" id="clock-day">JOUR 1</div>
+      <div class="clock-day" id="clock-day">DAY 1</div>
       <div class="clock-time font-mono" id="clock-time">06:00</div>
       <div class="clock-tick" id="clock-tick">Tick 0 / 192</div>
     </div>
   </header>
 
-  <!-- Corps principal -->
+  <!-- Main Layout -->
   <main class="main-container">
-    <!-- Vue Carte & Timeline -->
+    <!-- Map & Timeline View -->
     <section class="simulation-view">
-      <!-- Barre d'outils de Rejeu -->
+      <!-- Playback Controls -->
       <div class="playback-bar">
         <div class="playback-controls">
-          <button id="btn-play-pause" class="btn btn-primary" title="Espace : Lecture / Pause">
+          <button id="btn-play-pause" class="btn btn-primary" title="Space: Play / Pause">
             <span id="play-icon">▶</span>
           </button>
-          <button id="btn-step-prev" class="btn btn-secondary" title="Pas précédent">⏮</button>
-          <button id="btn-step-next" class="btn btn-secondary" title="Pas suivant">⏭</button>
+          <button id="btn-step-prev" class="btn btn-secondary" title="Previous Step">⏮</button>
+          <button id="btn-step-next" class="btn btn-secondary" title="Next Step">⏭</button>
           <div class="speed-selector">
-            <label>Vitesse :</label>
+            <label>Speed:</label>
             <button class="btn-chip active" data-speed="1">1x</button>
             <button class="btn-chip" data-speed="2">2x</button>
             <button class="btn-chip" data-speed="5">5x</button>
@@ -84,98 +84,98 @@
         <div class="timeline-slider-container">
           <input type="range" id="timeline-slider" min="0" max="576" value="0" step="1">
           <div class="timeline-ticks-labels">
-            <span>J1 06h (Départ)</span>
-            <span>J1 08h (R1 Rumeur)</span>
-            <span>J2 10h (R2 Démenti)</span>
-            <span>J3 07h (R3 Marché)</span>
-            <span>J3 17h (D9 Élection)</span>
+            <span>D1 06:00 (Start)</span>
+            <span>D1 08:00 (R1 Rumor)</span>
+            <span>D2 10:00 (R2 Denial)</span>
+            <span>D3 07:00 (R3 Market)</span>
+            <span>D3 17:00 (D9 Election)</span>
           </div>
         </div>
 
         <div class="playback-actions">
           <label class="btn btn-outline file-upload-label">
-            <span>Charger JSONL</span>
+            <span>Load JSONL</span>
             <input type="file" id="file-input" accept=".jsonl">
           </label>
-          <button id="btn-load-sample" class="btn btn-outline" title="Rejeu de la simulation 3 jours">Benchmark 3J</button>
-          <button id="btn-load-live" class="btn btn-outline" style="border-color: #10b981; color: #10b981;" title="Charger le run réel GPU & Bedrock">⚡ Run GPU/AWS</button>
-          <a href="roadmap.html" target="_blank" class="btn btn-outline" style="border-color: #6366f1; color: #a5b4fc; text-decoration: none; display: inline-flex; align-items: center;" title="Ouvrir le guide complet de la simulation">📖 Guide</a>
+          <button id="btn-load-sample" class="btn btn-outline" title="Replay 3-day certified simulation">3-Day Benchmark</button>
+          <button id="btn-load-live" class="btn btn-outline" style="border-color: #10b981; color: #10b981;" title="Load live GPU & Bedrock run">⚡ Live GPU/AWS</button>
+          <a href="roadmap.html" target="_blank" class="btn btn-outline" style="border-color: #6366f1; color: #a5b4fc; text-decoration: none; display: inline-flex; align-items: center;" title="Open comprehensive simulation guide">📖 Guide</a>
         </div>
       </div>
 
-      <!-- Canvas Carte du Village & Graphe Social -->
+      <!-- Village Map & Social Network Canvas -->
       <div class="canvas-wrapper">
         <div class="canvas-view-toggle">
-          <button id="btn-view-map" class="view-toggle-btn active" data-mode="map">🗺️ Plan du Village</button>
-          <button id="btn-view-network" class="view-toggle-btn" data-mode="network">🕸️ Réseau Social & Confiance</button>
-          <button id="btn-toggle-render-mode" class="view-toggle-btn active" data-render-mode="characters" title="Basculer entre Personnages Illustrés et Points Schématiques">🎭 Personnages 2D</button>
+          <button id="btn-view-map" class="view-toggle-btn active" data-mode="map">🗺️ Village Map</button>
+          <button id="btn-view-network" class="view-toggle-btn" data-mode="network">🕸️ Social Network & Trust</button>
+          <button id="btn-toggle-render-mode" class="view-toggle-btn active" data-render-mode="characters" title="Toggle between Illustrated Characters and Schematic Dots">🎭 2D Characters</button>
         </div>
         <canvas id="village-canvas" width="1000" height="640"></canvas>
         <div class="map-overlay-legend" id="canvas-legend">
-          <span class="legend-item"><span class="dot dot-habitant"></span> Habitant</span>
-          <span class="legend-item"><span class="dot dot-rumeur"></span> Porte la Rumeur R1</span>
-          <span class="legend-item"><span class="dot dot-dementi"></span> A reçu le Démenti R2</span>
-          <span class="legend-item"><span class="dot dot-stocking"></span> Stocke des provisions</span>
+          <span class="legend-item"><span class="dot dot-habitant"></span> Citizen</span>
+          <span class="legend-item"><span class="dot dot-rumeur"></span> Carries Rumor R1</span>
+          <span class="legend-item"><span class="dot dot-dementi"></span> Received Denial R2</span>
+          <span class="legend-item"><span class="dot dot-stocking"></span> Stockpiling Supplies</span>
         </div>
       </div>
 
-      <!-- Journal des événements en direct -->
+      <!-- Live Event Feed -->
       <div class="event-feed">
         <div class="feed-header">
-          <h3>Flux d'Activité en Direct</h3>
-          <span class="feed-filter" id="feed-status">Prêt</span>
+          <h3>Live Activity Feed</h3>
+          <span class="feed-filter" id="feed-status">Ready</span>
         </div>
         <div class="feed-list" id="feed-list">
-          <div class="feed-empty">Chargez un journal ou lancez la lecture pour observer les événements.</div>
+          <div class="feed-empty">Load a log or press Play to monitor events in real time.</div>
         </div>
       </div>
     </section>
 
-    <!-- Volet Inspecteur & Onglets (À droite) -->
+    <!-- Side Panel & Tabs (Right Side) -->
     <aside class="side-panel">
-      <!-- Navigation par onglets -->
+      <!-- Tab Navigation -->
       <nav class="panel-tabs">
-        <button class="tab-btn active" data-tab="inspector">Inspecteur d'Agent</button>
-        <button class="tab-btn" data-tab="rumor-graph">Graphe de Rumeur</button>
-        <button class="tab-btn" data-tab="memory-diff">Diff MemoryGate</button>
-        <button class="tab-btn" data-tab="gazette">La Gazette</button>
+        <button class="tab-btn active" data-tab="inspector">Agent Inspector</button>
+        <button class="tab-btn" data-tab="rumor-graph">Rumor Transmission</button>
+        <button class="tab-btn" data-tab="memory-diff">MemoryGate Diff</button>
+        <button class="tab-btn" data-tab="gazette">The Gazette</button>
       </nav>
 
-      <!-- Onglet 1 : Inspecteur d'Agent -->
+      <!-- Tab 1: Agent Inspector -->
       <div class="tab-content active" id="tab-inspector">
         <div class="agent-selector-wrapper">
-          <label for="agent-select">Sélectionner un habitant :</label>
+          <label for="agent-select">Select a citizen:</label>
           <select id="agent-select" class="form-select">
-            <option value="yao">Yao (Livreur du marché)</option>
-            <option value="kofi">Kofi (Maire)</option>
-            <option value="awa">Awa (Boulangère)</option>
-            <option value="elise">Élise (Institutrice)</option>
-            <option value="samuel">Samuel (Forgeron)</option>
-            <option value="nadia">Nadia (Médecin)</option>
-            <option value="tom">Tom (Apprenti café)</option>
-            <option value="mariam">Mariam (Marchande légumes)</option>
-            <option value="paul">Paul (Pêcheur retraité)</option>
-            <option value="lea">Léa (Bibliothécaire)</option>
-            <option value="ibrahim">Ibrahim (Agriculteur)</option>
-            <option value="claire">Claire (Rédactrice Gazette)</option>
-            <option value="victor">Victor (Notaire & Candidat)</option>
-            <option value="fatou">Fatou (Meunière du Moulin)</option>
-            <option value="lucas">Lucas (Bûcheron & Meneur)</option>
-            <option value="sokhna">Sokhna (Marchande itinérante)</option>
-            <option value="antoine">Antoine (Garde champêtre)</option>
-            <option value="mireille">Mireille (Herboriste)</option>
-            <option value="bastien">Bastien (Jeune Pêcheur)</option>
-            <option value="salimata">Salimata (Aubergiste)</option>
+            <option value="yao">Yao (Market Courier)</option>
+            <option value="kofi">Kofi (Mayor)</option>
+            <option value="awa">Awa (Baker)</option>
+            <option value="elise">Élise (School Teacher)</option>
+            <option value="samuel">Samuel (Blacksmith)</option>
+            <option value="nadia">Nadia (Doctor)</option>
+            <option value="tom">Tom (Café Apprentice)</option>
+            <option value="mariam">Mariam (Vegetable Merchant)</option>
+            <option value="paul">Paul (Retired Fisherman)</option>
+            <option value="lea">Léa (Librarian)</option>
+            <option value="ibrahim">Ibrahim (Farmer)</option>
+            <option value="claire">Claire (Gazette Editor)</option>
+            <option value="victor">Victor (Notary & Candidate)</option>
+            <option value="fatou">Fatou (Mill Operator)</option>
+            <option value="lucas">Lucas (Lumberjack & Leader)</option>
+            <option value="sokhna">Sokhna (Traveling Merchant)</option>
+            <option value="antoine">Antoine (Constable)</option>
+            <option value="mireille">Mireille (Herbalist)</option>
+            <option value="bastien">Bastien (Young Fisherman)</option>
+            <option value="salimata">Salimata (Innkeeper)</option>
           </select>
         </div>
 
         <div class="agent-card" id="agent-profile-card">
           <div class="agent-header">
-            <canvas id="inspector-bust-canvas" width="56" height="56" class="agent-bust-canvas" title="Portrait en buste"></canvas>
+            <canvas id="inspector-bust-canvas" width="56" height="56" class="agent-bust-canvas" title="Bust Portrait"></canvas>
             <div class="agent-avatar" id="inspector-avatar" style="display: none;">📦</div>
             <div class="agent-title">
               <h2 id="inspector-name">Yao</h2>
-              <p id="inspector-job">Livreur du marché &bull; 28 ans</p>
+              <p id="inspector-job">Market Courier &bull; 28 yrs old</p>
             </div>
             <div class="behavior-badge" id="inspector-stocking-badge">
               Normal
@@ -184,65 +184,65 @@
 
           <div class="agent-status-section">
             <div class="status-item">
-              <span class="label">Lieu actuel :</span>
-              <span class="value" id="inspector-loc">Place du Marché</span>
+              <span class="label">Current location:</span>
+              <span class="value" id="inspector-loc">Market Square</span>
             </div>
             <div class="status-item">
-              <span class="label">Action en cours :</span>
-              <span class="value" id="inspector-action">Prépare ses livraisons</span>
+              <span class="label">Current action:</span>
+              <span class="value" id="inspector-action">Preparing deliveries</span>
             </div>
           </div>
 
-          <!-- Croyances et Rumeurs -->
+          <!-- Beliefs, Rumors & Election -->
           <div class="inspector-beliefs">
-            <h4>Croyances, Rumeurs & Scrutin</h4>
+            <h4>Beliefs, Rumors & Election</h4>
             <div id="inspector-beliefs-list" class="beliefs-list">
-              <div class="belief-pill">R1 (Fermeture marché) : <span id="r1-cred">Non informé</span></div>
-              <div class="belief-pill">R2 (Démenti officiel) : <span id="r2-cred">Non informé</span></div>
-              <div class="belief-pill">R3 (Marché ouvert) : <span id="r3-cred">Non informé</span></div>
-              <div class="belief-pill">R4 (Campagne mairie) : <span id="r4-cred">Non informé</span></div>
-              <div class="belief-pill">Vote municipal (D9) : <span id="inspector-vote">En attente du scrutin (J3 17h)</span></div>
+              <div class="belief-pill">R1 (Market closure): <span id="r1-cred">Unaware</span></div>
+              <div class="belief-pill">R2 (Official denial): <span id="r2-cred">Unaware</span></div>
+              <div class="belief-pill">R3 (Market open): <span id="r3-cred">Unaware</span></div>
+              <div class="belief-pill">R4 (Mayoral campaign): <span id="r4-cred">Unaware</span></div>
+              <div class="belief-pill">Municipal vote (D9): <span id="inspector-vote">Awaiting election (D3 17:00)</span></div>
             </div>
           </div>
 
-          <!-- Dernières Décisions Decider -->
+          <!-- Recent Decider 2B Decisions -->
           <div class="inspector-decisions">
-            <h4>Dernières Décisions Decider 2B</h4>
+            <h4>Recent Decider 2B Decisions</h4>
             <div id="inspector-decisions-list" class="decisions-list">
-              <!-- Rempli dynamiquement -->
+              <!-- Dynamically populated -->
             </div>
           </div>
 
-          <!-- Souvenirs scorés par MemoryGate -->
+          <!-- Scored Memories (MemoryGate) -->
           <div class="inspector-memories">
-            <h4>Souvenirs Notés (MemoryGate)</h4>
+            <h4>Scored Memories (MemoryGate)</h4>
             <div id="inspector-memories-list" class="memories-list">
-              <!-- Rempli dynamiquement -->
+              <!-- Dynamically populated -->
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Onglet 2 : Graphe de propagation de la rumeur & Scrutin Municipal -->
+      <!-- Tab 2: Rumor Transmission Graph & Municipal Election -->
       <div class="tab-content" id="tab-rumor-graph">
         <div class="rumor-stats">
           <div class="stat-box">
             <span class="stat-num" id="rumor-count">0 / --</span>
-            <span class="stat-text">Habitants atteints (R1)</span>
+            <span class="stat-text">Citizens Reached (R1)</span>
           </div>
           <div class="stat-box">
             <span class="stat-num" id="stocking-count">0 / --</span>
-            <span class="stat-text">Ont fait des stocks</span>
+            <span class="stat-text">Stockpiled Goods</span>
           </div>
         </div>
 
         <div class="rumor-chart-card">
           <div class="chart-header">
-            <span class="chart-title">Courbes Épidémiques de Transmission</span>
+            <span class="chart-title">Epidemic Transmission Curves</span>
             <div class="chart-legend">
-              <span class="legend-item"><span class="legend-color r1"></span>R1 (Rumeur)</span>
-              <span class="legend-item"><span class="legend-color r2"></span>R2 (Démenti)</span>
-              <span class="legend-item"><span class="legend-color r3"></span>R3 (Marché ouvert)</span>
+              <span class="legend-item"><span class="legend-color r1"></span>R1 (Rumor)</span>
+              <span class="legend-item"><span class="legend-color r2"></span>R2 (Denial)</span>
+              <span class="legend-item"><span class="legend-color r3"></span>R3 (Market Open)</span>
             </div>
           </div>
           <canvas id="rumor-curve-canvas" width="390" height="120"></canvas>
@@ -250,51 +250,51 @@
 
         <div class="rumor-chart-card" id="election-panel-card" style="margin-top: 10px; padding: 10px 12px;">
           <div class="chart-header" style="margin-bottom: 6px;">
-            <span class="chart-title">🗳️ Scrutin Municipal (D9 : Kofi vs Victor)</span>
-            <span id="election-status-badge" style="font-size: 0.72rem; color: var(--text-muted);">J3 17h00</span>
+            <span class="chart-title">🗳️ Municipal Election (D9: Kofi vs Victor)</span>
+            <span id="election-status-badge" style="font-size: 0.72rem; color: var(--text-muted);">D3 17:00</span>
           </div>
           <div id="election-summary-line" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">
-            Campagne en cours — Scrutin au Jour 3 à 17h00
+            Campaign in progress — Election on Day 3 at 17:00
           </div>
           <div id="election-bars" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.74rem;">
             <div style="display: flex; justify-content: space-between;">
-              <span>Kofi (Maire sortant)</span>
-              <strong id="election-kofi-count">0 voix</strong>
+              <span>Kofi (Incumbent Mayor)</span>
+              <strong id="election-kofi-count">0 votes</strong>
             </div>
             <div style="display: flex; justify-content: space-between;">
-              <span>Victor (Notaire &amp; Candidat)</span>
-              <strong id="election-victor-count">0 voix</strong>
+              <span>Victor (Notary &amp; Challenger)</span>
+              <strong id="election-victor-count">0 votes</strong>
             </div>
             <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
-              <span>Abstentions (ou repli zone rouge)</span>
+              <span>Abstentions (or Red-zone fallback)</span>
               <span id="election-abst-count">0</span>
             </div>
           </div>
         </div>
 
         <div class="rumor-timeline" id="rumor-hops-list">
-          <!-- Historique des sauts de rumeur -->
+          <!-- Rumor hop history -->
         </div>
       </div>
 
-      <!-- Onglet 3 : Vue comparative MemoryGate (C2) -->
+      <!-- Tab 3: Comparative MemoryGate View (C2) -->
       <div class="tab-content" id="tab-memory-diff">
         <div class="diff-header-banner">
-          <h3>Comparaison de Contexte LLM (Prompt Diff)</h3>
-          <p>Impact du filtrage par Strands Decider 2B sur le prompt Bedrock Nova Micro.</p>
+          <h3>LLM Context Comparison (Prompt Diff)</h3>
+          <p>Impact of Strands Decider 2B filtering on Amazon Bedrock Nova Micro prompts.</p>
         </div>
 
         <div class="diff-metrics-row">
           <div class="diff-metric-pill">
-            <span class="label">Tokens Économisés</span>
+            <span class="label">Tokens Saved</span>
             <span class="val green" id="diff-tokens-saved">-- %</span>
           </div>
           <div class="diff-metric-pill">
-            <span class="label">Bruit Éliminé</span>
-            <span class="val green" id="diff-noise-removed">-- / -- souvenirs</span>
+            <span class="label">Noise Eliminated</span>
+            <span class="val green" id="diff-noise-removed">-- / -- memories</span>
           </div>
           <div class="diff-metric-pill">
-            <span class="label">Latence Decider</span>
+            <span class="label">Decider Latency</span>
             <span class="val font-mono" id="diff-decider-latency">-- ms</span>
           </div>
         </div>
@@ -302,40 +302,40 @@
         <div class="diff-columns">
           <div class="diff-box without-gate">
             <div class="diff-box-header">
-              <span class="box-title">❌ Sans MemoryGate (Brut)</span>
+              <span class="box-title">❌ Without MemoryGate (Raw)</span>
               <span class="badge badge-danger" id="tokens-raw-badge">-- tokens</span>
             </div>
             <div class="diff-box-body" id="diff-raw-content">
-              <!-- Rempli dynamiquement -->
+              <!-- Dynamically populated -->
             </div>
           </div>
 
           <div class="diff-box with-gate">
             <div class="diff-box-header">
-              <span class="box-title">✅ Avec MemoryGate (Scoré)</span>
+              <span class="box-title">✅ With MemoryGate (Gated)</span>
               <span class="badge badge-success" id="tokens-gated-badge">-- tokens</span>
             </div>
             <div class="diff-box-body" id="diff-gated-content">
-              <!-- Rempli dynamiquement -->
+              <!-- Dynamically populated -->
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Onglet 4 : Gazette du Hameau -->
+      <!-- Tab 4: The Village Gazette -->
       <div class="tab-content" id="tab-gazette">
         <div class="gazette-newspaper">
           <div class="gazette-masthead">
             <div class="gazette-author-badge">
-              <canvas id="gazette-author-canvas" width="46" height="46" class="agent-bust-canvas" title="Claire, rédactrice"></canvas>
+              <canvas id="gazette-author-canvas" width="46" height="46" class="agent-bust-canvas" title="Claire, editor"></canvas>
               <div>
-                <h1>LA GAZETTE DU HAMEAU</h1>
-                <p class="gazette-date" id="gazette-date">Édition Quotidienne &bull; Rédaction : Claire</p>
+                <h1>THE VILLAGE GAZETTE</h1>
+                <p class="gazette-date" id="gazette-date">Daily Edition &bull; Chief Editor: Claire</p>
               </div>
             </div>
           </div>
           <article class="gazette-body" id="gazette-content">
-            <p class="gazette-empty">La Gazette paraît chaque soir à 22h00.</p>
+            <p class="gazette-empty">The Gazette is published every evening at 22:00.</p>
           </article>
         </div>
       </div>

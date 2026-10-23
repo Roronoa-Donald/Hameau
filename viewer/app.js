@@ -5,25 +5,25 @@
 
 // Définition canonique des 19 lieux du village (étendus)
 const VILLAGE_LOCATIONS = {
-  marche: { id: "marche", name: "Place du Marché", category: "commerce", x: 0.50, y: 0.45, icon: "🧺" },
-  boulangerie: { id: "boulangerie", name: "Boulangerie d'Awa", category: "artisanat", x: 0.34, y: 0.34, icon: "🥖" },
-  mairie: { id: "mairie", name: "Mairie du Hameau", category: "civique", x: 0.50, y: 0.22, icon: "🏛️" },
-  ecole: { id: "ecole", name: "École communale", category: "education", x: 0.68, y: 0.28, icon: "📚" },
-  bibliotheque: { id: "bibliotheque", name: "Bibliothèque", category: "culture", x: 0.72, y: 0.48, icon: "📖" },
-  atelier: { id: "atelier", name: "Atelier de forge", category: "artisanat", x: 0.26, y: 0.50, icon: "⚒️" },
-  medical: { id: "medical", name: "Cabinet médical", category: "sante", x: 0.35, y: 0.62, icon: "🩺" },
-  cafe: { id: "cafe", name: "Café de la Rivière", category: "social", x: 0.52, y: 0.68, icon: "☕" },
-  riviere: { id: "riviere", name: "Berges Rivière", category: "nature", x: 0.65, y: 0.78, icon: "🎣" },
-  ferme: { id: "ferme", name: "Ferme des Hauts", category: "agriculture", x: 0.18, y: 0.72, icon: "🌾" },
-  village_voisin: { id: "village_voisin", name: "Village Voisin (Val-d'Or)", category: "exterieur", x: 0.88, y: 0.18, icon: "🏰" },
-  moulin_riviere: { id: "moulin_riviere", name: "Vieux Moulin", category: "artisanat", x: 0.78, y: 0.70, icon: "⚙️" },
-  place_fetes: { id: "place_fetes", name: "Place des Fêtes", category: "civique", x: 0.36, y: 0.20, icon: "🎪" },
-  foret_loups: { id: "foret_loups", name: "Forêt des Loups", category: "nature", x: 0.15, y: 0.88, icon: "🌲" },
-  maison_nord: { id: "maison_nord", name: "Maisons Nord", category: "residence", x: 0.58, y: 0.14, icon: "🏡" },
-  maison_ouest: { id: "maison_ouest", name: "Maisons Ouest", category: "residence", x: 0.18, y: 0.38, icon: "🏡" },
-  maison_centre: { id: "maison_centre", name: "Maisons Centre", category: "residence", x: 0.38, y: 0.56, icon: "🏡" },
-  maison_est: { id: "maison_est", name: "Maisons Est", category: "residence", x: 0.82, y: 0.38, icon: "🏡" },
-  maison_sud: { id: "maison_sud", name: "Maisons Sud", category: "residence", x: 0.40, y: 0.82, icon: "🏡" },
+  marche: { id: "marche", name: "Market Square", category: "commerce", x: 0.50, y: 0.45, icon: "🧺" },
+  boulangerie: { id: "boulangerie", name: "Awa's Bakery", category: "artisanat", x: 0.34, y: 0.34, icon: "🥖" },
+  mairie: { id: "mairie", name: "Town Hall", category: "civique", x: 0.50, y: 0.22, icon: "🏛️" },
+  ecole: { id: "ecole", name: "Community School", category: "education", x: 0.68, y: 0.28, icon: "📚" },
+  bibliotheque: { id: "bibliotheque", name: "Village Library", category: "culture", x: 0.72, y: 0.48, icon: "📖" },
+  atelier: { id: "atelier", name: "Blacksmith Forge", category: "artisanat", x: 0.26, y: 0.50, icon: "⚒️" },
+  medical: { id: "medical", name: "Medical Clinic", category: "sante", x: 0.35, y: 0.62, icon: "🩺" },
+  cafe: { id: "cafe", name: "River Café", category: "social", x: 0.52, y: 0.68, icon: "☕" },
+  riviere: { id: "riviere", name: "Riverbanks", category: "nature", x: 0.65, y: 0.78, icon: "🎣" },
+  ferme: { id: "ferme", name: "Upland Farm", category: "agriculture", x: 0.18, y: 0.72, icon: "🌾" },
+  village_voisin: { id: "village_voisin", name: "Neighboring Village (Val-d'Or)", category: "exterieur", x: 0.88, y: 0.18, icon: "🏰" },
+  moulin_riviere: { id: "moulin_riviere", name: "Old Mill", category: "artisanat", x: 0.78, y: 0.70, icon: "⚙️" },
+  place_fetes: { id: "place_fetes", name: "Festival Square", category: "civique", x: 0.36, y: 0.20, icon: "🎪" },
+  foret_loups: { id: "foret_loups", name: "Wolf Forest", category: "nature", x: 0.15, y: 0.88, icon: "🌲" },
+  maison_nord: { id: "maison_nord", name: "North Residences", category: "residence", x: 0.58, y: 0.14, icon: "🏡" },
+  maison_ouest: { id: "maison_ouest", name: "West Residences", category: "residence", x: 0.18, y: 0.38, icon: "🏡" },
+  maison_centre: { id: "maison_centre", name: "Central Residences", category: "residence", x: 0.38, y: 0.56, icon: "🏡" },
+  maison_est: { id: "maison_est", name: "East Residences", category: "residence", x: 0.82, y: 0.38, icon: "🏡" },
+  maison_sud: { id: "maison_sud", name: "South Residences", category: "residence", x: 0.40, y: 0.82, icon: "🏡" },
 };
 
 const VILLAGE_ROADS = [
@@ -38,54 +38,54 @@ const VILLAGE_ROADS = [
 ];
 
 const AGENTS_META = {
-  yao: { name: "Yao", job: "Livreur du marché", age: 28, avatar: "📦", home: "maison_centre" },
-  kofi: { name: "Kofi", job: "Maire du Hameau", age: 51, avatar: "👔", home: "maison_nord" },
-  awa: { name: "Awa", job: "Boulangère", age: 42, avatar: "👩‍🍳", home: "maison_nord" },
-  elise: { name: "Élise", job: "Institutrice", age: 36, avatar: "👩‍🏫", home: "maison_est" },
-  samuel: { name: "Samuel", job: "Forgeron", age: 48, avatar: "🔨", home: "maison_ouest" },
-  nadia: { name: "Nadia", job: "Médecin", age: 39, avatar: "🩺", home: "maison_sud" },
-  tom: { name: "Tom", job: "Apprenti café", age: 21, avatar: "☕", home: "maison_centre" },
-  mariam: { name: "Mariam", job: "Marchande légumes", age: 45, avatar: "🥬", home: "maison_centre" },
-  paul: { name: "Paul", job: "Pêcheur retraité", age: 68, avatar: "🎣", home: "maison_sud" },
-  lea: { name: "Léa", job: "Bibliothécaire", age: 31, avatar: "📖", home: "maison_est" },
-  ibrahim: { name: "Ibrahim", job: "Agriculteur", age: 54, avatar: "🚜", home: "maison_ouest" },
-  claire: { name: "Claire", job: "Rédactrice Gazette", age: 34, avatar: "📰", home: "maison_nord" },
-  victor: { name: "Victor", job: "Notaire & Candidat", age: 58, avatar: "📜", home: "maison_nord" },
-  fatou: { name: "Fatou", job: "Meunière du Moulin", age: 31, avatar: "🌾", home: "maison_sud" },
-  lucas: { name: "Lucas", job: "Bûcheron & Meneur", age: 19, avatar: "🪓", home: "maison_ouest" },
-  sokhna: { name: "Sokhna", job: "Marchande itinérante", age: 47, avatar: "🧕", home: "maison_est" },
-  antoine: { name: "Antoine", job: "Garde champêtre", age: 62, avatar: "💂", home: "maison_centre" },
-  mireille: { name: "Mireille", job: "Herboriste", age: 29, avatar: "🌿", home: "maison_ouest" },
-  bastien: { name: "Bastien", job: "Jeune Pêcheur", age: 24, avatar: "🛶", home: "maison_sud" },
-  salimata: { name: "Salimata", job: "Aubergiste", age: 38, avatar: "🍲", home: "maison_est" },
+  yao: { name: "Yao", job: "Market Courier", age: 28, avatar: "📦", home: "maison_centre" },
+  kofi: { name: "Kofi", job: "Village Mayor", age: 51, avatar: "👔", home: "maison_nord" },
+  awa: { name: "Awa", job: "Baker", age: 42, avatar: "👩‍🍳", home: "maison_nord" },
+  elise: { name: "Élise", job: "School Teacher", age: 36, avatar: "👩‍🏫", home: "maison_est" },
+  samuel: { name: "Samuel", job: "Blacksmith", age: 48, avatar: "🔨", home: "maison_ouest" },
+  nadia: { name: "Nadia", job: "Doctor / Physician", age: 39, avatar: "🩺", home: "maison_sud" },
+  tom: { name: "Tom", job: "Café Apprentice", age: 21, avatar: "☕", home: "maison_centre" },
+  mariam: { name: "Mariam", job: "Vegetable Merchant", age: 45, avatar: "🥬", home: "maison_centre" },
+  paul: { name: "Paul", job: "Retired Fisherman", age: 68, avatar: "🎣", home: "maison_sud" },
+  lea: { name: "Léa", job: "Librarian", age: 31, avatar: "📖", home: "maison_est" },
+  ibrahim: { name: "Ibrahim", job: "Farmer", age: 54, avatar: "🚜", home: "maison_ouest" },
+  claire: { name: "Claire", job: "Gazette Editor", age: 34, avatar: "📰", home: "maison_nord" },
+  victor: { name: "Victor", job: "Notary & Candidate", age: 58, avatar: "📜", home: "maison_nord" },
+  fatou: { name: "Fatou", job: "Mill Operator", age: 31, avatar: "🌾", home: "maison_sud" },
+  lucas: { name: "Lucas", job: "Lumberjack & Leader", age: 19, avatar: "🪓", home: "maison_ouest" },
+  sokhna: { name: "Sokhna", job: "Traveling Merchant", age: 47, avatar: "🧕", home: "maison_est" },
+  antoine: { name: "Antoine", job: "Constable", age: 62, avatar: "💂", home: "maison_centre" },
+  mireille: { name: "Mireille", job: "Herbalist", age: 29, avatar: "🌿", home: "maison_ouest" },
+  bastien: { name: "Bastien", job: "Young Fisherman", age: 24, avatar: "🛶", home: "maison_sud" },
+  salimata: { name: "Salimata", job: "Innkeeper", age: 38, avatar: "🍲", home: "maison_est" },
 };
 
-// Topologie des relations sociales du village (Graphe social étendu à 20 agents)
+// Social relationships topology for the village (Extended to 20 agents)
 const SOCIAL_RELATIONSHIPS = [
-  { source: "awa", target: "yao", strength: 0.65, label: "Clients & livraisons" },
-  { source: "awa", target: "mariam", strength: 0.70, label: "Partenaires de marché" },
-  { source: "awa", target: "fatou", strength: 0.75, label: "Fourniture farine" },
-  { source: "kofi", target: "claire", strength: 0.60, label: "Communication municipale" },
-  { source: "kofi", target: "samuel", strength: 0.80, label: "Conseil des aînés" },
-  { source: "kofi", target: "victor", strength: 0.40, label: "Rivalité politique" },
-  { source: "victor", target: "antoine", strength: 0.65, label: "Ordre public électoral" },
-  { source: "victor", target: "mariam", strength: 0.60, label: "Promesses marchandes" },
-  { source: "mariam", target: "ibrahim", strength: 0.75, label: "Approvisionnement légumes" },
-  { source: "paul", target: "tom", strength: 0.65, label: "Habitués du café" },
-  { source: "paul", target: "bastien", strength: 0.85, label: "Transmission de pêche" },
-  { source: "elise", target: "yao", strength: 0.60, label: "Voisins d'enfance" },
-  { source: "elise", target: "lea", strength: 0.70, label: "Échange de livres" },
-  { source: "nadia", target: "samuel", strength: 0.60, label: "Entretien matériel" },
-  { source: "nadia", target: "kofi", strength: 0.55, label: "Santé communale" },
-  { source: "claire", target: "tom", strength: 0.50, label: "Échos du comptoir" },
-  { source: "paul", target: "nadia", strength: 0.50, label: "Consultations de routine" },
-  { source: "ibrahim", target: "samuel", strength: 0.65, label: "Réparation d'outils" },
-  { source: "awa", target: "kofi", strength: 0.55, label: "Doléances du marché" },
-  { source: "yao", target: "sokhna", strength: 0.70, label: "Cargaisons fluviales" },
-  { source: "lucas", target: "mireille", strength: 0.75, label: "Exploration des bois" },
-  { source: "sokhna", target: "salimata", strength: 0.80, label: "Commerce inter-villages" },
-  { source: "lucas", target: "bastien", strength: 0.70, label: "Compagnons de veillée" },
-  { source: "fatou", target: "bastien", strength: 0.60, label: "Voisins de rivière" }
+  { source: "awa", target: "yao", strength: 0.65, label: "Clients & deliveries" },
+  { source: "awa", target: "mariam", strength: 0.70, label: "Market partners" },
+  { source: "awa", target: "fatou", strength: 0.75, label: "Flour supplies" },
+  { source: "kofi", target: "claire", strength: 0.60, label: "Town hall press" },
+  { source: "kofi", target: "samuel", strength: 0.80, label: "Elders council" },
+  { source: "kofi", target: "victor", strength: 0.40, label: "Political rivalry" },
+  { source: "victor", target: "antoine", strength: 0.65, label: "Public order" },
+  { source: "victor", target: "mariam", strength: 0.60, label: "Campaign trade deals" },
+  { source: "mariam", target: "ibrahim", strength: 0.75, label: "Produce supplies" },
+  { source: "paul", target: "tom", strength: 0.65, label: "Café regulars" },
+  { source: "paul", target: "bastien", strength: 0.85, label: "Fishing mentorship" },
+  { source: "elise", target: "yao", strength: 0.60, label: "Childhood neighbors" },
+  { source: "elise", target: "lea", strength: 0.70, label: "Book exchange" },
+  { source: "nadia", target: "samuel", strength: 0.60, label: "Equipment repair" },
+  { source: "nadia", target: "kofi", strength: 0.55, label: "Community health" },
+  { source: "claire", target: "tom", strength: 0.50, label: "Counter gossip" },
+  { source: "paul", target: "nadia", strength: 0.50, label: "Routine checkups" },
+  { source: "ibrahim", target: "samuel", strength: 0.65, label: "Tool repairs" },
+  { source: "awa", target: "kofi", strength: 0.55, label: "Market grievances" },
+  { source: "yao", target: "sokhna", strength: 0.70, label: "River cargo" },
+  { source: "lucas", target: "mireille", strength: 0.75, label: "Woods exploration" },
+  { source: "sokhna", target: "salimata", strength: 0.80, label: "Inter-village trade" },
+  { source: "lucas", target: "bastien", strength: 0.70, label: "Evening companions" },
+  { source: "fatou", target: "bastien", strength: 0.60, label: "Riverside neighbors" }
 ];
 
 const NETWORK_AGENT_ORDER = [
@@ -194,7 +194,7 @@ class HameauViewer {
         prevLocation: meta.home,
         targetLocation: null,
         travelProgress: 1.0,
-        currentAction: "commence sa journée",
+        currentAction: "starting their day",
         believedFacts: {},
         didStock: false,
         isTalking: false,
@@ -281,18 +281,18 @@ class HameauViewer {
       btnLive.addEventListener("click", () => {
         fetch("live_run.jsonl")
           .then((r) => {
-            if (!r.ok) throw new Error("live_run.jsonl non trouvé");
+            if (!r.ok) throw new Error("live_run.jsonl not found");
             return r.text();
           })
           .then((txt) => this.loadJSONLContent(txt))
           .catch((err) => {
             console.warn(err);
-            alert("Fichier live_run.jsonl non disponible. Lancez d'abord une simulation réelle.");
+            alert("live_run.jsonl file not available. Please run a real simulation first.");
           });
       });
     }
 
-    // Raccourcis clavier (Espace, Flèches)
+    // Keyboard shortcuts (Space, Arrow keys)
     window.addEventListener("keydown", (e) => {
       if (e.code === "Space") {
         e.preventDefault();
@@ -323,7 +323,7 @@ class HameauViewer {
         this.eventsByTick[globalT].push(ev);
         if (globalT > maxT) maxT = globalT;
       } catch (err) {
-        console.warn("Ligne invalide:", line);
+        console.warn("Invalid line:", line);
       }
     }
 
@@ -331,13 +331,13 @@ class HameauViewer {
 
     this.maxTick = Math.max(576, maxT);
     this.slider.max = this.maxTick;
-    document.getElementById("feed-status").textContent = `${this.events.length} événements chargés`;
+    document.getElementById("feed-status").textContent = `${this.events.length} events loaded`;
     this.seekToTick(0);
     this.togglePlay(true);
   }
 
   computeRunRoster(events) {
-    // La population affichée vient du journal, jamais d'une constante.
+    // The active population is derived directly from the log file.
     const ids = new Set();
     for (const ev of events) {
       if (ev.agent_id && AGENTS_META[ev.agent_id]) ids.add(ev.agent_id);
@@ -352,8 +352,7 @@ class HameauViewer {
   }
 
   generateSyntheticRun() {
-    // Si aucun fichier n'est trouvé, charge une simulation illustrative propre
-    document.getElementById("feed-status").textContent = "Génération d'un échantillon...";
+    document.getElementById("feed-status").textContent = "Generating sample run...";
     this.seekToTick(0);
   }
 
@@ -459,11 +458,11 @@ class HameauViewer {
         this.agentsState[agent_id].isTalking = isCurrentTick;
         this.agentsState[agent_id].lastUtterance = payload.utterance;
         const otherName = AGENTS_META[payload.listener]?.name || payload.listener;
-        this.agentsState[agent_id].currentAction = `discute avec ${otherName}`;
+        this.agentsState[agent_id].currentAction = `conversing with ${otherName}`;
       }
       if (payload.listener && this.agentsState[payload.listener]) {
         const speakerName = AGENTS_META[payload.speaker]?.name || payload.speaker;
-        this.agentsState[payload.listener].currentAction = `écoute ${speakerName}`;
+        this.agentsState[payload.listener].currentAction = `listening to ${speakerName}`;
       }
       if (isCurrentTick) {
         this.addFeedItem(tick, "tag-talk", "Bedrock", `« ${payload.utterance} » (${payload.speaker})`);
@@ -473,10 +472,10 @@ class HameauViewer {
       if (payload.from_cassette) this.cassetteCount++;
       this.totalCost += payload.cost_usd || 0.0;
       if (agent_id && this.agentsState[agent_id]) {
-        this.agentsState[agent_id].currentAction = "synthétise ses pensées";
+        this.agentsState[agent_id].currentAction = "reflecting on their day";
       }
       if (isCurrentTick && agent_id) {
-        this.addFeedItem(tick, "tag-talk", "Réflexion", `${AGENTS_META[agent_id]?.name || agent_id} synthétise sa journée`);
+        this.addFeedItem(tick, "tag-talk", "Reflection", `${AGENTS_META[agent_id]?.name || agent_id} reflects on the day`);
       }
     } else if (event_type === "move") {
       if (agent_id && this.agentsState[agent_id]) {
@@ -484,10 +483,10 @@ class HameauViewer {
         ag.prevLocation = payload.from || ag.location;
         ag.location = payload.to;
         ag.travelProgress = isCurrentTick ? 0.0 : 1.0;
-        ag.currentAction = `se déplace vers ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`;
+        ag.currentAction = `walking to ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`;
       }
       if (isCurrentTick) {
-        this.addFeedItem(tick, "tag-move", "Déplacement", `${AGENTS_META[agent_id]?.name || agent_id} -> ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`);
+        this.addFeedItem(tick, "tag-move", "Movement", `${AGENTS_META[agent_id]?.name || agent_id} -> ${VILLAGE_LOCATIONS[payload.to]?.name || payload.to}`);
       }
     } else if (event_type === "rumor_hop") {
       this.rumorHops.push(payload);
@@ -508,7 +507,7 @@ class HameauViewer {
         }
       }
       if (isCurrentTick) {
-        this.addFeedItem(tick, "tag-rumor", "Rumeur", `${payload.sender} a transmis ${payload.fact_id} à ${payload.receiver}`);
+        this.addFeedItem(tick, "tag-rumor", "Rumor", `${payload.sender} shared ${payload.fact_id} with ${payload.receiver}`);
       }
     } else if (event_type === "election_vote") {
       if (!this.electionVotes) this.electionVotes = {};
@@ -518,13 +517,13 @@ class HameauViewer {
         if (this.agentsState[voter]) {
           this.agentsState[voter].vote = payload;
           const vLabel = AGENTS_META[payload.vote]?.name || payload.vote;
-          this.agentsState[voter].currentAction = `a voté (${vLabel})`;
+          this.agentsState[voter].currentAction = `voted (${vLabel})`;
         }
       }
       if (isCurrentTick && voter) {
         const voterName = AGENTS_META[voter]?.name || voter;
         const choiceName = AGENTS_META[payload.vote]?.name || payload.vote;
-        this.addFeedItem(tick, "tag-decision", "Vote D9", `${voterName} dépose son bulletin : ${choiceName}`);
+        this.addFeedItem(tick, "tag-decision", "Vote D9", `${voterName} casts ballot: ${choiceName}`);
       }
     } else if (event_type === "election_result") {
       this.electionResult = payload;
@@ -536,7 +535,7 @@ class HameauViewer {
         ag.believedFacts["R7_resultat_election"] = 1.0;
       }
       if (isCurrentTick) {
-        this.addFeedItem(tick, "tag-rumor", "Scrutin", `🏆 ${wName} élu Maire (Kofi ${kCount}, Victor ${vCount}, Abst. ${aCount})`);
+        this.addFeedItem(tick, "tag-rumor", "Election", `🏆 ${wName} elected Mayor (Kofi ${kCount}, Victor ${vCount}, Abst. ${aCount})`);
       }
     } else if (event_type === "gazette") {
       this.bedrockCount++;
@@ -551,17 +550,17 @@ class HameauViewer {
     if (!this.scoredMemories[agent_id]) {
       this.scoredMemories[agent_id] = [];
     }
-    const memId = payload.memory_id || (payload.question ? payload.question.replace("Pertinence du souvenir ", "").trim() : `mem_${tick}`);
+    const memId = payload.memory_id || (payload.question ? payload.question.replace("Pertinence du souvenir ", "").replace("Relevance of memory ", "").trim() : `mem_${tick}`);
     let memText = payload.memory_text;
     if (!memText) {
       if (memId === "mem_r1_init") {
-        memText = "A entendu une rumeur sur la fermeture prochaine du marché hebdomadaire.";
+        memText = "Overheard a rumor about the upcoming closure of the weekly market.";
       } else if (memId === "mem_r2_init") {
-        memText = "Le maire a formellement démenti toute fermeture du marché.";
+        memText = "The Mayor formally denied any closure of the market.";
       } else if (memId.startsWith("mem_hear_")) {
-        memText = "Échange de propos récents lors d'une discussion au village.";
+        memText = "Recent exchange of words during a village discussion.";
       } else {
-        memText = `Souvenir (${memId})`;
+        memText = `Memory (${memId})`;
       }
     }
 
@@ -604,7 +603,7 @@ class HameauViewer {
     container.textContent = "";
 
     if (!markdownText) {
-      container.textContent = "Aucune édition disponible pour le moment.";
+      container.textContent = "No edition published yet.";
       return;
     }
 
@@ -680,35 +679,35 @@ class HameauViewer {
   }
 
   updateUI() {
-    // Horloge multi-jours
+    // Multi-day clock
     const curDay = Math.floor(this.currentTick / 192) + 1;
     const tickInDay = this.currentTick % 192;
-    this.clockDay.textContent = `JOUR ${curDay}`;
+    this.clockDay.textContent = `DAY ${curDay}`;
     this.clockTime.textContent = this.formatTickTime(tickInDay);
-    this.clockTick.textContent = `Tick ${this.currentTick} / ${this.maxTick} (J${curDay} • ${this.formatTickTime(tickInDay)})`;
+    this.clockTick.textContent = `Tick ${this.currentTick} / ${this.maxTick} (D${curDay} • ${this.formatTickTime(tickInDay)})`;
 
-    // Compteurs
+    // Metrics counters
     this.counterDecider.textContent = this.deciderCount.toLocaleString();
     if (this.counterDeciderLatency) {
       if (this.deciderLatencies.length > 0) {
         const avg = this.deciderLatencies.reduce((a, b) => a + b, 0) / this.deciderLatencies.length;
-        this.counterDeciderLatency.textContent = `~${avg.toFixed(0)} ms moy. (mesuré)`;
+        this.counterDeciderLatency.textContent = `~${avg.toFixed(0)} ms avg (measured)`;
       } else {
-        this.counterDeciderLatency.textContent = "Mesuré depuis journal";
+        this.counterDeciderLatency.textContent = "Measured from log";
       }
     }
     this.counterBedrock.textContent = this.bedrockCount.toLocaleString();
-    this.counterCassettes.textContent = `${this.cassetteCount} en cassette`;
-    this.counterCost.textContent = `${this.totalCost.toFixed(4)} $`;
+    this.counterCassettes.textContent = `${this.cassetteCount} cached`;
+    this.counterCost.textContent = `$${this.totalCost.toFixed(4)}`;
 
     const ratio = this.bedrockCount > 0 ? (this.deciderCount / this.bedrockCount).toFixed(1) : "--";
     this.ratioValue.textContent = `${ratio} : 1`;
 
-    // Ticker d'économie en direct (C3)
+    // Real-time savings ticker (C3)
     const allLlmCost = (this.deciderCount * 420 / 1e6) * 0.035 + (this.deciderCount * 45 / 1e6) * 0.140 + this.totalCost;
     const savingsUsd = Math.max(0, allLlmCost - this.totalCost);
     if (this.counterSavings) {
-      this.counterSavings.textContent = `Éco. vs Tout-LLM : ${savingsUsd.toFixed(4)} $`;
+      this.counterSavings.textContent = `Saved vs All-LLM: $${savingsUsd.toFixed(4)}`;
     }
     const avgDecLat = this.deciderLatencies.length > 0
       ? this.deciderLatencies.reduce((a, b) => a + b, 0) / this.deciderLatencies.length
@@ -721,8 +720,8 @@ class HameauViewer {
     const latSubEl = document.getElementById("counter-latency-sub");
     if (latSubEl) {
       latSubEl.textContent = this.deciderLatencies.length > 0
-        ? `-${Math.max(0, Math.round(680 - avgDecLat))} ms / décision`
-        : "Mesuré depuis journal";
+        ? `-${Math.max(0, Math.round(680 - avgDecLat))} ms / decision`
+        : "Measured from log";
     }
 
     this.updateInspector();
@@ -737,49 +736,49 @@ class HameauViewer {
 
     const meta = AGENTS_META[this.selectedAgentId];
     document.getElementById("inspector-name").textContent = a.name;
-    document.getElementById("inspector-job").textContent = `${meta.job} • ${meta.age} ans`;
+    document.getElementById("inspector-job").textContent = `${meta.job} • ${meta.age} yrs old`;
     document.getElementById("inspector-avatar").textContent = meta.avatar;
 
     const locObj = VILLAGE_LOCATIONS[a.location];
     document.getElementById("inspector-loc").textContent = locObj?.name || a.location;
     document.getElementById("inspector-action").textContent = a.currentAction;
 
-    // Badge Stockage
+    // Stocking badge
     const badge = document.getElementById("inspector-stocking-badge");
-    badge.textContent = a.didStock ? "⚠️ Stocke des vivres" : "Normal";
+    badge.textContent = a.didStock ? "⚠️ Stockpiling Supplies" : "Normal";
     badge.classList.toggle("active-stock", a.didStock);
 
-    // Croyances
+    // Beliefs
     const r1 = a.believedFacts["R1_fermeture_marche"];
     const r2 = a.believedFacts["R2_dementi_maire"];
     const r3 = a.believedFacts["R3_ouverture_marche"];
     const r4 = a.believedFacts["R4_election_municipale"];
-    document.getElementById("r1-cred").textContent = r1 ? `Crédibilité : ${(r1 * 100).toFixed(0)}%` : "Non informé";
-    document.getElementById("r2-cred").textContent = r2 ? `Officiel : ${(r2 * 100).toFixed(0)}%` : "Non informé";
+    document.getElementById("r1-cred").textContent = r1 ? `Credibility: ${(r1 * 100).toFixed(0)}%` : "Uninformed";
+    document.getElementById("r2-cred").textContent = r2 ? `Official: ${(r2 * 100).toFixed(0)}%` : "Uninformed";
     const r3El = document.getElementById("r3-cred");
-    if (r3El) r3El.textContent = r3 ? `Ouvert : ${(r3 * 100).toFixed(0)}%` : "Non informé";
+    if (r3El) r3El.textContent = r3 ? `Open: ${(r3 * 100).toFixed(0)}%` : "Uninformed";
     const r4El = document.getElementById("r4-cred");
-    if (r4El) r4El.textContent = r4 ? `Informé : ${(r4 * 100).toFixed(0)}%` : "Non informé";
+    if (r4El) r4El.textContent = r4 ? `Informed: ${(r4 * 100).toFixed(0)}%` : "Uninformed";
     const voteEl = document.getElementById("inspector-vote");
     if (voteEl) {
       const vObj = a.vote || (this.electionVotes && this.electionVotes[this.selectedAgentId]);
       if (vObj) {
         const vName = AGENTS_META[vObj.vote]?.name || vObj.vote;
-        const confTxt = typeof vObj.confidence === "number" ? ` (${(vObj.confidence * 100).toFixed(0)}%, ${vObj.zone})` : " (candidat)";
+        const confTxt = typeof vObj.confidence === "number" ? ` (${(vObj.confidence * 100).toFixed(0)}%, ${vObj.zone})` : " (candidate)";
         voteEl.textContent = `${vName}${confTxt}`;
       } else {
-        voteEl.textContent = "En attente du scrutin (J3 17h)";
+        voteEl.textContent = "Awaiting ballot (D3 17:00)";
       }
     }
 
-    // Décisions récentes
+    // Recent decisions
     const decList = document.getElementById("inspector-decisions-list");
     decList.textContent = "";
     const history = this.decisionsHistory[this.selectedAgentId] || [];
     if (history.length === 0) {
       const emptyDiv = document.createElement("div");
       emptyDiv.style.cssText = "color:var(--text-muted);font-size:0.75rem;";
-      emptyDiv.textContent = "Aucune décision récente.";
+      emptyDiv.textContent = "No recent decisions.";
       decList.appendChild(emptyDiv);
     } else {
       history.slice(0, 4).forEach((d) => {
@@ -801,7 +800,7 @@ class HameauViewer {
 
         const timeDiv = document.createElement("div");
         timeDiv.style.cssText = "font-size:0.7rem;color:var(--text-muted);";
-        timeDiv.textContent = `À ${this.formatTickTime(d.tick)}`;
+        timeDiv.textContent = `At ${this.formatTickTime(d.tick)}`;
 
         box.appendChild(topDiv);
         box.appendChild(timeDiv);
@@ -809,7 +808,7 @@ class HameauViewer {
       });
     }
 
-    // Souvenirs scorés par MemoryGate (BUG-05)
+    // Memories scored by MemoryGate (BUG-05)
     const memList = document.getElementById("inspector-memories-list");
     if (memList) {
       memList.textContent = "";
@@ -817,7 +816,7 @@ class HameauViewer {
       if (memories.length === 0) {
         const emptyDiv = document.createElement("div");
         emptyDiv.style.cssText = "color:var(--text-muted);font-size:0.75rem;padding:4px 0;";
-        emptyDiv.textContent = "Aucun souvenir noté pour le moment.";
+        emptyDiv.textContent = "No scored memories yet.";
         memList.appendChild(emptyDiv);
       } else {
         memories.slice(0, 3).forEach((m, idx) => {
@@ -834,7 +833,7 @@ class HameauViewer {
 
           const scoreSpan = document.createElement("span");
           scoreSpan.style.cssText = "font-size:0.7rem;color:var(--text-muted);";
-          scoreSpan.textContent = `Score : ${m.composite.toFixed(2)}`;
+          scoreSpan.textContent = `Score: ${m.composite.toFixed(2)}`;
 
           head.appendChild(badge);
           head.appendChild(scoreSpan);
@@ -882,21 +881,21 @@ class HameauViewer {
         victorVotes = this.electionResult.tally.victor || 0;
         abstVotes = this.electionResult.tally.abstention || 0;
         const winnerName = AGENTS_META[this.electionResult.winner]?.name || this.electionResult.winner;
-        if (statusBadge) statusBadge.textContent = "Scrutin clos (J3 17h)";
-        summaryLine.textContent = `🏆 Maire élu : ${winnerName} (Participation : ${Math.round((this.electionResult.turnout || 0) * 100)}%)`;
+        if (statusBadge) statusBadge.textContent = "Election closed (D3 17:00)";
+        summaryLine.textContent = `🏆 Mayor Elected: ${winnerName} (Turnout: ${Math.round((this.electionResult.turnout || 0) * 100)}%)`;
       } else {
         for (const v of Object.values(this.electionVotes || {})) {
           if (v.vote === "kofi") kofiVotes++;
           else if (v.vote === "victor") victorVotes++;
           else abstVotes++;
         }
-        if (statusBadge) statusBadge.textContent = `Campagne R4 : ${r4Count}/${n}`;
+        if (statusBadge) statusBadge.textContent = `Campaign R4: ${r4Count}/${n}`;
         summaryLine.textContent = r4Count > 0
-          ? `Campagne active (${r4Count}/${n} informés) — Vote J3 à 17h00`
-          : "En attente du lancement de campagne (J1 09h20)";
+          ? `Active campaign (${r4Count}/${n} informed) — Vote D3 at 17:00`
+          : "Awaiting campaign launch (D1 09:20)";
       }
-      kofiEl.textContent = `${kofiVotes} voix`;
-      victorEl.textContent = `${victorVotes} voix`;
+      kofiEl.textContent = `${kofiVotes} votes`;
+      victorEl.textContent = `${victorVotes} votes`;
       abstEl.textContent = `${abstVotes}`;
     }
 
@@ -913,7 +912,7 @@ class HameauViewer {
       routeSpan.textContent = `${h.sender} ➔ ${h.receiver}`;
 
       const hopSpan = document.createElement("span");
-      hopSpan.textContent = `${(h.fact_id || "").split("_")[0]} · Saut #${h.hop_count}`;
+      hopSpan.textContent = `${(h.fact_id || "").split("_")[0]} · Hop #${h.hop_count}`;
 
       header.appendChild(routeSpan);
       header.appendChild(hopSpan);
@@ -963,13 +962,13 @@ class HameauViewer {
     }
 
     if (totalTicks > 192) {
-      ctx.fillText("J1 06h", padLeft, h - 5);
-      ctx.fillText("J2 10h", padLeft + plotW * 0.42, h - 5);
-      ctx.fillText("J3 22h", w - padRight - 35, h - 5);
+      ctx.fillText("D1 06:00", padLeft, h - 5);
+      ctx.fillText("D2 10:00", padLeft + plotW * 0.42, h - 5);
+      ctx.fillText("D3 22:00", w - padRight - 45, h - 5);
     } else {
-      ctx.fillText("06h", padLeft, h - 5);
-      ctx.fillText("14h", padLeft + plotW * 0.5, h - 5);
-      ctx.fillText("22h", w - padRight - 15, h - 5);
+      ctx.fillText("06:00", padLeft, h - 5);
+      ctx.fillText("14:00", padLeft + plotW * 0.5, h - 5);
+      ctx.fillText("22:00", w - padRight - 30, h - 5);
     }
 
     const r1Points = [];
@@ -1076,25 +1075,25 @@ class HameauViewer {
         latency: m.latency ?? fallbackLatency,
       }));
     } else {
-      // Contexte initial canonique de l'agent (avant ses premières interactions)
+      // Initial canonical context of agent (before first interactions)
       const locName = VILLAGE_LOCATIONS[a.location]?.name || a.location;
       const meta = AGENTS_META[this.selectedAgentId];
       candidates = [
-        { id: "c1", text: `${a.name} est à ${locName} (${a.currentAction}).`, imp: 0.7, rel: 0.85, comp: 0.78, zone: "green", latency: fallbackLatency },
-        { id: "c2", text: `Résidence principale : ${VILLAGE_LOCATIONS[meta?.home]?.name || meta?.home}.`, imp: 0.5, rel: 0.60, comp: 0.55, zone: "orange", latency: fallbackLatency },
-        { id: "c3", text: "Le village s'éveille paisiblement au lever du soleil.", imp: 0.2, rel: 0.15, comp: 0.18, zone: "red", latency: fallbackLatency },
+        { id: "c1", text: `${a.name} is at ${locName} (${a.currentAction}).`, imp: 0.7, rel: 0.85, comp: 0.78, zone: "green", latency: fallbackLatency },
+        { id: "c2", text: `Primary residence: ${VILLAGE_LOCATIONS[meta?.home]?.name || meta?.home}.`, imp: 0.5, rel: 0.60, comp: 0.55, zone: "orange", latency: fallbackLatency },
+        { id: "c3", text: "The village peacefully awakens at sunrise.", imp: 0.2, rel: 0.15, comp: 0.18, zone: "red", latency: fallbackLatency },
       ];
     }
 
-    // Afficher tous les candidats dans la colonne "Brut (Sans MemoryGate)"
+    // Display all candidates in "Raw (Without MemoryGate)" column
     candidates.forEach((c) => {
       const item = document.createElement("div");
       item.className = "diff-memory-item";
-      item.textContent = `• [Brut] ${c.text}`;
+      item.textContent = `• [Raw] ${c.text}`;
       this.diffRawContent.appendChild(item);
     });
 
-    // Sélectionner le Top 3 retenu (Avec MemoryGate)
+    // Select Top 3 retained (With MemoryGate)
     const top3 = candidates.slice(0, 3);
     top3.forEach((c, idx) => {
       const item = document.createElement("div");
@@ -1106,14 +1105,14 @@ class HameauViewer {
       badge.style.marginRight = "6px";
 
       const txt = document.createElement("span");
-      txt.textContent = `${c.text} (Pertinence D3 : ${(c.rel * 100).toFixed(0)}%)`;
+      txt.textContent = `${c.text} (Relevance D3: ${(c.rel * 100).toFixed(0)}%)`;
 
       item.appendChild(badge);
       item.appendChild(txt);
       this.diffGatedContent.appendChild(item);
     });
 
-    // Estimation réaliste des tokens (~3.8 caractères par token pour le français + base prompt)
+    // Realistic token estimation (~3.8 characters per token + base prompt)
     const basePromptTokens = 350;
     const rawTokens = basePromptTokens + candidates.reduce((sum, c) => sum + Math.ceil(c.text.length / 3.8) + 12, 0);
     const gatedTokens = basePromptTokens + top3.reduce((sum, c) => sum + Math.ceil(c.text.length / 3.8) + 12, 0);
@@ -1128,7 +1127,7 @@ class HameauViewer {
     if (this.diffTokensSaved) this.diffTokensSaved.textContent = `-${tokensSavedPct} %`;
     if (this.diffNoiseRemoved) {
       const noise = Math.max(0, candidates.length - top3.length);
-      this.diffNoiseRemoved.textContent = `${noise} / ${candidates.length} souvenirs`;
+      this.diffNoiseRemoved.textContent = `${noise} / ${candidates.length} memories`;
     }
     const latEl = document.getElementById("diff-decider-latency");
     if (latEl) {
@@ -1237,7 +1236,7 @@ class HameauViewer {
     this.renderMode = this.renderMode === "characters" ? "dots" : "characters";
     const btn = document.getElementById("btn-toggle-render-mode");
     if (btn) {
-      btn.textContent = this.renderMode === "characters" ? "🎭 Personnages 2D" : "⚪ Points Schématiques";
+      btn.textContent = this.renderMode === "characters" ? "🎭 2D Characters" : "⚪ Schematic Dots";
       btn.classList.toggle("active", this.renderMode === "characters");
     }
     this.updateCanvasLegend();
@@ -1250,24 +1249,24 @@ class HameauViewer {
 
     const items = this.viewMode === "network"
       ? [
-          { dot: "dot-neutral", label: "Serein / Neutre" },
-          { dot: "dot-rumeur", label: "Rumeur R1 (Panique)" },
-          { dot: "dot-dementi", label: "Démenti R2" },
-          { dot: "dot-resolution", label: "Marché Ouvert R3" },
-          { dot: "dot-stocking", label: "Cercle pointillé : Panique provisions" },
+          { dot: "dot-neutral", label: "Serene / Neutral" },
+          { dot: "dot-rumeur", label: "Rumor R1 (Panic)" },
+          { dot: "dot-dementi", label: "Official Denial R2" },
+          { dot: "dot-resolution", label: "Market Reopening R3" },
+          { dot: "dot-stocking", label: "Dashed circle: Panic Stockpiling" },
         ]
       : this.renderMode === "characters"
       ? [
-          { dot: "dot-habitant", label: "Habitant Illustré 2D" },
-          { dot: "dot-rumeur", label: "Inquiétude R1 (Regard furtif)" },
-          { dot: "dot-dementi", label: "Soulagement R2 (Soupir apaisé)" },
-          { dot: "dot-stocking", label: "Stockage (Panier garni)" },
+          { dot: "dot-habitant", label: "2D Illustrated Citizen" },
+          { dot: "dot-rumeur", label: "Concern R1 (Furtive glance)" },
+          { dot: "dot-dementi", label: "Relief R2 (Reassured sigh)" },
+          { dot: "dot-stocking", label: "Stockpiling (Supply basket)" },
         ]
       : [
-          { dot: "dot-habitant", label: "Habitant" },
-          { dot: "dot-rumeur", label: "Porte la Rumeur R1" },
-          { dot: "dot-dementi", label: "A reçu le Démenti R2" },
-          { dot: "dot-stocking", label: "Stocke des provisions" },
+          { dot: "dot-habitant", label: "Citizen" },
+          { dot: "dot-rumeur", label: "Carries Rumor R1" },
+          { dot: "dot-dementi", label: "Received Denial R2" },
+          { dot: "dot-stocking", label: "Stockpiling supplies" },
         ];
 
     items.forEach((it) => {
@@ -1668,11 +1667,11 @@ class HameauViewer {
     ctx.fillText(nameText, ax, ay + 7 * this.dpr);
     ctx.restore();
 
-    // 5. Bulle de dialogue éditoriale si l'agent parle
+    // 5. Speech bubble when agent is talking
     if (isTalking) {
       const bubbleText = a.lastUtterance
-        ? (a.lastUtterance.length > 38 ? `« ${a.lastUtterance.slice(0, 36)}… »` : `« ${a.lastUtterance} »`)
-        : "« Bonjour ! »";
+        ? (a.lastUtterance.length > 38 ? `“${a.lastUtterance.slice(0, 36)}…”` : `“${a.lastUtterance}”`)
+        : "“Hello!”";
       const bx = ax;
       const by = ay - 68 * this.dpr;
 
@@ -1690,7 +1689,7 @@ class HameauViewer {
       ctx.fill();
       ctx.stroke();
 
-      // Queue triangulaire
+      // Triangular tail
       ctx.fillStyle = "#fffbeb";
       ctx.beginPath();
       ctx.moveTo(bx - 4 * this.dpr, by);
@@ -1730,17 +1729,17 @@ class HameauViewer {
       ctx.stroke();
     }
 
-    // 3. Cœur du village (Place Centrale)
+    // 3. Central Village Square
     ctx.font = `${22 * this.dpr}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🏛️", cx, cy - 8 * this.dpr);
     ctx.font = `700 ${10 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = "#94a3b8";
-    ctx.fillText("PLACE DU MARCHÉ", cx, cy + 16 * this.dpr);
+    ctx.fillText("MARKET SQUARE", cx, cy + 16 * this.dpr);
     ctx.font = `500 ${8 * this.dpr}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = "#64748b";
-    ctx.fillText("Réseau de Confiance", cx, cy + 28 * this.dpr);
+    ctx.fillText("Trust & Influence Network", cx, cy + 28 * this.dpr);
 
     // 4. Calcul des coordonnées des 12 nœuds
     this.networkNodePositions = {};
@@ -1858,20 +1857,20 @@ class HameauViewer {
       const r3 = a.believedFacts["R3_ouverture_marche"] || 0;
 
       let haloColor = "#64748b";
-      let statusText = "Serein";
+      let statusText = "Serene";
       let statusColor = "#94a3b8";
 
       if (r3 >= 0.55) {
         haloColor = "#10b981";
-        statusText = `Marché Ouvert (${(r3 * 100).toFixed(0)}%)`;
+        statusText = `Market Open (${(r3 * 100).toFixed(0)}%)`;
         statusColor = "#10b981";
       } else if (r2 >= 0.60) {
         haloColor = "#06b6d4";
-        statusText = `Démenti R2 (${(r2 * 100).toFixed(0)}%)`;
+        statusText = `Official Denial R2 (${(r2 * 100).toFixed(0)}%)`;
         statusColor = "#06b6d4";
       } else if (r1 >= 0.55) {
         haloColor = "#f43f5e";
-        statusText = `Rumeur R1 (${(r1 * 100).toFixed(0)}%)`;
+        statusText = `Rumor R1 (${(r1 * 100).toFixed(0)}%)`;
         statusColor = "#f43f5e";
       }
 
@@ -1945,7 +1944,7 @@ function initHameau() {
       return fetch("live_run.jsonl").then((r2) => r2.text());
     })
     .then((txt) => window.hameauViewer.loadJSONLContent(txt))
-    .catch(() => console.log("Prêt pour chargement JSONL"));
+    .catch(() => console.log("Ready for JSONL loading"));
 }
 
 if (document.readyState === "loading") {

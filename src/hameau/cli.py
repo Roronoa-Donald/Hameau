@@ -60,27 +60,27 @@ def create_viewer_server(port: int = 8000, repo_root: Optional[Path] = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="HAMEAU — Simulation multi-agents avec Strands Decider 2B et Amazon Nova Micro")
-    parser.add_argument("--config", type=str, default="config.yaml", help="Chemin vers config.yaml")
-    parser.add_argument("--days", type=int, default=None, help="Nombre de jours simulés")
-    parser.add_argument("--ticks-per-day", type=int, default=None, help="Nombre de ticks par jour (défaut 192)")
-    parser.add_argument("--mock-decider", action="store_true", help="Utiliser le mock déterministe au lieu du GPU local")
-    parser.add_argument("--decider-urls", type=str, default=None, help="URLs des workers GPU distants (séparées par virgules, ex: Google Colab). Lu depuis .env si omis.")
-    parser.add_argument("--no-cassettes", action="store_true", help="Désactiver le cache des cassettes Bedrock")
-    parser.add_argument("--output", type=str, default=None, help="Chemin du fichier de journalisation JSONL (ex: runs/real_gpu_run.jsonl)")
-    parser.add_argument("--serve", action="store_true", help="Lancer un serveur web local pour le visualiseur")
-    parser.add_argument("--port", type=int, default=8000, help="Port pour le serveur web local (défaut 8000)")
+    parser = argparse.ArgumentParser(description="HAMEAU — Multi-agent simulation with Strands Decider 2B and Amazon Nova Micro")
+    parser.add_argument("--config", type=str, default="config.yaml", help="Path to config.yaml")
+    parser.add_argument("--days", type=int, default=None, help="Number of simulated days")
+    parser.add_argument("--ticks-per-day", type=int, default=None, help="Number of ticks per day (default 192)")
+    parser.add_argument("--mock-decider", action="store_true", help="Use deterministic mock instead of local GPU")
+    parser.add_argument("--decider-urls", type=str, default=None, help="Remote GPU worker URLs (comma-separated). Read from .env if omitted.")
+    parser.add_argument("--no-cassettes", action="store_true", help="Disable Bedrock cassette cache")
+    parser.add_argument("--output", type=str, default=None, help="JSONL log output file path (e.g. runs/real_gpu_run.jsonl)")
+    parser.add_argument("--serve", action="store_true", help="Launch local web server for the viewer")
+    parser.add_argument("--port", type=int, default=8000, help="Port for local web server (default 8000)")
 
     args = parser.parse_args()
 
     if args.serve:
         server, port = create_viewer_server(args.port)
         url = f"http://127.0.0.1:{port}/index.html"
-        print(f"Serveur visualiseur HAMEAU sécurisé démarré sur : {url}")
+        print(f"HAMEAU secure viewer server started at: {url}")
         try:
             server.serve_forever()
         except KeyboardInterrupt:
-            print("\nArrêt du serveur.")
+            print("\nServer stopped.")
         finally:
             server.server_close()
         return
@@ -98,7 +98,7 @@ def main():
     # Lecture de la configuration
     config_path = Path(args.config)
     if not config_path.exists():
-        print(f"Erreur : fichier de configuration '{args.config}' introuvable.")
+        print(f"Error: configuration file '{args.config}' not found.")
         sys.exit(1)
 
     with open(config_path, "r", encoding="utf-8") as f:
@@ -114,18 +114,18 @@ def main():
     use_cassettes = not args.no_cassettes
 
     if use_mock:
-        decider_mode_str = "Mock déterministe (sans GPU)"
+        decider_mode_str = "Deterministic Mock (no GPU)"
     elif decider_urls_str:
-        decider_mode_str = f"Distribué GPU Colab ({decider_urls_str})"
+        decider_mode_str = f"Distributed GPU Colab ({decider_urls_str})"
     else:
-        decider_mode_str = "GPU local (CUDA RTX 3050)"
+        decider_mode_str = "Local GPU (CUDA RTX 3050)"
 
     print(f"===========================================================")
-    print(f"   HAMEAU — Démarrage de la Simulation")
-    print(f"   Jours : {days} | Ticks/jour : {ticks_per_day} (1 tick = 5 min)")
-    print(f"   Decider 2B : {decider_mode_str}")
-    print(f"   Bedrock : {cfg['bedrock']['model_id']} ({cfg['bedrock']['region']})")
-    print(f"   Cassettes : {'Activées (0$ au rejeu)' if use_cassettes else 'Désactivées'}")
+    print(f"   HAMEAU — Simulation Starting")
+    print(f"   Days: {days} | Ticks/day: {ticks_per_day} (1 tick = 5 min)")
+    print(f"   Decider 2B: {decider_mode_str}")
+    print(f"   Bedrock: {cfg['bedrock']['model_id']} ({cfg['bedrock']['region']})")
+    print(f"   Cassettes: {'Enabled ($0 on replay)' if use_cassettes else 'Disabled'}")
     print(f"===========================================================\n")
 
     world = build_default_village()
@@ -178,8 +178,8 @@ def main():
     )
 
     summary = engine.run(days=days, ticks_per_day=ticks_per_day)
-    print(f"\nJournal de simulation enregistré : {summary['log_file']}")
-    print(f"Pour visualiser le résultat, ouvrez 'viewer/index.html' dans votre navigateur.")
+    print(f"\nSimulation log saved to: {summary['log_file']}")
+    print(f"To visualize the results, open 'viewer/index.html' in your browser.")
 
 
 if __name__ == "__main__":
