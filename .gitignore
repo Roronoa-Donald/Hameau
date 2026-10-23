@@ -48,6 +48,7 @@ cassettes/*.json
 
 # Test artifacts
 test-jour1.png
+heameau.png
 # Archives
 *.zip
 
